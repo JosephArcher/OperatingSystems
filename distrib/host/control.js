@@ -1,5 +1,6 @@
 ///<reference path="../globals.ts" />
 ///<reference path="../os/canvastext.ts" />
+//test
 /* ------------
      Control.ts
 

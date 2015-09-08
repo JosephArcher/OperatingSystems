@@ -3,6 +3,7 @@
 
    Utility functions.
    -------- */
+ // This is a test  
 
 module TSOS {
 
@@ -19,6 +20,29 @@ module TSOS {
             - "g" makes is global, so we get all the whitespace.
             - "" is nothing, which is what we replace the whitespace with.
             */
+        }
+        public static getDateTime(): string {
+            var date = new Date();
+            var day = date.getDay();
+            var month = date.getMonth();
+            var year = date.getFullYear();
+            var dayOut = "" + day;
+            var monthOut = "" + month;
+            var timeHours = date.getHours();
+            var timeMin = date.getMinutes();
+            var timeSec = date.getSeconds();
+
+            if(day < 10){
+                dayOut = "0" + dayOut;
+            }
+            if(month < 10){
+                monthOut = "0" + monthOut;
+            }
+           
+
+
+
+            return "Date: " + dayOut + "/" + monthOut + "/" + year + " Time: " + timeHours + ":" + timeMin + ":" + timeSec + "";
         }
 
         public static rot13(str: string): string {
