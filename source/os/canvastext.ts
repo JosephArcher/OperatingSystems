@@ -157,6 +157,7 @@ module TSOS {
 
             for (var i = 0; i < len; i++) {
                 var c = CanvasTextFunctions.letter(str.charAt(i));
+                
                 if (!c) {
                     continue;
                 }
@@ -182,7 +183,6 @@ module TSOS {
             ctx.restore();
             return total;
         }
-
         public static enable(ctx) {
             ctx.drawText = function(font,size,x,y,text) { return CanvasTextFunctions.draw( ctx, font,size,x,y,text); };
             ctx.measureText = function(font,size,text) { return CanvasTextFunctions.measure( font,size,text); };

@@ -3,8 +3,6 @@
 
    Utility functions.
    -------- */
- // This is a test  
-
 module TSOS {
 
     export class Utils {
@@ -21,28 +19,47 @@ module TSOS {
             - "" is nothing, which is what we replace the whitespace with.
             */
         }
+        // Takes a given string and returns it in reverse
+        public static reverseString(str) {
+            var answer = "";
+
+            for (var i = str.length - 1; i > -1; i --) {
+                answer = answer + str.charAt(i);
+            }
+            return answer;
+        }
+        /*
+          This method is used to get the current date and time
+          and return a nicely formated string  (mm/dd/yyyy) (hr:min:sec)
+        */
         public static getDateTime(): string {
             var date = new Date();
-            var day = date.getDay();
-            var month = date.getMonth();
+            // Get the current date 1 - 31
+            var day = date.getDate();
+
+            // Get the current Month 1 - 11
+            var month = date.getMonth() + 1; // add one to account for 0 as starting position
+
+            // Get the current year
             var year = date.getFullYear();
-            var dayOut = "" + day;
-            var monthOut = "" + month;
+            
+            // Get the time stuff
             var timeHours = date.getHours();
             var timeMin = date.getMinutes();
             var timeSec = date.getSeconds();
 
-            if(day < 10){
-                dayOut = "0" + dayOut;
-            }
-            if(month < 10){
-                monthOut = "0" + monthOut;
-            }
-           
+            return "Date: " + month + "/" + day + "/" + year + " Time: " + timeHours + ":" + timeMin + ":" + timeSec + "";
 
-
-
-            return "Date: " + dayOut + "/" + monthOut + "/" + year + " Time: " + timeHours + ":" + timeMin + ":" + timeSec + "";
+        }
+        /*
+          This method is used to create a blue screen of death which is drawn in the console
+        */
+        public static createBSOD(): void {
+                     
+            _Kernel.krnShutdown();
+            clearInterval(_hardwareClockID);
+            _DrawingContext.clearRect(0, 0, 500, 500);
+            _DrawingContext.drawImage(BSOD_IMAGE, 0, 0, 500, 500);
         }
 
         public static rot13(str: string): string {
@@ -67,5 +84,143 @@ module TSOS {
             }
             return retVal;
         }
+        /*
+          This method is used to convert a number keypress while shifted 
+          to its shifted value
+        */
+        public static getShiftedNumber(keyCode): string {
+
+            var answer: string = "";
+
+            switch (keyCode)
+            {
+                case 48:
+                    answer = ")";
+                    break;
+                case 49:
+                    answer = "!";
+                    break;
+                case 50:
+                    answer = "@";
+                    break;
+                case 51:
+                    answer = "#";
+                    break;
+                case 52:
+                    answer = "$";
+                    break;
+                case 53:
+                    answer = "%";
+                    break;
+                case 54:
+                    answer = "^";
+                    break;
+                case 55:
+                    answer = "&";
+                    break;
+                case 56:
+                    answer = "*";
+                    break;
+                case 57:
+                    answer = "(";
+                    break;
+                default:
+                  console.log("This should never happen");
+            }
+            return answer;
+        }
+        /*
+           This method is used to convert keypress to its SpecialCharacter 
+        */
+       public static getSpecialCharacter(keyCode): string {
+
+           var answer: string = "";
+
+           switch (keyCode)
+           {
+               case 186:
+                   answer = ";";
+                   break;
+               case 187:
+                   answer = "=";
+                   break;
+               case 188:
+                   answer = ",";
+                   break;
+               case 189:
+                   answer = "-";
+                   break;
+               case 190:
+                   answer = ".";
+                   break;
+               case 191:
+                   answer = "/";
+                   break;
+               case 192:
+                   answer = "`";
+                   break;
+               case 219:
+                   answer = "[";
+                   break;
+               case 220:
+                   answer = "\\"
+                   break;
+               case 221:
+                   answer = "]";
+                   break;
+               case 222:
+                   answer = "'";
+                   break;
+               default:
+                   console.log("This should never happen");
+           }
+           return answer;
+       }
+        /*
+           This method is used to convert keypress to its shifted SpecialCharacter 
+        */
+       public static getSpecialCharacterShifted(keyCode) : string {
+
+          var answer: string = "";
+           switch (keyCode)
+           {
+               case 186:
+                   answer = ":";
+                   break;
+               case 187:
+                   answer = "+";
+                   break;
+               case 188:
+                   answer = "<";
+                   break;
+               case 189:
+                   answer = "_";
+                   break;
+               case 190:
+                   answer = ">";
+                   break;
+               case 191:
+                   answer = "?";
+                   break;
+               case 192:
+                   answer = "~";
+                   break;
+               case 219:
+                   answer = "{";
+                   break;
+               case 220:
+                   answer = "|"
+                   break;
+               case 221:
+                   answer = "}";
+                   break;
+               case 222:
+                   answer = "\"";
+                   break;
+               default:
+                 console.log("This should never happen");
+           }
+           return answer;
+       }
     }
 }

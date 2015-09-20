@@ -2,8 +2,9 @@
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-   <meta name="author"             content="Alan G. Labouseur" />
+   <meta name="author"             content="Alan G. Labouseur , Joseph Archer" />
    <link rel="stylesheet" href="tsos.css" type="text/css" media="screen" />
+   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> <!-- Added Bootstrap -->
    <title>
       TSOS - a browser-based virtual Operating System in TypeScript
    </title>
@@ -31,40 +32,26 @@
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
    <!-- Uncomment this line below to enable GLaDOS testing -->
-  <!-- <script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script> -->
+   <script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script> 
 </head>
 
 <body onload="onDocumentLoad()">
 
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <p class ="navbar-text"> Joe/S </p> 
+    </div>
+      <button type="button" id="btnStartOS"  name="brnStartOS" onclick="TSOS.Control.hostBtnStartOS_click(this);" tabindex="0"  class="btn btn-default navbar-btn"> Start </button>
+      <button type="button" id = "btnHaltOS" name="brnHaltOS"  onclick="TSOS.Control.hostBtnHaltOS_click(this);"  tabindex="1"  class="btn btn-default navbar-btn"> Halt  </button>
+      <button type="button" id = "btnReset"  name="brnReset"   onclick="TSOS.Control.hostBtnReset_click(this);"   tabindex="2"  class="btn btn-default navbar-btn"> Reset </button>
+      <span id="statusMsg"class ="navbar-text">Status: </span>
+      <span id = "currentTime" class ="navbar-text"></span>
+  </div><!-- /.container-fluid -->
+</nav>
+
 <div id="divMain" style="width:100%;">
-
-   <div id="divButtonBar" style="margin:4px;">
-      <input type="button"
-             id = "btnStartOS"
-             name="brnStartOS"
-             class="normal_button"
-             value="Start"
-             tabindex="0"
-             onclick="TSOS.Control.hostBtnStartOS_click(this);">
-
-      <input type="button"
-             id = "btnHaltOS"
-             name="brnHaltOS"
-             class="normal_button"
-             disabled="disabled"
-             value="Halt"
-             tabindex="1"
-             onclick="TSOS.Control.hostBtnHaltOS_click(this);">
-
-      <input type="button"
-             id = "btnReset"
-             name="brnReset"
-             class="normal_button"
-             disabled="disabled"
-             value="Reset"
-             tabindex="2"
-             onclick="TSOS.Control.hostBtnReset_click(this);">
-   </div>
 
    <div id="divConsole" style="margin:4px; width:500px; height:500px; float:left;">
       <canvas id="display"

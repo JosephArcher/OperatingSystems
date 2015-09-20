@@ -2,7 +2,7 @@
 ///<reference path="../utils.ts" />
 ///<reference path="shellCommand.ts" />
 ///<reference path="userCommand.ts" />
-// This is a test 
+///<reference path="interrupt.ts" />
 /* ------------
    Shell.ts
 
@@ -24,13 +24,27 @@ var TSOS;
         }
         Shell.prototype.init = function () {
             var sc;
-            //
             // Load the command list.
             // ver
             sc = new TSOS.ShellCommand(this.shellVer, "ver", "- Displays the current version data.");
             this.commandList[this.commandList.length] = sc;
             //date
             sc = new TSOS.ShellCommand(this.shellDate, "date", "- Displays the current time and date");
+            this.commandList[this.commandList.length] = sc;
+            //WhereAmI
+            sc = new TSOS.ShellCommand(this.shellLocation, "whereami", "- Displays the current URL of the Page");
+            this.commandList[this.commandList.length] = sc;
+            //Screen
+            sc = new TSOS.ShellCommand(this.shellScreen, "screen", "-Displays information about the screen");
+            this.commandList[this.commandList.length] = sc;
+            //Status
+            sc = new TSOS.ShellCommand(this.shellStatus, "status", "<String> - Sets the status message on the taskbar to the <String>");
+            this.commandList[this.commandList.length] = sc;
+            //Blue Screen Of Death
+            sc = new TSOS.ShellCommand(this.shellBSOD, "bsod", "- Crash the mighty Joe/S with a single command! RAW POWER!");
+            this.commandList[this.commandList.length] = sc;
+            //Load
+            sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Validates code in 'User Program Input' section ");
             this.commandList[this.commandList.length] = sc;
             // help
             sc = new TSOS.ShellCommand(this.shellHelp, "help", "- This is the help command. Seek help.");
@@ -71,7 +85,6 @@ var TSOS;
             // ... and assign the command and args to local variables.
             var cmd = userCommand.command;
             var args = userCommand.args;
-            //
             // Determine the command and execute it.
             //
             // TypeScript/JavaScript may not support associative arrays in all browsers so we have to iterate over the
@@ -173,10 +186,56 @@ var TSOS;
             }
         };
         Shell.prototype.shellVer = function (args) {
-            _StdOut.putText(APP_NAME + " version " + APP_VERSION);
+            _StdOut.putText(APP_NAME + " version " + APP_VERSION); // Get the name of the OS and the version number
         };
         Shell.prototype.shellDate = function (args) {
-            _StdOut.putText(TSOS.Utils.getDateTime());
+            _StdOut.putText(TSOS.Utils.getDateTime()); // Get the current date
+        };
+        Shell.prototype.shellLocation = function (args) {
+            var x = location.href; // Get the current URL    
+            _StdOut.putText(x);
+        };
+        Shell.prototype.shellScreen = function (args) {
+            var width = screen.width; // get Screen width
+            var height = screen.height; // get screen height
+            var color = screen.pixelDepth; // get screen color pixel in bits
+            _StdOut.putText("Width: " + width + " Height: " + height + " Color: " + color + " Bit");
+        };
+        Shell.prototype.shellStatus = function (args) {
+            var output = "";
+            var statusMsg = document.getElementById("statusMsg");
+            if (args.length > 0) {
+                for (var i = 0; i < args.length; i++) {
+                    output = output + args[i] + " ";
+                }
+                statusMsg.innerHTML = "Status: " + output;
+            }
+            else {
+                _StdOut.putText("Usage: status <string>  Please supply a string.");
+            }
+        };
+        Shell.prototype.shellBSOD = function () {
+            var params = "";
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(BSOD_IRQ, params)); // Create a new Interupt to handle the Blue Screen of death and add it to the queue                   
+        };
+        Shell.prototype.shellLoad = function (args) {
+            var userInputHTML = document.getElementById("taProgramInput"); // Get the element where the user input is kept
+            var userInput = userInputHTML.value; // Store the input as a string
+            // If the user has no input then cant validate it
+            if (userInput.length < 1) {
+                _StdOut.putText("No user code was found");
+                return;
+            }
+            // Create a regular expression for only hex digits and spaces
+            var regex = /[0-9A-Fa-f\s]/;
+            // Loop over the current input
+            for (var i = 0; i < userInput.length; i++) {
+                if (regex.test(userInput.charAt(i)) === false) {
+                    _StdOut.putText("Error, the code is invalid because it contains something other than a space or hex digit");
+                    return;
+                }
+            }
+            _StdOut.putText("The code successfully validated. Yay"); // If we get this far then the code is valid
         };
         Shell.prototype.shellHelp = function (args) {
             _StdOut.putText("Commands:");

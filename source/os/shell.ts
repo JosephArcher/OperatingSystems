@@ -2,7 +2,9 @@
 ///<reference path="../utils.ts" />
 ///<reference path="shellCommand.ts" />
 ///<reference path="userCommand.ts" />
-// This is a test 
+///<reference path="interrupt.ts" />
+
+
 
 /* ------------
    Shell.ts
@@ -28,7 +30,6 @@ module TSOS {
 
         public init() {
             var sc;
-            //
             // Load the command list.
 
             // ver
@@ -42,6 +43,37 @@ module TSOS {
                                     "date",
                                     "- Displays the current time and date");
             this.commandList[this.commandList.length] = sc;
+
+            //WhereAmI
+            sc = new ShellCommand(this.shellLocation,
+                                    "whereami",
+                                    "- Displays the current URL of the Page");
+            this.commandList[this.commandList.length] = sc;
+
+            //Screen
+            sc = new ShellCommand(this.shellScreen,
+                                    "screen",
+                                    "-Displays information about the screen");
+            this.commandList[this.commandList.length] = sc;
+
+            //Status
+            sc = new ShellCommand(this.shellStatus,
+                                    "status",
+                                    "<String> - Sets the status message on the taskbar to the <String>");
+            this.commandList[this.commandList.length] = sc;
+
+            //Blue Screen Of Death
+            sc = new ShellCommand(this.shellBSOD,
+                                    "bsod",
+                                    "- Crash the mighty Joe/S with a single command! RAW POWER!");
+            this.commandList[this.commandList.length] = sc;
+
+            //Load
+            sc = new ShellCommand(this.shellLoad,
+                                    "load",
+                                    "- Validates code in 'User Program Input' section ");
+            this.commandList[this.commandList.length] = sc;
+
             // help
             sc = new ShellCommand(this.shellHelp,
                                   "help",
@@ -105,7 +137,7 @@ module TSOS {
             // ... and assign the command and args to local variables.
             var cmd = userCommand.command;
             var args = userCommand.args;
-            //
+          
             // Determine the command and execute it.
             //
             // TypeScript/JavaScript may not support associative arrays in all browsers so we have to iterate over the
@@ -122,7 +154,7 @@ module TSOS {
                 }
             }
             if (found) {
-                this.execute(fn, args);
+                this.execute(fn, args);   
             } else {
                 // It's not found, so check for curses and apologies before declaring the command invalid.
                 if (this.curses.indexOf("[" + Utils.rot13(cmd) + "]") >= 0) {     // Check for curses.
@@ -137,6 +169,7 @@ module TSOS {
 
         // Note: args is an option parameter, ergo the ? which allows TypeScript to understand that.
         public execute(fn, args?) {
+            
             // We just got a command, so advance the line...
             _StdOut.advanceLine();
             // ... call the command function passing in the args with some über-cool functional programming ...
@@ -145,10 +178,10 @@ module TSOS {
             if (_StdOut.currentXPosition > 0) {
                 _StdOut.advanceLine();
             }
+
             // ... and finally write the prompt again.
             this.putPrompt();
         }
-
         public parseInput(buffer): UserCommand {
             var retVal = new UserCommand();
 
@@ -212,12 +245,67 @@ module TSOS {
         }
 
         public shellVer(args) {
-            _StdOut.putText(APP_NAME + " version " + APP_VERSION);
+            _StdOut.putText(APP_NAME + " version " + APP_VERSION); // Get the name of the OS and the version number
         }
         public shellDate(args) {
-            _StdOut.putText( Utils.getDateTime() );
+            _StdOut.putText( Utils.getDateTime() ); // Get the current date
         }
+        public shellLocation(args) {
 
+            var x = location.href; // Get the current URL    
+            _StdOut.putText(x);
+        }
+        public shellScreen(args) {
+            
+            var width = screen.width; // get Screen width
+            var height = screen.height; // get screen height
+            var color = screen.pixelDepth; // get screen color pixel in bits
+
+            _StdOut.putText("Width: " + width + " Height: " + height + " Color: " + color + " Bit");
+        }
+        public shellStatus(args) {
+            
+            var output = "";
+            var statusMsg = document.getElementById("statusMsg");
+
+            if (args.length > 0) {
+                for (var i = 0; i < args.length; i++) {
+                    output = output + args[i] + " ";
+                    
+                }
+                statusMsg.innerHTML = "Status: " + output;
+            }
+            else {
+               _StdOut.putText("Usage: status <string>  Please supply a string.");
+            }
+
+        }
+        public shellBSOD() {
+            var params = "";
+            _KernelInterruptQueue.enqueue(new Interrupt(BSOD_IRQ , params)); // Create a new Interupt to handle the Blue Screen of death and add it to the queue                   
+        }
+        public shellLoad(args) {
+            
+            var userInputHTML = <HTMLInputElement> document.getElementById("taProgramInput"); // Get the element where the user input is kept
+            var userInput: string = userInputHTML.value; // Store the input as a string
+
+            // If the user has no input then cant validate it
+            if(userInput.length < 1){
+                _StdOut.putText("No user code was found");
+                return;
+            }
+            // Create a regular expression for only hex digits and spaces
+            var regex = /[0-9A-Fa-f\s]/;
+
+            // Loop over the current input
+            for (var i = 0; i < userInput.length; i++) {
+                if(regex.test(userInput.charAt(i)) === false) { // If the character fails to pass the test than input is invalid
+                     _StdOut.putText("Error, the code is invalid because it contains something other than a space or hex digit");
+                     return;          
+                }            
+            }
+                _StdOut.putText("The code successfully validated. Yay"); // If we get this far then the code is valid
+        }
         public shellHelp(args) {
             _StdOut.putText("Commands:");
             for (var i in _OsShell.commandList) {
@@ -225,14 +313,12 @@ module TSOS {
                 _StdOut.putText("  " + _OsShell.commandList[i].command + " " + _OsShell.commandList[i].description);
             }
         }
-
         public shellShutdown(args) {
              _StdOut.putText("Shutting down...");
              // Call Kernel shutdown routine.
             _Kernel.krnShutdown();
             // TODO: Stop the final prompt from being displayed.  If possible.  Not a high priority.  (Damn OCD!)
         }
-
         public shellCls(args) {
             _StdOut.clearScreen();
             _StdOut.resetXY();

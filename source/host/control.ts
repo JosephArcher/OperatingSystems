@@ -1,6 +1,7 @@
 ///<reference path="../globals.ts" />
+///<reference path="../utils.ts" />
 ///<reference path="../os/canvastext.ts" />
-//test
+
 /* ------------
      Control.ts
 
@@ -47,6 +48,8 @@ module TSOS {
             // Use the TypeScript cast to HTMLInputElement
             (<HTMLInputElement> document.getElementById("btnStartOS")).focus();
 
+
+            
             // Check for our testing and enrichment core, which
             // may be referenced here (from index.html) as function Glados().
             if (typeof Glados === "function") {
@@ -66,15 +69,13 @@ module TSOS {
 
             // Build the log string.
             var str: string = "({ clock:" + clock + ", source:" + source + ", msg:" + msg + ", now:" + now  + " })"  + "\n";
-
+          
             // Update the log console.
             var taLog = <HTMLInputElement> document.getElementById("taHostLog");
             taLog.value = str + taLog.value;
 
             // TODO in the future: Optionally update a log database or some streaming service.
         }
-
-
         //
         // Host Events
         //

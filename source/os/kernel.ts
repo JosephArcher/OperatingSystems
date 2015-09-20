@@ -1,5 +1,7 @@
 ///<reference path="../globals.ts" />
 ///<reference path="queue.ts" />
+///<reference path="../utils.ts" />
+///<reference path="console.ts" />
 
 /* ------------
      Kernel.ts
@@ -12,7 +14,6 @@
      This code references page numbers in the text book:
      Operating System Concepts 8th edition by Silberschatz, Galvin, and Gagne.  ISBN 978-0-470-12872-5
      ------------ */
-
 module TSOS {
 
     export class Kernel {
@@ -25,7 +26,7 @@ module TSOS {
             // Initialize our global queues.
             _KernelInterruptQueue = new Queue();  // A (currently) non-priority queue for interrupt requests (IRQs).
             _KernelBuffers = new Array();         // Buffers... for the kernel.
-            _KernelInputQueue = new Queue();      // Where device input lands before being processed out somewhere.
+            _KernelInputQueue = new Queue();      // Where device input lands before being processed out somewhere.       
 
             // Initialize the console.
             _Console = new Console();          // The command line interface / console I/O device.
@@ -37,7 +38,7 @@ module TSOS {
 
             // Load the Keyboard Device Driver
             this.krnTrace("Loading the keyboard device driver.");
-            _krnKeyboardDriver = new DeviceDriverKeyboard();     // Construct it.
+            _krnKeyboardDriver = new DeviceDriverKeyboard();    // Construct it.
             _krnKeyboardDriver.driverEntry();                    // Call the driverEntry() initialization routine.
             this.krnTrace(_krnKeyboardDriver.status);
 
@@ -78,7 +79,13 @@ module TSOS {
             /* This gets called from the host hardware simulation every time there is a hardware clock pulse.
                This is NOT the same as a TIMER, which causes an interrupt and is handled like other interrupts.
                This, on the other hand, is the clock pulse from the hardware / VM / host that tells the kernel
-               that it has to look for interrupts and process them if it finds any.                           */
+               that it has to look for interrupts and process them if it finds any.    
+                                      */
+            // Update the current clock display
+            var dateTime = document.getElementById("currentTime");
+
+            //Append the updated date and time to the top bar
+            dateTime.innerHTML = Utils.getDateTime() + "";
 
             // Check for an interrupt, are any. Page 560
             if (_KernelInterruptQueue.getSize() > 0) {
@@ -126,11 +133,13 @@ module TSOS {
                     _krnKeyboardDriver.isr(params);   // Kernel mode device driver
                     _StdIn.handleInput();
                     break;
+                case BSOD_IRQ:                        //Blue Screen of death Test Case
+                    this.krnTrapError("BSOD Command");
+                    break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }
         }
-
         public krnTimerISR() {
             // The built-in TIMER (not clock) Interrupt Service Routine (as opposed to an ISR coming from a device driver). {
             // Check multiprogramming parameters and enforce quanta here. Call the scheduler / context switch here if necessary.
@@ -170,11 +179,11 @@ module TSOS {
                 }
              }
         }
-
         public krnTrapError(msg) {
             Control.hostLog("OS ERROR - TRAP: " + msg);
-            // TODO: Display error on console, perhaps in some sort of colored screen. (Maybe blue?)
-            this.krnShutdown();
+            Utils.createBSOD(); // Create the blue screen of death
+            this.krnShutdown();  
+            clearInterval(_hardwareClockID);    
         }
     }
 }

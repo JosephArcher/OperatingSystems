@@ -1,5 +1,7 @@
 ///<reference path="../globals.ts" />
 ///<reference path="queue.ts" />
+///<reference path="../utils.ts" />
+///<reference path="console.ts" />
 /* ------------
      Kernel.ts
 
@@ -24,7 +26,7 @@ var TSOS;
             // Initialize our global queues.
             _KernelInterruptQueue = new TSOS.Queue(); // A (currently) non-priority queue for interrupt requests (IRQs).
             _KernelBuffers = new Array(); // Buffers... for the kernel.
-            _KernelInputQueue = new TSOS.Queue(); // Where device input lands before being processed out somewhere.
+            _KernelInputQueue = new TSOS.Queue(); // Where device input lands before being processed out somewhere.       
             // Initialize the console.
             _Console = new TSOS.Console(); // The command line interface / console I/O device.
             _Console.init();
@@ -67,7 +69,12 @@ var TSOS;
             /* This gets called from the host hardware simulation every time there is a hardware clock pulse.
                This is NOT the same as a TIMER, which causes an interrupt and is handled like other interrupts.
                This, on the other hand, is the clock pulse from the hardware / VM / host that tells the kernel
-               that it has to look for interrupts and process them if it finds any.                           */
+               that it has to look for interrupts and process them if it finds any.
+                                      */
+            // Update the current clock display
+            var dateTime = document.getElementById("currentTime");
+            //Append the updated date and time to the top bar
+            dateTime.innerHTML = TSOS.Utils.getDateTime() + "";
             // Check for an interrupt, are any. Page 560
             if (_KernelInterruptQueue.getSize() > 0) {
                 // Process the first interrupt on the interrupt queue.
@@ -110,6 +117,9 @@ var TSOS;
                 case KEYBOARD_IRQ:
                     _krnKeyboardDriver.isr(params); // Kernel mode device driver
                     _StdIn.handleInput();
+                    break;
+                case BSOD_IRQ:
+                    this.krnTrapError("BSOD Command");
                     break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
@@ -154,8 +164,9 @@ var TSOS;
         };
         Kernel.prototype.krnTrapError = function (msg) {
             TSOS.Control.hostLog("OS ERROR - TRAP: " + msg);
-            // TODO: Display error on console, perhaps in some sort of colored screen. (Maybe blue?)
+            TSOS.Utils.createBSOD(); // Create the blue screen of death
             this.krnShutdown();
+            clearInterval(_hardwareClockID);
         };
         return Kernel;
     })();
