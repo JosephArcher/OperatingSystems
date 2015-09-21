@@ -15,7 +15,8 @@ var TSOS;
     var Console = (function () {
         function Console(currentFont, currentFontSize, currentXPosition, currentYPosition, buffer, lineHeight, // Same Constant Used at the bottom to calculate the advanced line
             commandHistory, // Used to track the commands the user enters
-            commandCounter // Used to track the current position the user as they traverse the command history
+            commandCounter, // Used to track the current position the user as they traverse the command history
+            xPositionHistoy // Used to track the history of the line wraped x positions to enable the backspace to find its spot on the previous line
             ) {
             if (currentFont === void 0) { currentFont = _DefaultFontFamily; }
             if (currentFontSize === void 0) { currentFontSize = _DefaultFontSize; }
@@ -25,6 +26,7 @@ var TSOS;
             if (lineHeight === void 0) { lineHeight = _DefaultFontSize + _DrawingContext.fontDescent(currentFont, currentFontSize) + _FontHeightMargin; }
             if (commandHistory === void 0) { commandHistory = new Array(); }
             if (commandCounter === void 0) { commandCounter = 0; }
+            if (xPositionHistoy === void 0) { xPositionHistoy = new Array(); }
             this.currentFont = currentFont;
             this.currentFontSize = currentFontSize;
             this.currentXPosition = currentXPosition;
@@ -33,6 +35,7 @@ var TSOS;
             this.lineHeight = lineHeight;
             this.commandHistory = commandHistory;
             this.commandCounter = commandCounter;
+            this.xPositionHistoy = xPositionHistoy;
         }
         Console.prototype.init = function () {
             this.clearScreen();
@@ -74,6 +77,17 @@ var TSOS;
             if (this.currentXPosition - lastCharacterWidth < -1) {
                 // Still working on this feature
                 console.log("Need to handle the reverse line wrap This is not implemented yet !");
+                //Check the array to get the last inputed value
+                if (this.xPositionHistoy.length != 0) {
+                    this.currentXPosition = this.xPositionHistoy[this.xPositionHistoy.length - 1];
+                    this.currentYPosition = this.currentYPosition - this.lineHeight;
+                    //Clear the character from the buffer            
+                    _DrawingContext.clearRect(this.currentXPosition - lastCharacterWidth, this.currentYPosition + _FontHeightMargin - this.lineHeight, lastCharacterWidth, this.lineHeight + 1);
+                    //Reset the current x position to account for the backspace    
+                    this.currentXPosition = this.currentXPosition - lastCharacterWidth;
+                    //Remove the lastCharacter from the buffer
+                    this.buffer = this.buffer.substring(0, this.buffer.length - 1);
+                }
             }
             else {
                 //Clear the character from the buffer            
@@ -99,6 +113,8 @@ var TSOS;
                     }
                     // Reset the counter to include the new command also if the user hits enter this should be reset anyways
                     this.commandCounter = this.commandHistory.length;
+                    //Reset the array that handles the multi line inputs for a command because its different for each command
+                    this.xPositionHistoy = [];
                     _OsShell.handleInput(this.buffer);
                     // ... and reset our buffer.
                     this.buffer = "";
@@ -127,7 +143,10 @@ var TSOS;
                     nextCharacter = text.charAt(i) + "";
                     //Check to make sure that the character is able to be drawn on the current line
                     if (this.canFitOnLine(nextCharacter) === false) {
-                        //console.log("we need to line wrap here");
+                        console.log("we need to line wrap here");
+                        //before we do this we need to save the space left to allow the backspace to find the last x pos on the previous line 
+                        this.xPositionHistoy.push(this.currentXPosition);
+                        console.log("The x pos for the previous line should be ...  " + this.currentXPosition);
                         this.advanceLine();
                     }
                     // Draw the text at the current X and Y coordinates.
