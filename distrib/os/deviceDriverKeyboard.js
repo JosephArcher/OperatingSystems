@@ -78,7 +78,7 @@ var TSOS;
                 // First check to see if anything is actually in the command history
                 if (_Console.commandHistory.length > 0) {
                     if (keyCode == 38) {
-                        console.log("Up Arrow was pressed");
+                        //console.log("Up Arrow was pressed");
                         // Check to see if the user is already viewing the first command
                         if (_Console.commandCounter == 0) {
                         }
@@ -98,10 +98,9 @@ var TSOS;
                     }
                     else {
                         // Check to see if the user is already viewing the more recent command
-                        console.log("Counter ... " + _Console.commandCounter);
-                        console.log("Length of history" + _Console.commandHistory.length);
+                        //console.log("Counter ... " + _Console.commandCounter);
+                        //console.log("Length of history" + _Console.commandHistory.length);
                         if ((_Console.commandCounter + 1) >= _Console.commandHistory.length) {
-                            console.log("cant do anything already showing user the most recent command or not command exists");
                         }
                         else {
                             //Clear the Current Line and the current Buffer
@@ -128,7 +127,6 @@ var TSOS;
                 }
             }
             else if (keyCode == 9) {
-                console.log("Tab Key Was Presed");
                 var matchingCommands = new Array(); // Create an array to hold the possible matching commands
                 // Initalize the variables needed
                 var nextCommand; // Used to store the next command in the list while looping                
@@ -159,9 +157,9 @@ var TSOS;
                     // _Console.buffer = "";
                     _Console.clearLine();
                     // Then Auto Fill the command that matched
-                    console.log("this is the length of the command" + matchingCommands[0].length);
+                    //console.log("this is the length of the command" + matchingCommands[0].length);
                     for (var i = 0; i < matchingCommands[0].length; i++) {
-                        console.log("adding to the querue  " + matchingCommands[0].charAt(i));
+                        //console.log("adding to the querue  " + matchingCommands[0].charAt(i));
                         _KernelInputQueue.enqueue(matchingCommands[0].charAt(i));
                     }
                 }
@@ -175,7 +173,6 @@ var TSOS;
                     // Next because the line makes no sense now to the user and contains many differnt commmands just give them a new line to type on
                     _Console.advanceLine();
                     _OsShell.putPrompt();
-                    console.log(_Console.buffer + " ... Is the current Buffer");
                 }
                 else {
                 }

@@ -70,12 +70,12 @@ module TSOS {
             var lastCharacterWidth = CanvasTextFunctions.measure(this.currentFont, this.currentFontSize, lastCharacter);
 
 
-            console.log(" the last character in the buffer is ... " + lastCharacter);
+           // console.log(" the last character in the buffer is ... " + lastCharacter);
 
             // Next see if the character was drawn on the previous line and we have to move the x and y pos
             if(this.currentXPosition - lastCharacterWidth < -1) {
                 // Still working on this feature
-                console.log("Need to handle the reverse line wrap");
+                console.log("Need to handle the reverse line wrap This is not implemented yet !");
             }
             else { 
 
@@ -99,7 +99,7 @@ module TSOS {
                 if (chr === String.fromCharCode(13)) { //     Enter key
                     // The enter key marks the end of a console command, so ...
                     // ... tell the shell ... 
-                    console.log("Enter was pressed ..." + this.buffer);
+                   // console.log("Enter was pressed ..." + this.buffer);
 
                     if (this.buffer != "") { // Check to make sure that we dont add a blank command to the history
 
@@ -144,7 +144,7 @@ module TSOS {
                     nextCharacter = text.charAt(i) + "";
                     //Check to make sure that the character is able to be drawn on the current line
                     if (this.canFitOnLine(nextCharacter) === false) { // If not then 
-                        console.log("we need to line wrap here");
+                        //console.log("we need to line wrap here");
                         this.advanceLine();
                     }
                     // Draw the text at the current X and Y coordinates.
