@@ -243,7 +243,6 @@ module TSOS {
               _StdOut.putText("For what?");
            }
         }
-
         public shellVer(args) {
             _StdOut.putText(APP_NAME + " version " + APP_VERSION); // Get the name of the OS and the version number
         }
@@ -325,21 +324,41 @@ module TSOS {
         }
 
         public shellMan(args) {
+
             if (args.length > 0) {
+
+
+                // The user string that was enterd
                 var topic = args[0];
-                switch (topic) {
-                    case "help":
-                        _StdOut.putText("Help displays a list of (hopefully) valid commands.");
-                        break;
-                    // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
-                    default:
-                        _StdOut.putText("No manual entry for " + args[0] + ".");
+
+                // The length of the current command list
+
+                var test: number = _OsShell.commandList.length;
+
+                // The next command in the list
+
+                var nextCommand;
+
+                // Loop over the list 
+                for (var i = 0; i < test; i++) {
+                    //Get the next command in the list
+                    nextCommand = _OsShell.commandList[i];
+
+                    // if the next command matches the user string
+                    if(nextCommand.command == topic) {
+
+                        // Tell the user what the commmand does
+                        _StdOut.putText(" The " + args[0] + " command  does " + nextCommand.description);
+                        return;
+                    }
+
                 }
-            } else {
+                _StdOut.putText(" The " + args[0] + " command  does not exist" );
+            }  
+            else {
                 _StdOut.putText("Usage: man <topic>  Please supply a topic.");
             }
         }
-
         public shellTrace(args) {
             if (args.length > 0) {
                 var setting = args[0];
