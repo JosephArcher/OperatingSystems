@@ -1,5 +1,6 @@
 ///<reference path="../globals.ts" />
 ///<reference path="Instruction.ts" />
+///<reference path="memory.ts" />
 
 /* ------------
      CPU.ts
@@ -26,8 +27,8 @@ module TSOS {
                     public Yreg: number = 0,
                     public Zflag: number = 0,
                     public isExecuting: boolean = false,
-                    public instructionSet = []
-
+                    public instructionSet = [], //
+                    public memoryBlock = new MemoryBlock() //
                     ) {
 
         }
@@ -39,10 +40,13 @@ module TSOS {
             this.Yreg = 0;
             this.Zflag = 0;
             this.isExecuting = false;
+            //
+            this.memoryBlock = new MemoryBlock();
+            this.memoryBlock.init();
 
+            var instruction; //
 
-            var instruction;
-
+            //
             instruction = new Instruction(this.LDA,
                 "A9",
                 "-Load the accumulator with a constant");

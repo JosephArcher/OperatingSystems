@@ -190,6 +190,7 @@ var TSOS;
         };
         Shell.prototype.shellVer = function (args) {
             _StdOut.putText(APP_NAME + " version " + APP_VERSION); // Get the name of the OS and the version number
+            console.log(_CPU.memoryBlock.getLength());
         };
         Shell.prototype.shellDate = function (args) {
             _StdOut.putText(TSOS.Utils.getDateTime()); // Get the current date
@@ -237,10 +238,18 @@ var TSOS;
                     _StdOut.putText("Error, the code is invalid because it contains something other than a space or hex digit");
                     return;
                 }
+                else {
+                    if (userInput.charAt(i) != " ") {
+                        _CPU.memoryBlock.setNextByte(userInput.charAt(i));
+                    }
+                }
             }
             _StdOut.putText("The code successfully validated. Yay"); // If we get this far then the code is valid
         };
         Shell.prototype.shellRun = function (args) {
+            for (var i = 0; i < 255; i++) {
+                console.log(_CPU.memoryBlock.getByte(i));
+            }
         };
         Shell.prototype.shellHelp = function (args) {
             _StdOut.putText("Commands:");

@@ -34,7 +34,7 @@
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
    <!-- Uncomment this line below to enable GLaDOS testing -->
-   <script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script> 
+  <!--  <script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script> -->
 </head>
 
 <body onload="onDocumentLoad()">
@@ -55,7 +55,9 @@
 
 <div id="divMain" style="width:100%;">
 
-   <div id="divConsole" style="margin:4px; width:500px; height:500px; float:left;">
+<div id = "leftNav" style=" float: left; margin-left: 25px; width: 40%; ">
+
+<div id="divConsole" class="form-group" style="width:100%; height:45%; margin-left: 25px;">
       <canvas id="display"
               width="500px"
               height="500px"
@@ -63,29 +65,57 @@
       </canvas>
    </div>
 
-   <div id="divLog" style="margin-left:520px;">
-      <label>
-         Host Log
-         <br>
-         <textarea name="taHostLog"
-                   id  ="taHostLog"
-                   rows="26"
-                   cols="48"
-         ></textarea>
-      </label>
+  <div  id="divLog" class="form-group " style = "float:left; width: 100%;">
+    <label for="comment">Host Log</label>
+    <textarea class="form-control hostLog" rows="13" id="taHostLog" name="taHostLog" disabled="true"></textarea>
+  </div>
+
+
    </div>
 
-   <div id="divUserProgramInput" style="margin-left:520px;">
-      <label>
-         User Program Input
-         <br>
-         <textarea name="taProgramInput"
-                   id  ="taProgramInput"
-                   rows="8"
-                   cols="48"
-         ></textarea>
-      </label>
-   </div>
+   
+
+     <div id="rightNav" style = "float: left; margin-left: 35px; width: 55%;">
+
+     <div  id="divUserProgramInput" class="form-group" style = "float: left: width: 100%;">
+      <label for="comment">User Program Input</label>
+      <textarea class="form-control hostLog" rows="5" id="taProgramInput" name="taProgramInput" ></textarea>
+    </div>
+
+         
+
+         <div class="form-group" style = "float: left;">
+            <h2>Basic Table</h2>
+            <p>The .table class adds basic styling (light padding and only horizontal dividers) to a table:</p>            
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Firstname</th>
+                  <th>Lastname</th>
+                  <th>Email</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>John</td>
+                  <td>Doe</td>
+                  <td>john@example.com</td>
+                </tr>
+                <tr>
+                  <td>Mary</td>
+                  <td>Moe</td>
+                  <td>mary@example.com</td>
+                </tr>
+                <tr>
+                  <td>July</td>
+                  <td>Dooley</td>
+                  <td>july@example.com</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+      </div>
+
 </div>
 
 <p class="footerText" style="clear:both;">

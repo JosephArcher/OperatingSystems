@@ -1,7 +1,7 @@
 /* TSOS.css */
 
 body {
-  background: #909193 url(distrib/images/linen.png) repeat;
+ 
   font-family: Helvetica, Verdana, Arial, sans-serif;
   font-size: 12pt;
   font-weight: normal;
@@ -31,13 +31,15 @@ h3 {
 }
 
 #display {
-  background-color:#DFDBC3;
-  border: 2px solid red;
+  border: 2px solid black;
   cursor: default;
 }
 
 .normal_button {
   width: 100px;
+}
+.hostLog {
+  resize: none;
 }
 
 .footerText {

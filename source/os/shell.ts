@@ -251,6 +251,7 @@ module TSOS {
         }
         public shellVer(args) {
             _StdOut.putText(APP_NAME + " version " + APP_VERSION); // Get the name of the OS and the version number
+            console.log(_CPU.memoryBlock.getLength());
         }
         public shellDate(args) {
             _StdOut.putText( Utils.getDateTime() ); // Get the current date
@@ -307,13 +308,20 @@ module TSOS {
                 if(regex.test(userInput.charAt(i)) === false) { // If the character fails to pass the test than input is invalid
                      _StdOut.putText("Error, the code is invalid because it contains something other than a space or hex digit");
                      return;          
+                }
+                else {
+                    if (userInput.charAt(i) != " ") {
+                        _CPU.memoryBlock.setNextByte(userInput.charAt(i));
+                    }
                 }            
             }
                 _StdOut.putText("The code successfully validated. Yay"); // If we get this far then the code is valid
         }
-        public shellRun(args){
+        public shellRun(args) {
 
-
+            for (var i = 0; i < 255; i++){
+                console.log(_CPU.memoryBlock.getByte(i));
+            }
             
         }
         public shellHelp(args) {

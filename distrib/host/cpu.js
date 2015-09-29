@@ -1,5 +1,6 @@
 ///<reference path="../globals.ts" />
 ///<reference path="Instruction.ts" />
+///<reference path="memory.ts" />
 /* ------------
      CPU.ts
 
@@ -17,7 +18,9 @@
 var TSOS;
 (function (TSOS) {
     var Cpu = (function () {
-        function Cpu(PC, Acc, Xreg, Yreg, Zflag, isExecuting, instructionSet) {
+        function Cpu(PC, Acc, Xreg, Yreg, Zflag, isExecuting, instructionSet, //
+            memoryBlock //
+            ) {
             if (PC === void 0) { PC = 0; }
             if (Acc === void 0) { Acc = 0; }
             if (Xreg === void 0) { Xreg = 0; }
@@ -25,6 +28,7 @@ var TSOS;
             if (Zflag === void 0) { Zflag = 0; }
             if (isExecuting === void 0) { isExecuting = false; }
             if (instructionSet === void 0) { instructionSet = []; }
+            if (memoryBlock === void 0) { memoryBlock = new TSOS.MemoryBlock(); }
             this.PC = PC;
             this.Acc = Acc;
             this.Xreg = Xreg;
@@ -32,6 +36,7 @@ var TSOS;
             this.Zflag = Zflag;
             this.isExecuting = isExecuting;
             this.instructionSet = instructionSet;
+            this.memoryBlock = memoryBlock;
         }
         Cpu.prototype.init = function () {
             this.PC = 0;
@@ -40,7 +45,11 @@ var TSOS;
             this.Yreg = 0;
             this.Zflag = 0;
             this.isExecuting = false;
-            var instruction;
+            //
+            this.memoryBlock = new TSOS.MemoryBlock();
+            this.memoryBlock.init();
+            var instruction; //
+            //
             instruction = new TSOS.Instruction(this.LDA, "A9", "-Load the accumulator with a constant");
             this.instructionSet[this.instructionSet.length] = instruction;
             instruction = new TSOS.Instruction(this.LDA, "AD", "-Load the accumulator from memory");
