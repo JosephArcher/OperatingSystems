@@ -1,4 +1,5 @@
 ///<reference path="../globals.ts" />
+///<reference path="Instruction.ts" />
 /* ------------
      CPU.ts
 
@@ -16,19 +17,21 @@
 var TSOS;
 (function (TSOS) {
     var Cpu = (function () {
-        function Cpu(PC, Acc, Xreg, Yreg, Zflag, isExecuting) {
+        function Cpu(PC, Acc, Xreg, Yreg, Zflag, isExecuting, instructionSet) {
             if (PC === void 0) { PC = 0; }
             if (Acc === void 0) { Acc = 0; }
             if (Xreg === void 0) { Xreg = 0; }
             if (Yreg === void 0) { Yreg = 0; }
             if (Zflag === void 0) { Zflag = 0; }
             if (isExecuting === void 0) { isExecuting = false; }
+            if (instructionSet === void 0) { instructionSet = []; }
             this.PC = PC;
             this.Acc = Acc;
             this.Xreg = Xreg;
             this.Yreg = Yreg;
             this.Zflag = Zflag;
             this.isExecuting = isExecuting;
+            this.instructionSet = instructionSet;
         }
         Cpu.prototype.init = function () {
             this.PC = 0;
@@ -37,6 +40,57 @@ var TSOS;
             this.Yreg = 0;
             this.Zflag = 0;
             this.isExecuting = false;
+            var instruction;
+            instruction = new TSOS.Instruction(this.LDA, "A9", "-Load the accumulator with a constant");
+            this.instructionSet[this.instructionSet.length] = instruction;
+            instruction = new TSOS.Instruction(this.LDA, "AD", "-Load the accumulator from memory");
+            this.instructionSet[this.instructionSet.length] = instruction;
+            instruction = new TSOS.Instruction(this.STA, "8D", "-Store the accumulator in memory");
+            this.instructionSet[this.instructionSet.length] = instruction;
+            instruction = new TSOS.Instruction(this.ADC, "6D", "-Add with carry \n Adds contents of an address to  the contents of the accumulator and keeps the result in the accumulator");
+            this.instructionSet[this.instructionSet.length] = instruction;
+            instruction = new TSOS.Instruction(this.LDX, "A2", "-Load the X register with a constant");
+            this.instructionSet[this.instructionSet.length] = instruction;
+            instruction = new TSOS.Instruction(this.LDX, "AE", "-Load the X register from memory");
+            this.instructionSet[this.instructionSet.length] = instruction;
+            instruction = new TSOS.Instruction(this.LDY, "A0", "-Load the Y register with a constant");
+            this.instructionSet[this.instructionSet.length] = instruction;
+            instruction = new TSOS.Instruction(this.LDY, "AC", "-Load the Y register from memory ");
+            this.instructionSet[this.instructionSet.length] = instruction;
+            instruction = new TSOS.Instruction(this.NOP, "EA", "-No Operation");
+            this.instructionSet[this.instructionSet.length] = instruction;
+            instruction = new TSOS.Instruction(this.BRK, "00", "- Break (which is really a system call)");
+            this.instructionSet[this.instructionSet.length] = instruction;
+            instruction = new TSOS.Instruction(this.CPX, "EC", "- Compare a byte in memory to the X reg \n Sets the Z (zero) flag if equal ");
+            this.instructionSet[this.instructionSet.length] = instruction;
+            instruction = new TSOS.Instruction(this.BNE, "D0", "- Branch n bytes if Z flag = 0 ");
+            this.instructionSet[this.instructionSet.length] = instruction;
+            instruction = new TSOS.Instruction(this.INC, "EE", "- Increment the value of a byte");
+            this.instructionSet[this.instructionSet.length] = instruction;
+            instruction = new TSOS.Instruction(this.SYS, "FF", "-System Call \n  #$01 in X reg = print the integer stored in the Y register \n  #$02 in X reg = print the 00-terminated string stored at the address in the Y register");
+            this.instructionSet[this.instructionSet.length] = instruction;
+        };
+        Cpu.prototype.LDA = function () {
+        };
+        Cpu.prototype.STA = function () {
+        };
+        Cpu.prototype.ADC = function () {
+        };
+        Cpu.prototype.LDX = function () {
+        };
+        Cpu.prototype.LDY = function () {
+        };
+        Cpu.prototype.NOP = function () {
+        };
+        Cpu.prototype.BRK = function () {
+        };
+        Cpu.prototype.CPX = function () {
+        };
+        Cpu.prototype.BNE = function () {
+        };
+        Cpu.prototype.INC = function () {
+        };
+        Cpu.prototype.SYS = function () {
         };
         Cpu.prototype.cycle = function () {
             _Kernel.krnTrace('CPU cycle');

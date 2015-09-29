@@ -46,6 +46,9 @@ var TSOS;
             //Load
             sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Validates code in 'User Program Input' section ");
             this.commandList[this.commandList.length] = sc;
+            //Run
+            sc = new TSOS.ShellCommand(this.shellRun, "run", "- Runs a program already in memory");
+            this.commandList[this.commandList.length] = sc;
             // help
             sc = new TSOS.ShellCommand(this.shellHelp, "help", "- This is the help command. Seek help.");
             this.commandList[this.commandList.length] = sc;
@@ -236,6 +239,8 @@ var TSOS;
                 }
             }
             _StdOut.putText("The code successfully validated. Yay"); // If we get this far then the code is valid
+        };
+        Shell.prototype.shellRun = function (args) {
         };
         Shell.prototype.shellHelp = function (args) {
             _StdOut.putText("Commands:");

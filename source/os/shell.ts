@@ -74,6 +74,12 @@ module TSOS {
                                     "- Validates code in 'User Program Input' section ");
             this.commandList[this.commandList.length] = sc;
 
+            //Run
+            sc = new ShellCommand(this.shellRun,
+                                    "run",
+                                    "- Runs a program already in memory");
+            this.commandList[this.commandList.length] = sc;
+
             // help
             sc = new ShellCommand(this.shellHelp,
                                   "help",
@@ -304,6 +310,11 @@ module TSOS {
                 }            
             }
                 _StdOut.putText("The code successfully validated. Yay"); // If we get this far then the code is valid
+        }
+        public shellRun(args){
+
+
+            
         }
         public shellHelp(args) {
             _StdOut.putText("Commands:");
