@@ -2,6 +2,7 @@
 ///<reference path="queue.ts" />
 ///<reference path="../utils.ts" />
 ///<reference path="console.ts" />
+///<reference path="memoryManager.ts" />
 
 /* ------------
      Kernel.ts
@@ -23,10 +24,15 @@ module TSOS {
         public krnBootstrap() {      // Page 8. {
             Control.hostLog("bootstrap", "host");  // Use hostLog because we ALWAYS want this, even if _Trace is off.
 
+            //Initalize Memory
+            _MemoryManager0 = new MemoryManager(_MemoryBlock0);
+            console.log(_MemoryManager0.getByte(0));
+
             // Initialize our global queues.
             _KernelInterruptQueue = new Queue();  // A (currently) non-priority queue for interrupt requests (IRQs).
             _KernelBuffers = new Array();         // Buffers... for the kernel.
-            _KernelInputQueue = new Queue();      // Where device input lands before being processed out somewhere.       
+            _KernelInputQueue = new Queue();      // Where device input lands before being processed out somewhere.   
+            _ProcessResidentQueue = new Queue();  // Where the processes will sit and wait till called upon like minions in the deapths of hell  
 
             // Initialize the console.
             _Console = new Console();          // The command line interface / console I/O device.
@@ -49,6 +55,8 @@ module TSOS {
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
             this.krnTrace("Enabling the interrupts.");
             this.krnEnableInterrupts();
+
+
 
             // Launch the shell.
             this.krnTrace("Creating and Launching the shell.");
@@ -95,6 +103,7 @@ module TSOS {
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
                 _CPU.cycle();
+                console.log("WOOOOOOOOOOOOOOOOOOOSH Another cycle");
             } else {                      // If there are no interrupts and there is nothing being executed then just be idle. {
                 this.krnTrace("Idle");
             }

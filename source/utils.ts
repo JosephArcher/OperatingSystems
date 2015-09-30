@@ -28,6 +28,37 @@ module TSOS {
             }
             return answer;
         }
+        public static setFreeMemoryInfo(row:number, column:number, value: string): void {
+         // var currentRow = _MemoryInfoTable.rows[row];
+         // var currentCol = _MemoryInfoTable.cols[column];
+        
+       var currentRow:  HTMLTableRowElement = <HTMLTableRowElement>_MemoryInfoTable.rows.item(row + 1);
+       var currentCell: HTMLTableCellElement = <HTMLTableCellElement>currentRow.cells.item(column);
+       currentCell.innerHTML = value;
+       //console.log(currentCell.innerHTML + "    CurrentCell");
+
+         
+        }
+    public static setHalfFreeMemoryInfo(row: number, column: number, value: string): void {
+      // var currentRow = _MemoryInfoTable.rows[row];
+      // var currentCol = _MemoryInfoTable.cols[column];
+        
+      var currentRow: HTMLTableRowElement = <HTMLTableRowElement>_MemoryInfoTable.rows.item(row + 1);
+      var currentCell: HTMLTableCellElement = <HTMLTableCellElement>currentRow.cells.item(column);
+      var oldValue = currentCell.innerHTML;
+      currentCell.innerHTML = oldValue + value;
+      
+     }
+        public static getTableRowPosition(address:number):number {
+          var rowNumber:number = Math.floor(address / 8);         
+          console.log(rowNumber);        
+          return rowNumber;
+        }
+        public static getTableColumnPosition(address: number):number {
+          var columnNumber:number = address % 8;
+          console.log(columnNumber);
+          return columnNumber;
+        }
         /*
           This method is used to get the current date and time
           and return a nicely formated string  (mm/dd/yyyy) (hr:min:sec)

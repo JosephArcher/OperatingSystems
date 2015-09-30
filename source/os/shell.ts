@@ -3,6 +3,7 @@
 ///<reference path="shellCommand.ts" />
 ///<reference path="userCommand.ts" />
 ///<reference path="interrupt.ts" />
+///<reference path="processControlBlock.ts" />
 
 
 
@@ -251,7 +252,7 @@ module TSOS {
         }
         public shellVer(args) {
             _StdOut.putText(APP_NAME + " version " + APP_VERSION); // Get the name of the OS and the version number
-            console.log(_CPU.memoryBlock.getLength());
+            
         }
         public shellDate(args) {
             _StdOut.putText( Utils.getDateTime() ); // Get the current date
@@ -311,18 +312,23 @@ module TSOS {
                 }
                 else {
                     if (userInput.charAt(i) != " ") {
-                        _CPU.memoryBlock.setNextByte(userInput.charAt(i));
+                        _MemoryManager0.setNextByte(userInput.charAt(i));
                     }
                 }            
             }
-                _StdOut.putText("The code successfully validated. Yay"); // If we get this far then the code is valid
+            _ProcessResidentQueue.enqueue(new ProcessControlBlock( ) );
+            _StdOut.putText("The code successfully validated. Yay"); // If we get this far then the code is valid
         }
         public shellRun(args) {
 
-            for (var i = 0; i < 255; i++){
-                console.log(_CPU.memoryBlock.getByte(i));
+            var userInput = args
+            var process;
+
+            if(_ProcessResidentQueue.getSize() != 0) {
+                process = _ProcessResidentQueue.dequeue();
+                _CPU.isExecuting = true;
             }
-            
+           
         }
         public shellHelp(args) {
             _StdOut.putText("Commands:");

@@ -3,6 +3,7 @@
 ///<reference path="shellCommand.ts" />
 ///<reference path="userCommand.ts" />
 ///<reference path="interrupt.ts" />
+///<reference path="processControlBlock.ts" />
 /* ------------
    Shell.ts
 
@@ -190,7 +191,6 @@ var TSOS;
         };
         Shell.prototype.shellVer = function (args) {
             _StdOut.putText(APP_NAME + " version " + APP_VERSION); // Get the name of the OS and the version number
-            console.log(_CPU.memoryBlock.getLength());
         };
         Shell.prototype.shellDate = function (args) {
             _StdOut.putText(TSOS.Utils.getDateTime()); // Get the current date
@@ -240,15 +240,19 @@ var TSOS;
                 }
                 else {
                     if (userInput.charAt(i) != " ") {
-                        _CPU.memoryBlock.setNextByte(userInput.charAt(i));
+                        _MemoryManager0.setNextByte(userInput.charAt(i));
                     }
                 }
             }
+            _ProcessResidentQueue.enqueue(new TSOS.ProcessControlBlock());
             _StdOut.putText("The code successfully validated. Yay"); // If we get this far then the code is valid
         };
         Shell.prototype.shellRun = function (args) {
-            for (var i = 0; i < 255; i++) {
-                console.log(_CPU.memoryBlock.getByte(i));
+            var userInput = args;
+            var process;
+            if (_ProcessResidentQueue.getSize() != 0) {
+                process = _ProcessResidentQueue.dequeue();
+                _CPU.isExecuting = true;
             }
         };
         Shell.prototype.shellHelp = function (args) {

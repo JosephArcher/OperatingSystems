@@ -11,7 +11,7 @@
 // Global CONSTANTS (TypeScript 1.5 introduced const. Very cool.)
 //
 var APP_NAME = "Joe/S"; // 'cause Bob and I were at a loss for a better name.
-var APP_VERSION = "0.01"; // What did you expect?
+var APP_VERSION = "0.02"; // What did you expect?
 var CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 second.
 var TIMER_IRQ = 0; // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
 // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
@@ -20,10 +20,13 @@ var BSOD_IRQ = 2; // This is for the Blue Screen Of Death command
 //
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
+var _ProcessCounterID = 0;
+var _ProcessResidentQueue;
 var BSOD_IMAGE = new Image(); // Create an image global for the blue screen of death
 BSOD_IMAGE.src = "https://neosmart.net/wiki/wp-content/uploads/sites/5/2013/08/unmountable-boot-volume.png"; // Get the Image from the web
 var _CPU; // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
-var _MemoryBlock; // The Memory for the cpu
+var _MemoryBlock0; // The Memory for the cpu
+var _MemoryManager0; // The Manager for the Memory
 var _OSclock = 0; // Page 23.
 var _Mode = 0; // (currently unused)  0 = Kernel Mode, 1 = User Mode.  See page 21.
 var _Canvas; // Initialized in Control.hostInit().
@@ -43,6 +46,7 @@ var _StdOut;
 // UI
 var _Console;
 var _OsShell;
+var _MemoryInfoTable = null;
 // At least this OS is not trying to kill you. (Yet.)
 var _SarcasticMode = false;
 // Global Device Driver Objects - page 12

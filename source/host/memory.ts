@@ -1,8 +1,11 @@
+///<reference path="../globals.ts" />
+///<reference path="byte.ts" />
+
 module TSOS {
 
 	export class MemoryBlock {
 
-		public bytes = [];
+		public block: any = [];
 		private counter: number = 0;
 
 		constructor() {}
@@ -10,21 +13,20 @@ module TSOS {
 			public init () {
 
 				this.counter = 0;
-
+				
 				for (var i = 0; i < 255; i++) {
 
-					this.bytes[i] = null;
-				}
-		
+					this.block[i] = new Byte(i);
+				}		
 		}
 		public getLength(): number {
 
-			return this.bytes.length;
+			return this.block.length;
 
 		}
 		public setByte(args): void{
 
-			this.bytes[args[0]] = args[0];
+			this.block[args[0]] = args[0];
 
 
 		}
@@ -32,24 +34,24 @@ module TSOS {
 
 			
 			var nextCharacter: string = arg[0];
-			var nextBlock: string = this.bytes[this.counter];
+			var nextBlock: string = this.block[this.counter];
 
-			if(nextBlock == null) {
-				console.log("null");
-				this.bytes[this.counter] = nextCharacter;
+			if(nextBlock.length == 0 ) {
+			
+				this.block[this.counter] = nextCharacter;
 
 			}
-			else if(nextBlock.length < 2) {
-				console.log("under 2");
-				console.log(nextBlock.length + "length");
-				this.bytes[this.counter] = nextBlock + nextCharacter;
+			else if(nextBlock.length == 1) {
+				
+				//console.log(nextBlock.length + "length");
+				this.block[this.counter] = nextBlock + nextCharacter;
 				this.counter = this.counter + 1;
 			}
 			else {
 				console.log("over 2");
 
 				this.counter = this.counter + 1;
-				this.bytes[this.counter] = nextBlock + nextCharacter;
+				this.block[this.counter] = nextBlock + nextCharacter;
 			}
 
 			
@@ -58,14 +60,10 @@ module TSOS {
 		public getByte(arg): String {
 
 
-			return this.bytes[arg];
+			return this.block[arg];
 		}
 		public clearMemory(): void {
 
-		}
-		public nextOpen(): number {
-
-			return this.counter;
 		}
 
 	}

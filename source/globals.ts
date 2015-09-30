@@ -11,7 +11,7 @@
 // Global CONSTANTS (TypeScript 1.5 introduced const. Very cool.)
 //
 const APP_NAME: string    = "Joe/S";   // 'cause Bob and I were at a loss for a better name.
-const APP_VERSION: string = "0.01";   // What did you expect?
+const APP_VERSION: string = "0.02";   // What did you expect?
 
 const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 1000 = 1 second.
 
@@ -24,12 +24,16 @@ const BSOD_IRQ: number = 2; // This is for the Blue Screen Of Death command
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 
+var _ProcessCounterID = 0;
+var _ProcessResidentQueue;
+
  var BSOD_IMAGE = new Image(); // Create an image global for the blue screen of death
  BSOD_IMAGE.src = "https://neosmart.net/wiki/wp-content/uploads/sites/5/2013/08/unmountable-boot-volume.png"; // Get the Image from the web
 
 var _CPU: TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
 
-var _MemoryBlock;  // The Memory for the cpu
+var _MemoryBlock0: TSOS.MemoryBlock;  // The Memory for the cpu
+var _MemoryManager0: TSOS.MemoryManager; // The Manager for the Memory
 
 var _OSclock: number = 0;  // Page 23.
 
@@ -56,6 +60,8 @@ var _StdOut;
 // UI
 var _Console: TSOS.Console;
 var _OsShell: TSOS.Shell;
+
+var _MemoryInfoTable: HTMLTableElement = null;
 
 // At least this OS is not trying to kill you. (Yet.)
 var _SarcasticMode: boolean = false;

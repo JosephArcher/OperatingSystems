@@ -18,8 +18,7 @@
 var TSOS;
 (function (TSOS) {
     var Cpu = (function () {
-        function Cpu(PC, Acc, Xreg, Yreg, Zflag, isExecuting, instructionSet, //
-            memoryBlock //
+        function Cpu(PC, Acc, Xreg, Yreg, Zflag, isExecuting, instructionSet //
             ) {
             if (PC === void 0) { PC = 0; }
             if (Acc === void 0) { Acc = 0; }
@@ -28,7 +27,6 @@ var TSOS;
             if (Zflag === void 0) { Zflag = 0; }
             if (isExecuting === void 0) { isExecuting = false; }
             if (instructionSet === void 0) { instructionSet = []; }
-            if (memoryBlock === void 0) { memoryBlock = new TSOS.MemoryBlock(); }
             this.PC = PC;
             this.Acc = Acc;
             this.Xreg = Xreg;
@@ -36,7 +34,6 @@ var TSOS;
             this.Zflag = Zflag;
             this.isExecuting = isExecuting;
             this.instructionSet = instructionSet;
-            this.memoryBlock = memoryBlock;
         }
         Cpu.prototype.init = function () {
             this.PC = 0;
@@ -46,8 +43,6 @@ var TSOS;
             this.Zflag = 0;
             this.isExecuting = false;
             //
-            this.memoryBlock = new TSOS.MemoryBlock();
-            this.memoryBlock.init();
             var instruction; //
             //
             instruction = new TSOS.Instruction(this.LDA, "A9", "-Load the accumulator with a constant");
@@ -80,6 +75,7 @@ var TSOS;
             this.instructionSet[this.instructionSet.length] = instruction;
         };
         Cpu.prototype.LDA = function () {
+            //this.Acc
         };
         Cpu.prototype.STA = function () {
         };
@@ -105,6 +101,9 @@ var TSOS;
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
+            //Fetch the next instruction from memory
+            // Decode it... Determine what CPU routine to call 
+            // Call the routine
         };
         return Cpu;
     })();

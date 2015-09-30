@@ -28,6 +28,32 @@ var TSOS;
             }
             return answer;
         };
+        Utils.setFreeMemoryInfo = function (row, column, value) {
+            // var currentRow = _MemoryInfoTable.rows[row];
+            // var currentCol = _MemoryInfoTable.cols[column];
+            var currentRow = _MemoryInfoTable.rows.item(row + 1);
+            var currentCell = currentRow.cells.item(column);
+            currentCell.innerHTML = value;
+            //console.log(currentCell.innerHTML + "    CurrentCell");
+        };
+        Utils.setHalfFreeMemoryInfo = function (row, column, value) {
+            // var currentRow = _MemoryInfoTable.rows[row];
+            // var currentCol = _MemoryInfoTable.cols[column];
+            var currentRow = _MemoryInfoTable.rows.item(row + 1);
+            var currentCell = currentRow.cells.item(column);
+            var oldValue = currentCell.innerHTML;
+            currentCell.innerHTML = oldValue + value;
+        };
+        Utils.getTableRowPosition = function (address) {
+            var rowNumber = Math.floor(address / 8);
+            console.log(rowNumber);
+            return rowNumber;
+        };
+        Utils.getTableColumnPosition = function (address) {
+            var columnNumber = address % 8;
+            console.log(columnNumber);
+            return columnNumber;
+        };
         /*
           This method is used to get the current date and time
           and return a nicely formated string  (mm/dd/yyyy) (hr:min:sec)

@@ -2,6 +2,7 @@
 ///<reference path="queue.ts" />
 ///<reference path="../utils.ts" />
 ///<reference path="console.ts" />
+///<reference path="memoryManager.ts" />
 /* ------------
      Kernel.ts
 
@@ -23,10 +24,14 @@ var TSOS;
         //
         Kernel.prototype.krnBootstrap = function () {
             TSOS.Control.hostLog("bootstrap", "host"); // Use hostLog because we ALWAYS want this, even if _Trace is off.
+            //Initalize Memory
+            _MemoryManager0 = new TSOS.MemoryManager(_MemoryBlock0);
+            console.log(_MemoryManager0.getByte(0));
             // Initialize our global queues.
             _KernelInterruptQueue = new TSOS.Queue(); // A (currently) non-priority queue for interrupt requests (IRQs).
             _KernelBuffers = new Array(); // Buffers... for the kernel.
-            _KernelInputQueue = new TSOS.Queue(); // Where device input lands before being processed out somewhere.       
+            _KernelInputQueue = new TSOS.Queue(); // Where device input lands before being processed out somewhere.   
+            _ProcessResidentQueue = new TSOS.Queue(); // Where the processes will sit and wait till called upon like minions in the deapths of hell  
             // Initialize the console.
             _Console = new TSOS.Console(); // The command line interface / console I/O device.
             _Console.init();
@@ -84,6 +89,7 @@ var TSOS;
             }
             else if (_CPU.isExecuting) {
                 _CPU.cycle();
+                console.log("WOOOOOOOOOOOOOOOOOOOSH Another cycle");
             }
             else {
                 this.krnTrace("Idle");

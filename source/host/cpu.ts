@@ -21,18 +21,19 @@ module TSOS {
 
     export class Cpu {
 
+
+
         constructor(public PC: number = 0,
                     public Acc: number = 0,
                     public Xreg: number = 0,
                     public Yreg: number = 0,
                     public Zflag: number = 0,
                     public isExecuting: boolean = false,
-                    public instructionSet = [], //
-                    public memoryBlock = new MemoryBlock() //
+                    public instructionSet = [] //
+                 
                     ) {
 
         }
-
         public init(): void {
             this.PC = 0;
             this.Acc = 0;
@@ -41,9 +42,6 @@ module TSOS {
             this.Zflag = 0;
             this.isExecuting = false;
             //
-            this.memoryBlock = new MemoryBlock();
-            this.memoryBlock.init();
-
             var instruction; //
 
             //
@@ -118,7 +116,7 @@ module TSOS {
             this.instructionSet[this.instructionSet.length] = instruction;
         }
         public LDA() {
-
+            //this.Acc
         }
         public STA() {
 
@@ -155,6 +153,13 @@ module TSOS {
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
+            
+            //Fetch the next instruction from memory
+
+            // Decode it... Determine what CPU routine to call 
+
+            // Call the routine
+
         }
     }
 
