@@ -43,7 +43,12 @@ var TSOS;
             // Set focus on the start button.
             // Use the TypeScript cast to HTMLInputElement
             document.getElementById("btnStartOS").focus();
-            _MemoryInfoTable = document.getElementById('memoryInfoTable');
+            // Memory Display for the UI
+            _MemoryInformationTableElement = document.getElementById('memoryInfoTable');
+            // Cpu Statistics Display for the UI
+            _CpuStatisticsTableElement = document.getElementById('cpuStatTable');
+            // Process Control Block Display for the UI
+            _ProcessControlBlockTableElement = document.getElementById('processControlBlockTable');
             // Check for our testing and enrichment core, which
             // may be referenced here (from index.html) as function Glados().
             if (typeof Glados === "function") {
@@ -80,6 +85,7 @@ var TSOS;
             // ... Create and initialize the CPU (because it's part of the hardware)  ...
             _CPU = new TSOS.Cpu(); // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
             _CPU.init(); //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
+            // Create and initalize the Memory for the CPU
             _MemoryBlock0 = new TSOS.MemoryBlock();
             _MemoryBlock0.init();
             // ... then set the host clock pulse ...

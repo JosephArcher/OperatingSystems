@@ -1,6 +1,9 @@
 ///<reference path="../globals.ts" />
+///<reference path="../utils.ts" />
 ///<reference path="Instruction.ts" />
 ///<reference path="memory.ts" />
+///<reference path="byte.ts" />
+///<reference path="../os/memoryManager.ts"/>
 
 /* ------------
      CPU.ts
@@ -21,20 +24,26 @@ module TSOS {
 
     export class Cpu {
 
+        public PC: number = 0;
+        public Acc: number = 0;
+        public Xreg: number = 0;
+        public Yreg: number = 0;
+        public Zflag: number = 0;
+        public isExecuting: boolean = false;
+        public instructionSet = [];    // An array filled with the 6502A instructions 
 
+        public constructor() {
 
-        constructor(public PC: number = 0,
-                    public Acc: number = 0,
-                    public Xreg: number = 0,
-                    public Yreg: number = 0,
-                    public Zflag: number = 0,
-                    public isExecuting: boolean = false,
-                    public instructionSet = [] //
-                 
-                    ) {
-
+          this.PC = 0;
+          this.Acc = 0;
+          this.Xreg= 0;
+          this.Yreg = 0;
+          this.Zflag = 0;
+          this.isExecuting = false;
+          this.instructionSet = [];    // An array filled with the 6502A instructions 
         }
         public init(): void {
+
             this.PC = 0;
             this.Acc = 0;
             this.Xreg = 0;
@@ -42,125 +51,422 @@ module TSOS {
             this.Zflag = 0;
             this.isExecuting = false;
             //
-            var instruction; //
+            var instruction;
 
-            //
-            instruction = new Instruction(this.LDA,
+            // A9 Instruction 
+            instruction = new Instruction(this.loadAccumulatorConstant,
                 "A9",
                 "-Load the accumulator with a constant");
             this.instructionSet[this.instructionSet.length] = instruction;
 
-            instruction = new Instruction(this.LDA,
+            // AD Instruction 
+            instruction = new Instruction(this.loadAccumulatorMemory,
                 "AD",
                 "-Load the accumulator from memory");
             this.instructionSet[this.instructionSet.length] = instruction;
 
-            instruction = new Instruction(this.STA,
+            // 8D Instruction 
+            instruction = new Instruction(this.storeAccumulatorMemory,
                 "8D",
                 "-Store the accumulator in memory");
             this.instructionSet[this.instructionSet.length] = instruction;
 
-            instruction = new Instruction(this.ADC,
+            // 6D Instruction 
+            instruction = new Instruction(this.addWithCarry,
                 "6D",
                 "-Add with carry \n Adds contents of an address to  the contents of the accumulator and keeps the result in the accumulator");
             this.instructionSet[this.instructionSet.length] = instruction;
 
-            instruction = new Instruction(this.LDX,
+            // A2 Instruction 
+            instruction = new Instruction(this.loadXRegistrarWithConstant,
                 "A2",
                 "-Load the X register with a constant");
             this.instructionSet[this.instructionSet.length] = instruction;
 
-            instruction = new Instruction(this.LDX,
+            // AE Instruction 
+            instruction = new Instruction(this.loadXRegistrarFromMemory,
                 "AE",
                 "-Load the X register from memory");
             this.instructionSet[this.instructionSet.length] = instruction;
 
-            instruction = new Instruction(this.LDY,
+            // A0 Instruction 
+            instruction = new Instruction(this.loadYRegistrarWithConstant,
                 "A0",
                 "-Load the Y register with a constant");
             this.instructionSet[this.instructionSet.length] = instruction;
 
-            instruction = new Instruction(this.LDY,
+            // AC Instruction 
+            instruction = new Instruction(this.loadYRegistrarFromMemory,
                 "AC",
                 "-Load the Y register from memory ");
             this.instructionSet[this.instructionSet.length] = instruction;
 
-            instruction = new Instruction(this.NOP,
+            // EA Instruction 
+            instruction = new Instruction(this.noOperation,
                 "EA",
                 "-No Operation");
             this.instructionSet[this.instructionSet.length] = instruction;
 
-            instruction = new Instruction(this.BRK,
+            // 00 Instruction 
+            instruction = new Instruction(this.breakOperation,
                 "00",
                 "- Break (which is really a system call)");
             this.instructionSet[this.instructionSet.length] = instruction;
 
-            instruction = new Instruction(this.CPX,
+            // EC Instruction 
+            instruction = new Instruction(this.compareByte,
                 "EC",
                 "- Compare a byte in memory to the X reg \n Sets the Z (zero) flag if equal ");
             this.instructionSet[this.instructionSet.length] = instruction;
 
-            instruction = new Instruction(this.BNE,
+            // D0 Instruction 
+            instruction = new Instruction(this.branchBytes,
                 "D0",
                 "- Branch n bytes if Z flag = 0 ");
             this.instructionSet[this.instructionSet.length] = instruction;
 
-            instruction = new Instruction(this.INC,
+            // EE Instruction 
+            instruction = new Instruction(this.incrementByte,
                 "EE",
                 "- Increment the value of a byte");
             this.instructionSet[this.instructionSet.length] = instruction;
 
-            instruction = new Instruction(this.SYS,
+            // FF Instruction 
+            instruction = new Instruction(this.systemCall,
                 "FF",
                 "-System Call \n  #$01 in X reg = print the integer stored in the Y register \n  #$02 in X reg = print the 00-terminated string stored at the address in the Y register");
             this.instructionSet[this.instructionSet.length] = instruction;
         }
-        public LDA() {
-            //this.Acc
+        /**
+        * Load the Accumulator with a constant
+        * Uses the next byte for the constant value
+       */
+        public loadAccumulatorConstant() {
+
+            // Get the next byte from memory to use as a constant value
+            var nextMemoryLocation = <Byte>_MemoryManager0.getByte(_CPU.PC + 1); 
+
+            // Set the accumulator to the deciamal value of the next Byte
+            _CPU.Acc = parseInt(nextMemoryLocation.getValue(), 16);
+
+            // //Update the User Interface to display the change to the value
+            _CpuStatisticsTable.setAccumulator(_CPU.Acc + ""); 
+
+            // // Increment the Program Counter 
+            _CPU.PC = _CPU.PC + 2;
+        }        
+        /**
+         * Load the Accumulator from memory
+         * Uses the next 2 bytes as the memory address
+        */
+        public loadAccumulatorMemory(): void {
+
+           // Get the next two bytes from memory
+           var nextTwoBytes = _MemoryManager0.getTwoBytes(_CPU.PC + 1, _CPU.PC + 2);
+
+           var memoryLocation1 = nextTwoBytes[0].getValue();          
+           var memoryLocation2 = nextTwoBytes[1].getValue();
+
+           var hexLocation = memoryLocation1 + memoryLocation2 + "";
+
+           var loadLocation = parseInt(Utils.hexToDecimal(hexLocation), 10); //This is the location in memory
+
+           console.log("The location to load from is .. " + loadLocation);
+           var testByte = <Byte> _MemoryManager0.getByte(loadLocation);
+           
+          this.Acc = parseInt(testByte.getValue(), 10);
+
+          _CPU.PC = _CPU.PC + 3;
         }
-        public STA() {
+        /**
+         * Store the Accumulator in memory
+         * Uses the next 2 bytes as the memory address
+        */
+        public storeAccumulatorMemory(): void {
+
+            var valueToBeSet:string = _CPU.Acc + "";
+
+            // Get the next two bytes from memory
+            var nextTwoBytes = _MemoryManager0.getTwoBytes(_CPU.PC + 1, _CPU.PC + 2);
+
+            var memoryLocation1 = nextTwoBytes[0].getValue();
+            var memoryLocation2 = nextTwoBytes[1].getValue();
+
+            var hexLocation = memoryLocation1 + memoryLocation2 + "";
+
+            var loadLocation = parseInt(Utils.hexToDecimal(hexLocation), 10); //This is the location in memory
+
+            _MemoryManager0.setByte(loadLocation, valueToBeSet);
+
+            _MemoryInformationTable.setCellData(loadLocation, valueToBeSet);
+
+            _CPU.PC = _CPU.PC + 3;
+        }
+        /**
+         * Add with carry - Adds the contents of an address to the contents of the accumulator and keeps the result in the accumulator
+         * Uses the next 2 bytes as the memory address
+        */
+        public addWithCarry(): void {
+
+            // Get the next two bytes from memory
+            var nextTwoBytes = _MemoryManager0.getTwoBytes(_CPU.PC + 1, _CPU.PC + 2);
+
+            var memoryLocation1 = nextTwoBytes[0].getValue();
+            var memoryLocation2 = nextTwoBytes[1].getValue();
+
+            var hexLocation = memoryLocation1 + memoryLocation2 + "";
+
+            var loadLocation = parseInt(Utils.hexToDecimal(hexLocation), 10); //This is the location in memory
+
+            var byteAtLocation = <Byte> _MemoryManager0.getByte(loadLocation);
+
+            var valueAtLocation: number = parseInt(byteAtLocation.getValue(), 16);
+            console.log("The value of the location in memory is ... " + valueAtLocation);
+
+            _CPU.Acc = _CPU.Acc + valueAtLocation;
+            _CpuStatisticsTable.setAccumulator(_CPU.Acc + "");
+            console.log("The new acc value is  " + _CPU.Acc);
+            _CPU.PC = _CPU.PC + 3;
 
         }
-        public ADC() {
+        /**
+         * Load the X register with a constant
+         * Uses the next byte as the value
+        */
+        public loadXRegistrarWithConstant(): void {
+
+            // Get the next byte from memory to use as a constant value
+            var nextMemoryLocation = <Byte>_MemoryManager0.getByte(_CPU.PC + 1); 
+
+            // Set the accumulator to the deciamal value of the next Byte
+            _CPU.Xreg = parseInt(nextMemoryLocation.getValue(), 16);
+
+            // //Update the User Interface to display the change to the value
+            _CpuStatisticsTable.setXRegister(_CPU.Xreg + ""); 
+
+            // // Increment the Program Counter 
+            _CPU.PC = _CPU.PC + 2;
 
         }
-        public LDX() {
+        /**
+         * Load the X register from memory
+         * Uses the next 2 bytes as the memory address
+        */
+        public loadXRegistrarFromMemory(): void {
+
+            
+            var memoryLocationPart1 = _MemoryManager0.getByte(_MemoryManager0.currentProcess.programCounter + 1).getValue();
+            var memoryLocationPart2 = _MemoryManager0.getByte(_MemoryManager0.currentProcess.programCounter + 2).getValue();
+
+            var hexLocation = memoryLocationPart1 + memoryLocationPart2 + "";
+            var memoryLocation = parseInt(Utils.hexToDecimal(hexLocation), 10); //This is the location in memory
+
+            var value = _MemoryManager0.getByte(memoryLocation).getValue();  
+
+            this.Xreg = parseInt(value, 16);
+
+            _CpuStatisticsTable.setXRegister(this.Xreg + "");
+
+            _MemoryManager0.currentProcess.programCounter = _MemoryManager0.currentProcess.programCounter + 3;
 
         }
-        public LDY() {
+        /**
+         * Load the Y register with a constant
+         * Uses the next byte as the value
+        */
+        public loadYRegistrarWithConstant(): void {
+
+            var memoryLocation1 = <Byte>_MemoryManager0.getByte(_MemoryManager0.currentProcess.programCounter + 1);
+
+            this.Yreg = parseInt(memoryLocation1.getValue(), 16);
+
+            _CpuStatisticsTable.setYRegister(this.Yreg + "");
+
+            _MemoryManager0.currentProcess.programCounter = _MemoryManager0.currentProcess.programCounter + 2;
 
         }
-        public NOP() {
+        /**
+         * Load the Y register from memory
+         * Uses the next 2 bytes as the memory address
+        */
+        public loadYRegistrarFromMemory(): void {
+
+            // Get the next two bytes from memory
+            var nextTwoBytes = _MemoryManager0.getTwoBytes(_CPU.PC + 1, _CPU.PC + 2);
+
+            var memoryLocation1 = nextTwoBytes[0].getValue();
+            var memoryLocation2 = nextTwoBytes[1].getValue();
+
+            var hexLocation = memoryLocation1 + memoryLocation2 + "";
+
+            var loadLocation = parseInt(Utils.hexToDecimal(hexLocation), 10); //This is the location in memory
+
+            console.log("The location to load from is .. " + loadLocation);
+            var testByte = <Byte>_MemoryManager0.getByte(loadLocation);
+
+            
+           _CPU.Yreg = parseInt(testByte.getValue(), 10);
+            _CpuStatisticsTable.setYRegister(_CPU.Yreg + "");
+            _CPU.PC = _CPU.PC + 3;
 
         }
-        public BRK() {
-
-
-        }
-        public CPX() {
-
-        }
-        public BNE() {
-
-        }
-        public INC() {
+        /**
+         * No Operation
+        */
+        public noOperation(): void {
+             // Do Nothing
+            console.log("No Operation");
+            _CPU.PC = _CPU.PC + 1;
 
         }
-        public SYS() {
+        /**
+         *  Break (Which really is a system call)
+        */
+        public breakOperation(): void {
+             
+             // Need to save the state of the CPU into the Program Control Block here and then add it back to the start of the ready queue
+            
+            _CPU.saveProcessControlBlock();
+
+            
+            _Kernel.createAndQueueInterrupt(BREAK_IRQ, false);
+        }
+        /**
+         * Comapares a byte in memory to the x reg ands sets the z flag if equal
+         * Uses the next 2 bytes as the memory address
+        */
+        public compareByte(): void {
+
+            var memoryLocationPart1 = _MemoryManager0.getByte(_MemoryManager0.currentProcess.programCounter + 1).getValue();
+            var memoryLocationPart2 = _MemoryManager0.getByte(_MemoryManager0.currentProcess.programCounter + 2).getValue();
+
+            var hexLocation = memoryLocationPart1 + memoryLocationPart2 + "";
+            var memoryLocation = parseInt(Utils.hexToDecimal(hexLocation), 10); //This is the location in memory
+
+            var memoryValue:number = parseInt(_MemoryManager0.getByte(memoryLocation).getValue(), 16);  
+            var xRegValue = this.Xreg;
+
+            if (memoryValue == xRegValue) {
+                this.Zflag = 1;
+            }
+        }
+        /**
+         * Branch n bytes if z flag is equal to zero
+         * Uses the next byte as the value
+        */
+        public branchBytes(): void {
 
         }
+        /**
+         * Increment the value of a byte
+         * Uses the next 2 bytes as the memory address
+        */
+        public incrementByte(): void {
+
+            var memoryLocationPart1 = _MemoryManager0.getByte(_MemoryManager0.currentProcess.programCounter + 1).getValue();
+            var memoryLocationPart2 = _MemoryManager0.getByte(_MemoryManager0.currentProcess.programCounter + 2).getValue();
+
+            var hexLocation = memoryLocationPart1 + memoryLocationPart2 + "";
+            var memoryLocation = parseInt(Utils.hexToDecimal(hexLocation), 10); //This is the location in memory
+
+            var memoryValue: number = parseInt(_MemoryManager0.getByte(memoryLocation).getValue(), 16);
+            console.log(memoryValue + "Before Inc");
+            memoryValue = memoryValue + 1;
+            console.log(memoryValue + "After Inc");
+
+            _MemoryManager0.setByte(memoryLocation, memoryValue.toString(16));
+        }
+       /**
+        * System Call
+        * $01 in X reg = print the integer stored in the Y register
+        * $02 in X reg = print the 00-terminated string stored at the address in the Y register 
+       */
+        public systemCall(): void {
+            
+            // #$01 in X reg = print the integer stored in the Y register.
+            if (_CPU.Xreg == 1) {
+
+                _CPU.saveProcessControlBlock();
+                // Should type check here
+                _Kernel.createAndQueueInterrupt(PRINT_IRQ, _CPU.Yreg + "");
+
+            }
+            // #$02 in X reg = print the 00- terminated string stored at the address in the Y register.
+            else if (_CPU.Xreg == 2) {
+                //Should type check here
+                _Kernel.createAndQueueInterrupt(PRINT_IRQ, _CPU.Yreg + "");
+            }
+            else {
+                _Kernel.createAndQueueInterrupt(INVALID_OPCODE_USE_IRQ, "Error xReg value not valid syscall value");
+            }
+
+            _CPU.PC = _CPU.PC + 1;
+        }
+
         public cycle(): void {
+
             _Kernel.krnTrace('CPU cycle');
+
+            // Update the cpu status Bar
+            _CpuStatisticsTable.updateStatusBar();
+            
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
-            
-            //Fetch the next instruction from memory
+            _CpuStatisticsTable.setProgramCounter(_CPU.PC + "");
+            // Fetch the next memory location according to the value of the program counter
+  
+            var nextMemoryLocation = this.PC;
+           
+            // Get the next Byte at the Location
+            var nextByte = _MemoryManager0.getByte(nextMemoryLocation);
 
-            // Decode it... Determine what CPU routine to call 
+            // Get the value of the byte            
+            var nextInstruction = nextByte.getValue();
 
-            // Call the routine
+            console.log("Next Instruction: " + nextInstruction);
+
+
+            var nextOpCode: Instruction;
+            var nextInstructionFunction;
+
+            // Loop over the instruction set checking the value of the byte for a matching Op Code
+            for (var i = 0; i < this.instructionSet.length; i++) {
+
+                nextOpCode = this.instructionSet[i];
+
+                // If one of the Op Codes matches the next instruction
+                if(nextOpCode.opCode == nextInstruction) {
+                    console.log("Found a matching op code");
+                    nextInstructionFunction = nextOpCode.function; // Set the function of next instruction                   
+                    nextInstructionFunction(this.PC); // Execute the function
+                    _ProcessControlBlockTable.updateTableContents(<TSOS.ProcessControlBlock> _ReadyQueue.first() );
+                    return;
+                }                       
+            }
+            // Invalid Op Code
+            _Kernel.createAndQueueInterrupt(INVALID_OPCODE_IRQ, nextInstruction);
+            return;
+               
+        }
+        public saveProcessControlBlock() {
+
+            var currentProcess = <TSOS.ProcessControlBlock>_ReadyQueue.first();
+
+            currentProcess.setProcessState(PROCESS_STATE_READY);
+            currentProcess.setProgramCounter(_CPU.PC);
+            currentProcess.setAcc(_CPU.Acc);
+            currentProcess.setXReg(_CPU.Xreg);
+            currentProcess.setYReg(_CPU.Yreg);
+            currentProcess.setZFlag(_CPU.Zflag);
 
         }
-    }
+        public beginExecuting(process: TSOS.ProcessControlBlock){
 
+            _CPU.PC = parseInt(process.getProgramCounter(), 16);
+            _CPU.Acc = parseInt(process.getAcc(), 16);
+            _CPU.Xreg = parseInt(process.getXReg(), 16);
+            _CPU.Yreg = parseInt(process.getYReg(), 16);
+            _CPU.Zflag = parseInt(process.getZFlag(), 16);
+        }
+    }
 }

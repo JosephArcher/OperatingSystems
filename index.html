@@ -33,26 +33,31 @@
    <script type="text/javascript" src="distrib/os/kernel.js"></script>
    <script type="text/javascript" src="distrib/os/memoryManager.js"></script>
    <script type="text/javascript" src="distrib/os/processControlBlock.js"></script>
+   <script type="text/javascript" src="distrib/os/CpuStatisticsTable.js"></script>
+   <script type="text/javascript" src="distrib/os/MemoryInformationTable.js"></script>
+   <script type="text/javascript" src="distrib/os/processControlBlockTable.js"></script>
+   <script type="text/javascript" src="distrib/os/collections.js"></script>
 
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
    <!-- Uncomment this line below to enable GLaDOS testing -->
-  <script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script> 
+<!--   <script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script> -->
 </head>
 
 <body onload="onDocumentLoad()">
 
-<nav class="navbar navbar-default">
+<nav class="navbar navbar-default navBarTextSize navbar-inverse">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
-      <p class ="navbar-text"> Joe/S </p> 
+      <p  style = "margin-left: 50px;" class ="navbar-text navBarTextSize">  Joe/S </p> 
     </div>
-      <button type="button" id="btnStartOS"  name="brnStartOS" onclick="TSOS.Control.hostBtnStartOS_click(this);" tabindex="0"  class="btn btn-default navbar-btn"> Start </button>
-      <button type="button" id = "btnHaltOS" name="brnHaltOS"  onclick="TSOS.Control.hostBtnHaltOS_click(this);"  tabindex="1"  class="btn btn-default navbar-btn"> Halt  </button>
-      <button type="button" id = "btnReset"  name="brnReset"   onclick="TSOS.Control.hostBtnReset_click(this);"   tabindex="2"  class="btn btn-default navbar-btn"> Reset </button>
-      <span id="statusMsg"class ="navbar-text">Status: </span>
-      <span id = "currentTime" class ="navbar-text"></span>
+      <button type="button" id="btnStartOS"  name="brnStartOS" style = "margin-left: 50px;" onclick="TSOS.Control.hostBtnStartOS_click(this);" tabindex="0"  class="btn  btn-group-lg navbar-btn navBarTextSize"> <p class ="navBarTextSize">  Start </p>  </button>
+      <button type="button" id = "btnHaltOS" name="brnHaltOS" style = "margin-left: 50px;" onclick="TSOS.Control.hostBtnHaltOS_click(this);"  tabindex="1"  class="btn   btn-group-lg navbar-btn navBarTextSize"><p class ="navBarTextSize">  Halt </p>  </button>
+      <button type="button" id = "btnReset"  name="brnReset" style = "margin-left: 50px;" onclick="TSOS.Control.hostBtnReset_click(this);"   tabindex="2"  class="btn  navbar-btn btn-group-lg navBarTextSize"> <p class ="navBarTextSize">  Reset </p></button>
+      <span id="statusMsg"class ="navbar-text navBarTextSize" style = "margin-left: 50px;">Status: </span>
+      <span id = "currentTime" style = "margin-left: 50px;" class ="navbar-text navBarTextSize"></span>
+      <span id = "currentDate" style = "margin-left: 50px;" class ="navbar-text navBarTextSize"></span>
   </div><!-- /.container-fluid -->
 </nav>
 
@@ -68,8 +73,8 @@
       </canvas>
    </div>
 
-  <div   id="divLog" class="form-group " style = "float:left; width: 100%;">
-    <label for="comment">Host Log</label>
+  <div id="divLog" class="form-group " style = "float:left; width: 100%;">
+    <div style = "width: 100%;"> <h2> Host Log </h2> </div>
     <textarea class="form-control hostLog" rows="13" id="taHostLog" name="taHostLog" disabled="true"></textarea>
   </div>
   
@@ -78,14 +83,16 @@
         <div id="rightNav" style = "float: left; margin-left: 35px; width: 55%;">
 
      <div  id="divUserProgramInput" class="form-group" style = "float: left: width: 100%;">
-      <label for="comment">User Program Input</label>
+     <h2> User Program Input </h2>
       <textarea class="form-control hostLog" rows="5" id="taProgramInput" name="taProgramInput" ></textarea>
     </div>
 
          
 
          <div class="form-group" id="cpuStat" style = "float: left; width: 100%;">
-            <h2>CPU Statistics</h2>
+          
+             <h2> CPU Statistics</h2> 
+           
             <table class="table" id="cpuStatTable" >
               <thead>
                 <tr>
@@ -105,6 +112,32 @@
                   <td>$0000</td>
                   <td>$0000</td>
                   <td>$0000</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+            <div class="form-group" id="processControlBlock" style = "float: left; width: 100%;">
+            <h2>Process Control Block</h2>
+            <table class="table" id="processControlBlockTable" >
+              <thead>
+                <tr>
+                  <th>Process State</th>
+                  <th>Program Counter</th>
+                  <th>Accumulator</th>
+                  <th>X Register</th>
+                  <th>Y Register</th>
+                  <th>Z Flag</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>0000</td>
+                  <td>0000</td>
+                  <td>0000</td>
+                  <td>0000</td>
+                  <td>0000</td>
+                  <td>0000</td>
                 </tr>
               </tbody>
             </table>

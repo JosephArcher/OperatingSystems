@@ -1,70 +1,25 @@
 ///<reference path="../globals.ts" />
 ///<reference path="byte.ts" />
 
+/**
+ * This class is used to represent a 256 Byte block of Core Memory (Main Memory) for the CPU
+*/
+
 module TSOS {
 
 	export class MemoryBlock {
 
-		public block: any = [];
-		private counter: number = 0;
+		// The block of memory to be stored as a array
+		public memoryBlock = [];
+		
+		public constructor() {}
 
-		constructor() {}
-
-			public init () {
-
-				this.counter = 0;
-				
-				for (var i = 0; i < 255; i++) {
-
-					this.block[i] = new Byte(i);
-				}		
+		public init () {
+			// Create the 265 byte memory block	
+			for (var i = 0; i < 255; i++) {
+				// Create each byte
+				this.memoryBlock[i] = new Byte(i, "00");
+			}		
 		}
-		public getLength(): number {
-
-			return this.block.length;
-
-		}
-		public setByte(args): void{
-
-			this.block[args[0]] = args[0];
-
-
-		}
-		public setNextByte(arg): void {
-
-			
-			var nextCharacter: string = arg[0];
-			var nextBlock: string = this.block[this.counter];
-
-			if(nextBlock.length == 0 ) {
-			
-				this.block[this.counter] = nextCharacter;
-
-			}
-			else if(nextBlock.length == 1) {
-				
-				//console.log(nextBlock.length + "length");
-				this.block[this.counter] = nextBlock + nextCharacter;
-				this.counter = this.counter + 1;
-			}
-			else {
-				console.log("over 2");
-
-				this.counter = this.counter + 1;
-				this.block[this.counter] = nextBlock + nextCharacter;
-			}
-
-			
-
-		}
-		public getByte(arg): String {
-
-
-			return this.block[arg];
-		}
-		public clearMemory(): void {
-
-		}
-
 	}
 }

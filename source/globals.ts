@@ -1,3 +1,4 @@
+///<reference path="os/collections.ts" />
 /* ------------
    Globals.ts
    Global CONSTANTS and _Variables.
@@ -10,7 +11,7 @@
 //
 // Global CONSTANTS (TypeScript 1.5 introduced const. Very cool.)
 //
-const APP_NAME: string    = "Joe/S";   // 'cause Bob and I were at a loss for a better name.
+const APP_NAME: string    = "Joe/S";   // Joe is Love Joe is Lyfe
 const APP_VERSION: string = "0.02";   // What did you expect?
 
 const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 1000 = 1 second.
@@ -19,21 +20,52 @@ const TIMER_IRQ: number = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (inte
                               // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 const KEYBOARD_IRQ: number = 1;
 
-const BSOD_IRQ: number = 2; // This is for the Blue Screen Of Death command
+// This is for the Blue Screen Of Death command
+const BSOD_IRQ: number = 2; 
+
+// Print Operation system call
+const PRINT_IRQ: number = 3; 
+
+// Break Operation system call
+const BREAK_IRQ: number = 4; 
+
+// Invalid Op Code
+const INVALID_OPCODE_IRQ: number = 5; 
+
+// Incorrect use of an Op Code
+const INVALID_OPCODE_USE_IRQ: number = 6; 
+
+
+// Process States as consts for the Process Control Blocks
+const PROCESS_STATE_NEW: string         = "NEW";
+const PROCESS_STATE_RUNNING: string     = "RUNNING"; 
+const PROCESS_STATE_WAITING: string     = "WAITING"; 
+const PROCESS_STATE_READY: string       = "READY"; 
+const PROCESS_STATE_TERMINATED: string  = "TERMINATED"; 
+
 //
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 
-var _ProcessCounterID = 0;
-var _ProcessResidentQueue;
+// Used to create the auto incrementing process ID's for the Process Control Blocks
+var _ProcessCounterID = -1;
 
- var BSOD_IMAGE = new Image(); // Create an image global for the blue screen of death
- BSOD_IMAGE.src = "https://neosmart.net/wiki/wp-content/uploads/sites/5/2013/08/unmountable-boot-volume.png"; // Get the Image from the web
+// Create an image global for the blue screen of death
+var BSOD_IMAGE = new Image();
+
+// Get the Image from the web
+BSOD_IMAGE.src = "https://neosmart.net/wiki/wp-content/uploads/sites/5/2013/08/unmountable-boot-volume.png"; 
 
 var _CPU: TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
 
-var _MemoryBlock0: TSOS.MemoryBlock;  // The Memory for the cpu
-var _MemoryManager0: TSOS.MemoryManager; // The Manager for the Memory
+// The Memory for the cpu
+var _MemoryBlock0: TSOS.MemoryBlock;  
+
+// The Manager for the Memory
+var _MemoryManager0: TSOS.MemoryManager; 
+
+// Create the Ready Queue as a Linked List of Process Control Blocks
+var _ReadyQueue: collections.LinkedList<TSOS.ProcessControlBlock>;
 
 var _OSclock: number = 0;  // Page 23.
 
@@ -61,7 +93,17 @@ var _StdOut;
 var _Console: TSOS.Console;
 var _OsShell: TSOS.Shell;
 
-var _MemoryInfoTable: HTMLTableElement = null;
+// Memory Information Table
+var _MemoryInformationTableElement: HTMLTableElement;
+var _MemoryInformationTable: TSOS.MemoryInformationTable;
+
+// Cpu Statistics Table
+var _CpuStatisticsTableElement: HTMLTableElement;
+var _CpuStatisticsTable: TSOS.CpuStatisticsTable;
+
+// Process Control Block Table
+var _ProcessControlBlockTableElement: HTMLTableElement;
+var _ProcessControlBlockTable: TSOS.ProcessControlBlockTable;
 
 // At least this OS is not trying to kill you. (Yet.)
 var _SarcasticMode: boolean = false;

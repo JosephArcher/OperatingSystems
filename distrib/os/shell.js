@@ -132,7 +132,9 @@ var TSOS;
                 _StdOut.advanceLine();
             }
             // ... and finally write the prompt again.
-            this.putPrompt();
+            if (fn != this.shellRun) {
+                this.putPrompt();
+            }
         };
         Shell.prototype.parseInput = function (buffer) {
             var retVal = new TSOS.UserCommand();
@@ -193,7 +195,7 @@ var TSOS;
             _StdOut.putText(APP_NAME + " version " + APP_VERSION); // Get the name of the OS and the version number
         };
         Shell.prototype.shellDate = function (args) {
-            _StdOut.putText(TSOS.Utils.getDateTime()); // Get the current date
+            _StdOut.putText(TSOS.Utils.getDate() + " " + TSOS.Utils.getTime()); // Get the current date
         };
         Shell.prototype.shellLocation = function (args) {
             var x = location.href; // Get the current URL    
@@ -222,37 +224,31 @@ var TSOS;
             var params = "";
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(BSOD_IRQ, params)); // Create a new Interupt to handle the Blue Screen of death and add it to the queue                   
         };
+        /**
+         * used to load the user program in the text area into main memory
+        */
         Shell.prototype.shellLoad = function (args) {
-            var userInputHTML = document.getElementById("taProgramInput"); // Get the element where the user input is kept
-            var userInput = userInputHTML.value; // Store the input as a string
-            // If the user has no input then cant validate it
-            if (userInput.length < 1) {
-                _StdOut.putText("No user code was found");
-                return;
-            }
-            // Create a regular expression for only hex digits and spaces
-            var regex = /[0-9A-Fa-f\s]/;
-            // Loop over the current input
-            for (var i = 0; i < userInput.length; i++) {
-                if (regex.test(userInput.charAt(i)) === false) {
-                    _StdOut.putText("Error, the code is invalid because it contains something other than a space or hex digit");
-                    return;
-                }
-                else {
-                    if (userInput.charAt(i) != " ") {
-                        _MemoryManager0.setNextByte(userInput.charAt(i));
-                    }
-                }
-            }
-            _ProcessResidentQueue.enqueue(new TSOS.ProcessControlBlock());
-            _StdOut.putText("The code successfully validated. Yay"); // If we get this far then the code is valid
+            // load the program into memory 
+            _Kernel.loadUserProgram();
         };
         Shell.prototype.shellRun = function (args) {
             var userInput = args;
             var process;
-            if (_ProcessResidentQueue.getSize() != 0) {
-                process = _ProcessResidentQueue.dequeue();
+            // Check to see if anything is in the ready queue
+            if (_ReadyQueue.size() < 0) {
+                _StdOut.putText("No user program is loaded, please load a program using the load command");
+                return;
+            }
+            // Check the user Input for a PID and then see if that current one exists in the queue          
+            process = TSOS.Utils.isExistingProcess(args);
+            if (process == true) {
+                var currentProcess = _ReadyQueue.first();
+                currentProcess.setProcessState(PROCESS_STATE_RUNNING);
+                _CPU.beginExecuting(currentProcess);
                 _CPU.isExecuting = true;
+            }
+            else {
+                _StdOut.putText("Sorry, the process ID that you entered does not exist");
             }
         };
         Shell.prototype.shellHelp = function (args) {

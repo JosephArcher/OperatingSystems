@@ -1,50 +1,70 @@
+///<reference path="collections.ts" />
+///<reference path="ProcessControlBlock.ts" />
 ///<reference path="../globals.ts" />
 ///<reference path="../utils.ts" />
+///<reference path="../host/byte.ts" />
+/**
+ * This class is used to handle the memory and the operations that need to be performed on it
+*/
 var TSOS;
 (function (TSOS) {
     var MemoryManager = (function () {
         function MemoryManager(block) {
-            this.memoryBlock = null;
             this.counter = 0;
             this.processID = 0;
-            this.memoryBlock = block;
+            this.currentProcess = null;
+            this.currentMemoryLocation = 0;
+            this.placeholder = "";
+            this.memory = block;
         }
+        MemoryManager.prototype.printBlock = function () {
+            var nextByte;
+            for (var i = 0; i < 255; i++) {
+                nextByte = this.memory.memoryBlock[i];
+                console.log("Next Byte Address:  " + nextByte.getAddress() + "  Value: " + nextByte.getValue() + "");
+            }
+        };
+        /**
+         * CLears the current memory by setting each byte equal to "00"
+        */
+        MemoryManager.prototype.clearMemory = function () {
+            for (var i = 0; i < 255; i++) {
+                this.memory.memoryBlock[i] = new TSOS.Byte(i, "00");
+            }
+            console.log("Memory was cleared");
+        };
+        /**
+         * Returns the byte at the given index in the memory
+         * @Params index {Number} - The index of the byte you want
+         * @Return respose {Byte} - The byte at the given location
+         */
         MemoryManager.prototype.getByte = function (index) {
-            var response = this.memoryBlock.block[index];
+            var response = this.memory.memoryBlock[index];
             return response;
         };
-        MemoryManager.prototype.setByte = function (index, value) {
-            this.memoryBlock[index] = value;
-            console.log("index " + index + " was set to " + value);
-            TSOS.Utils.setFreeMemoryInfo(TSOS.Utils.getTableRowPosition(this.counter), TSOS.Utils.getTableColumnPosition(this.counter), value);
+        /**
+         * Returns the bytes at the given indexs in the memory
+         * @Params index1 {Number} - The index of the byte you want
+                   index2 {Number} - The index of the byte you want
+         * @Return respose {Array} - The byteArray of the bytes at the given location
+         */
+        MemoryManager.prototype.getTwoBytes = function (index1, index2) {
+            var byteArray = [];
+            var byte1 = this.memory.memoryBlock[index1];
+            var byte2 = this.memory.memoryBlock[index2];
+            byteArray[0] = byte1;
+            byteArray[1] = byte2;
+            return byteArray;
         };
-        MemoryManager.prototype.setNextByte = function (value) {
-            //Base Case
-            if (this.counter > 255) {
-                console.log("Memory is full");
-                return;
-            }
-            var nextByte = this.memoryBlock.block[this.counter];
-            var nibble = this.memoryBlock.block[this.counter].address;
-            console.log(nextByte.address + " asdf");
-            if (nextByte.n1Set == false) {
-                nextByte.nibble1 = value;
-                console.log("set n1 value" + nextByte.nibble1);
-                nextByte.n1Set = true;
-                //_MemoryInfoTable.rows.item(this.counter)
-                TSOS.Utils.setFreeMemoryInfo(TSOS.Utils.getTableRowPosition(this.counter), TSOS.Utils.getTableColumnPosition(this.counter), value);
-            }
-            else if (nextByte.n1Set == true && nextByte.n2Set == false) {
-                console.log("set n2 value" + nextByte.nibble2);
-                nextByte.nibble2 = value;
-                nextByte.n2Set = true;
-                TSOS.Utils.setHalfFreeMemoryInfo(TSOS.Utils.getTableRowPosition(this.counter), TSOS.Utils.getTableColumnPosition(this.counter), value);
-            }
-            else {
-                // Case when the current counter is on a full byte already
-                this.counter = this.counter + 1;
-                this.setNextByte(value);
-            }
+        /**
+         * Sets the value of the byte in memory at the given index
+         * @Params index {Number} - The index of the byte you wish to change
+         *
+         *
+        */
+        MemoryManager.prototype.setByte = function (index, value) {
+            this.memory.memoryBlock[index] = new TSOS.Byte(index, value);
+            _MemoryInformationTable.setCellData(index, value);
         };
         return MemoryManager;
     })();

@@ -50,11 +50,15 @@ module TSOS {
             // Use the TypeScript cast to HTMLInputElement
             (<HTMLInputElement> document.getElementById("btnStartOS")).focus();
 
-            _MemoryInfoTable = <HTMLTableElement>document.getElementById('memoryInfoTable');
+            // Memory Display for the UI
+            _MemoryInformationTableElement = <HTMLTableElement>document.getElementById('memoryInfoTable'); 
 
-            
+             // Cpu Statistics Display for the UI
+            _CpuStatisticsTableElement  = <HTMLTableElement>document.getElementById('cpuStatTable'); 
 
-            
+            // Process Control Block Display for the UI
+            _ProcessControlBlockTableElement = <HTMLTableElement>document.getElementById('processControlBlockTable');
+             
             // Check for our testing and enrichment core, which
             // may be referenced here (from index.html) as function Glados().
             if (typeof Glados === "function") {
@@ -99,10 +103,10 @@ module TSOS {
             _CPU = new Cpu();  // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
             _CPU.init();       //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
 
+            // Create and initalize the Memory for the CPU
             _MemoryBlock0 = new MemoryBlock();
             _MemoryBlock0.init();
             
-
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
             // .. and call the OS Kernel Bootstrap routine.

@@ -37,6 +37,20 @@ var TSOS;
             }
             return retVal;
         };
+        Queue.prototype.returnAllProcessIds = function () {
+            var nextProcessBlock;
+            var processArray = new Array();
+            for (var i = 0; i < this.getSize(); i++) {
+                nextProcessBlock = this.q[i];
+                processArray.push(nextProcessBlock.processID);
+            }
+            console.log(processArray);
+            return processArray;
+        };
+        Queue.prototype.getNextProcess = function () {
+            var nextPCB = this.q[0];
+            return nextPCB;
+        };
         return Queue;
     })();
     TSOS.Queue = Queue;

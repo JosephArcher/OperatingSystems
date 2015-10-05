@@ -104,6 +104,16 @@ module TSOS {
                this.buffer = this.buffer.substring(0, this.buffer.length - 1);
            }
         }
+        public clearPrompt(): void {
+
+            var lastCharacterWidth = CanvasTextFunctions.measure(this.currentFont, this.currentFontSize, ">");
+            //Clear the character from the buffer            
+            _DrawingContext.clearRect(this.currentXPosition - lastCharacterWidth, this.currentYPosition + _FontHeightMargin - this.lineHeight, lastCharacterWidth, this.lineHeight + 1);  
+
+            //Reset the current x position to account for the backspace    
+            this.currentXPosition = this.currentXPosition - lastCharacterWidth;
+
+        }
         public handleInput(): void {
 
             while (_KernelInputQueue.getSize() > 0) {

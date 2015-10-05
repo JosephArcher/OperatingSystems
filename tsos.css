@@ -34,14 +34,15 @@ h3 {
   border: 2px solid black;
   cursor: default;
 }
-
+.navBarTextSize {
+  font-size: 20pt;
+}
 .normal_button {
   width: 100px;
 }
 .hostLog {
   resize: none;
 }
-
 .footerText {
   color: black;
   font-family: Arial, Helvetica, sans-serif;

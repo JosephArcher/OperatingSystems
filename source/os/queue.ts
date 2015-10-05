@@ -24,7 +24,6 @@ module TSOS {
         public enqueue(element) {
             this.q.push(element);
         }
-
         public dequeue() {
             var retVal = null;
             if (this.q.length > 0) {
@@ -32,13 +31,30 @@ module TSOS {
             }
             return retVal;
         }
-
         public toString() {
             var retVal = "";
             for (var i in this.q) {
                 retVal += "[" + this.q[i] + "] ";
             }
             return retVal;
+        }
+        public returnAllProcessIds() {
+
+            var nextProcessBlock;
+            var processArray = new Array();
+
+            for (var i = 0; i < this.getSize(); i++) {
+                nextProcessBlock = this.q[i];
+                processArray.push(nextProcessBlock.processID);
+            }
+            console.log(processArray);
+            return processArray;
+        }
+        public getNextProcess(){
+
+            var nextPCB = <ProcessControlBlock> this.q[0];
+
+            return nextPCB;
         }
     }
 }
