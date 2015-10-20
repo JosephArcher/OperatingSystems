@@ -7,6 +7,7 @@
 ///<reference path="CpuStatisticsTable.ts" />
 ///<reference path="MemoryInformationTable.ts" />
 ///<reference path="ProcessControlBlockTable.ts" />
+///<reference path="systemInformationSection.ts" />
 /* ------------
      Kernel.ts
 
@@ -28,20 +29,26 @@ var TSOS;
         //
         Kernel.prototype.krnBootstrap = function () {
             TSOS.Control.hostLog("bootstrap", "host"); // Use hostLog because we ALWAYS want this, even if _Trace is off.
-            //Initalize Memory
+            //Creaste a Memory Manager with a memory block
             _MemoryManager0 = new TSOS.MemoryManager(_MemoryBlock0);
             // Initialize our global queues.
             _KernelInterruptQueue = new TSOS.Queue(); // A (currently) non-priority queue for interrupt requests (IRQs).
             _KernelBuffers = new Array(); // Buffers... for the kernel.
             _KernelInputQueue = new TSOS.Queue(); // Where device input lands before being processed out somewhere.   
-            // Create the Ready Queue where all the programs that are ready to run a kept
+            // Initialize the Ready Queue 
             _ReadyQueue = new collections.LinkedList();
+            // Initialize the Resident Queue 
+            _ResidentQueue = new TSOS.Queue();
             // Initialize the console.
             _Console = new TSOS.Console(); // The command line interface / console I/O device.
             _Console.init();
             // Initialize standard input and output to the _Console.
             _StdIn = _Console;
             _StdOut = _Console;
+            // Initalize the Process Control Block Counter 
+            _ProcessCounterID = -1;
+            // Initalize the Current Process Control Block global
+            _CurrentProcess = null;
             // Load the Keyboard Device Driver
             this.krnTrace("Loading the keyboard device driver.");
             _krnKeyboardDriver = new TSOS.DeviceDriverKeyboard(); // Construct it.
@@ -56,6 +63,8 @@ var TSOS;
             _MemoryInformationTable = new TSOS.MemoryInformationTable(_MemoryInformationTableElement);
             // Initalize the Process Control Table with its Table Element
             _ProcessControlBlockTable = new TSOS.ProcessControlBlockTable(_ProcessControlBlockTableElement);
+            // Initalize the System InformationInferface with its HTML Elements
+            _SystemInformationInterface = new TSOS.SystemInformationSection(_StatusSectionElement, _DateSectionElement, _TimeSectionElement);
             // Launch the shell.
             this.krnTrace("Creating and Launching the shell.");
             _OsShell = new TSOS.Shell();
@@ -82,13 +91,9 @@ var TSOS;
                This is NOT the same as a TIMER, which causes an interrupt and is handled like other interrupts.
                This, on the other hand, is the clock pulse from the hardware / VM / host that tells the kernel
                that it has to look for interrupts and process them if it finds any.
-                                      */
-            // Update the current clock display
-            var time = document.getElementById("currentTime");
-            var date = document.getElementById("currentDate");
-            //Append the updated date and time to the top bar
-            time.innerHTML = TSOS.Utils.getTime() + "";
-            date.innerHTML = TSOS.Utils.getDate() + "";
+            */
+            // On each clock pulse the time on the UI system interface will update
+            _SystemInformationInterface.updateDateTime();
             // Check for an interrupt, are any. Page 560
             if (_KernelInterruptQueue.getSize() > 0) {
                 // Process the first interrupt on the interrupt queue.
@@ -97,7 +102,10 @@ var TSOS;
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             }
             else if (_CPU.isExecuting) {
-                _CPU.cycle();
+                // Checks to see if the single step mode is checked and if so do not allow the next cpu to cycle
+                if ((_SingleStepMode == true && _AllowNextCycle == true) || (_SingleStepMode == false)) {
+                    _CPU.cycle();
+                }
             }
             else {
                 this.krnTrace("Idle");
@@ -135,8 +143,11 @@ var TSOS;
                     _krnKeyboardDriver.isr(params); // Kernel mode device driver
                     _StdIn.handleInput();
                     break;
-                case PRINT_IRQ:
-                    this.writeConsole(params);
+                case PRINT_INTEGER_IRQ:
+                    this.writeIntegerConsole(params);
+                    break;
+                case PRINT_STRING_IRQ:
+                    this.writeStringConsole(params);
                     break;
                 case INVALID_OPCODE_IRQ:
                     this.invalidOpCode(params);
@@ -161,25 +172,62 @@ var TSOS;
         //
         // System Calls... that generate software interrupts via tha Application Programming Interface library routines.
         //
-        Kernel.prototype.writeConsole = function (output) {
-            console.log(output + "this is the output!");
-            _StdOut.putText(output);
+        /**
+         * Used to write a string to the console
+         */
+        Kernel.prototype.writeStringConsole = function (startAddress) {
+            var memLoc = startAddress - 1;
+            //  console.log("Write a string out to the console!");
+            var nextByte = _MemoryManager0.getByte(memLoc);
+            var nextValue = "";
+            // Loop untill the null terminated string ends
+            while (nextValue != "00") {
+                // Increase the memory location 
+                memLoc = 1 + memLoc;
+                // Get the next
+                var byte = _MemoryManager0.getByte(memLoc);
+                // console.log("Value of the Byte is :  " + byte.getValue());
+                // var test = <Byte>_MemoryManager0.getByte(parseInt(byte.getValue(),16 ));
+                // Print the next character to the console
+                _StdOut.putText(TSOS.Utils.hexToAscii(byte.getValue()));
+                // console.log("another etst " + test.getValue());
+                // console.log("Address After: " + memLoc);
+                // 
+                nextValue = byte.getValue();
+            }
+            // console.log("hit a 00 and end of the string has been found");
             _Console.advanceLine();
         };
+        /**
+        * Used to write a integer to the console
+        */
+        Kernel.prototype.writeIntegerConsole = function (output) {
+            // console.log("Write an Integer out to the console!");
+            _StdOut.putText(output + "");
+            _Console.advanceLine();
+            //_CPU.beginExecuting( _ReadyQueue.first() );
+        };
+        /**
+        * Used to end the current process
+        */
         Kernel.prototype.endProcess = function () {
+            // Set the global to no executing
             _CPU.isExecuting = false;
             // Update and display the PCB Contents
-            var holder = _ReadyQueue.first();
-            holder.setProcessState(PROCESS_STATE_TERMINATED);
-            _ProcessControlBlockTable.updateTableContents(_ReadyQueue.first());
-            _ReadyQueue.clear();
-            console.log(_ReadyQueue.size() + 'after clear ');
-            this.writeConsole("Program Finished Running");
+            //var holder = <TSOS.ProcessControlBlock>_ReadyQueue.first();
+            //holder.setProcessState(PROCESS_STATE_TERMINATED);
+            _ProcessControlBlockTable.updateTableContents();
+            // _ReadyQueue.clear();
+            // console.log(_ReadyQueue.size() + 'after clear ');
+            _StdOut.putText("Program Finished Running");
+            _Console.advanceLine();
             _OsShell.putPrompt();
+            TSOS.Utils.endProgramSpinner();
+            _CurrentProcess = null;
         };
         Kernel.prototype.badOpCodeUsage = function (userMsg) {
             _CPU.isExecuting = false;
-            this.writeConsole(userMsg);
+            // this.writeConsole(userMsg);
             _OsShell.putPrompt();
         };
         Kernel.prototype.invalidOpCode = function (code) {
@@ -201,8 +249,6 @@ var TSOS;
             _MemoryManager0.clearMemory();
             // Create a placeholder string to help with placing of hex digits used later in for loop
             var placeholder = "";
-            // Create a new process control block
-            var processControlBlock = new TSOS.ProcessControlBlock();
             // Get the element where the user input is kept
             var userInputHTML = document.getElementById("taProgramInput");
             // Store the input as a string
@@ -241,10 +287,12 @@ var TSOS;
                     }
                 }
             }
+            // Create a new process control block
+            _CurrentProcess = new TSOS.ProcessControlBlock();
             // Add the new PCB to the queue to be run
-            _ReadyQueue.add(processControlBlock);
+            // _ReadyQueue.add(processControlBlock);
             // Tell the user the code was valid and report the process ID to them
-            _StdOut.putText("Code Validated and assigned a Process ID of " + processControlBlock.processID);
+            _StdOut.putText("Code Validated and assigned a Process ID of " + _CurrentProcess.processID);
         };
         Kernel.prototype.krnTrace = function (msg) {
             // Check globals to see if trace is set ON.  If so, then (maybe) log the message.

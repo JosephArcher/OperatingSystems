@@ -14,8 +14,8 @@ module TSOS {
 		* Row 1: -------------------------
 		*/
 
-		public table: HTMLTableElement;
-		public programCounter;
+		public table: HTMLTableElement; // The Table Element 
+		public programCounter;          
 		public instructionRegistar;
 		public Acccumlater;
 		public xRegistrar;

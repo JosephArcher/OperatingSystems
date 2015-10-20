@@ -32,13 +32,21 @@ var TSOS;
         ProcessControlBlockTable.prototype.setZFlagValue = function (value) {
             this.setCellData(1, 5, value);
         };
-        ProcessControlBlockTable.prototype.updateTableContents = function (processControlBlock) {
-            this.setProcessStateValue(processControlBlock.getProcessState());
-            this.setProgramCounterValue(processControlBlock.getProgramCounter());
-            this.setXRegisterValue(processControlBlock.getXReg());
-            this.setYRegisterValue(processControlBlock.getYReg());
-            this.setAccumulatorValue(processControlBlock.getAcc());
-            this.setZFlagValue(processControlBlock.getZFlag());
+        ProcessControlBlockTable.prototype.updateTableContents = function () {
+            this.setProcessStateValue(PROCESS_STATE_TERMINATED);
+            this.setProgramCounterValue(_CPU.PC + "");
+            this.setXRegisterValue(_CPU.Xreg + "");
+            this.setYRegisterValue(_CPU.Yreg + "");
+            this.setAccumulatorValue(_CPU.Acc + "");
+            this.setZFlagValue(_CPU.Zflag + "");
+        };
+        ProcessControlBlockTable.prototype.clearTable = function () {
+            this.setProcessStateValue("00");
+            this.setProgramCounterValue("00");
+            this.setXRegisterValue("00");
+            this.setYRegisterValue("00");
+            this.setAccumulatorValue("00");
+            this.setZFlagValue("00");
         };
         return ProcessControlBlockTable;
     })();

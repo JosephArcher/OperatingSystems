@@ -5,8 +5,14 @@
    <meta name="author"             content="Alan G. Labouseur , Joseph Archer" />
    <link rel="stylesheet" href="tsos.css" type="text/css" media="screen" />
    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> <!-- Added Bootstrap -->
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"> <!-- Added Font Awesome -->
+   <link rel="stylesheet" href="buttons.css" type="text/css" /> <!-- Added Bootstrap Button Extras --> 
+   <link rel="stylesheet" href="title.css" type="text/css" /> <!-- Added Bootstrap Button Extras --> 
+   <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
    <title>
-      TSOS - a browser-based virtual Operating System in TypeScript
+      TSOS -  a browser-based virtual Operating System in TypeScript
    </title>
 
    <!-- Globals CONSTANTS and _Variables. Must included be first. -->
@@ -36,62 +42,154 @@
    <script type="text/javascript" src="distrib/os/CpuStatisticsTable.js"></script>
    <script type="text/javascript" src="distrib/os/MemoryInformationTable.js"></script>
    <script type="text/javascript" src="distrib/os/processControlBlockTable.js"></script>
+   <script type="text/javascript"  src="distrib/os/systemInformationSection.js"></script>
    <script type="text/javascript" src="distrib/os/collections.js"></script>
 
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
+  
    <!-- Uncomment this line below to enable GLaDOS testing -->
-<!--   <script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script> -->
+  <script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script> 
 </head>
 
 <body onload="onDocumentLoad()">
 
 <nav class="navbar navbar-default navBarTextSize navbar-inverse">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <p  style = "margin-left: 50px;" class ="navbar-text navBarTextSize">  Joe/S </p> 
+
+<div class="navbar-header ">
+ <p class="navbar-text  name "> J<i id = "programSpinner" class="fa fa-spinner " style="font-size:70px; color: #FF0000;"> </i>e/s</p>
+</div>
+
+    <div  class="navbar-left"
+          style="margin-left: 150px;"
+           >
+    <form class="navbar-form" >
+
+        <div class="form-group ">
+
+         <button 
+              type="button" 
+              id="btnStartOS"  
+              name="brnStartOS" 
+             
+              onclick="TSOS.Control.hostBtnStartOS_click(this);" 
+              tabindex="0"  
+              class="btn btn-navPowerOffBorder outline btn-group-lg ">
+              <p>
+              <i class="fa fa-power-off" id="powerButtonIcon"></i>
+              </p> 
+              <p style= "color: #C0C0C0"> Power </p> 
+            </button>
+
+          <button type="button" 
+              id="btnReset"  
+              name="brnReset" 
+              style = "margin-left: 60px;" 
+              onclick="TSOS.Control.hostBtnReset_click(this);" 
+              tabindex="0"  
+              class="btn btn-group-lg navbar-btn btn-unselectedMode outline"> 
+
+              <p class ="navBarButtonText">
+                  <i class="fa fa-refresh"></i> </p> 
+
+              <p class = "navBarButtonText">Reset</p> </button>
+
+          <button type="button" 
+                  id="btnStepForward"  
+                  name="brnStepForward" 
+                  style = "margin-left: 60px;" 
+                  onclick="TSOS.Control.hostBtnStepForward_click(this);" 
+                  tabindex="0"  
+                  class="btn btn-group-lg navbar-btn btn-unselectedMode inv outline"> 
+
+              <p class ="navBarButtonText">
+                  <i class="fa fa-fast-forward"></i> </p> 
+
+              <p class = "navBarButtonText">Advance</p> </button>
+
+
+      
+       </div>
+
+    </form>
     </div>
-      <button type="button" id="btnStartOS"  name="brnStartOS" style = "margin-left: 50px;" onclick="TSOS.Control.hostBtnStartOS_click(this);" tabindex="0"  class="btn  btn-group-lg navbar-btn navBarTextSize"> <p class ="navBarTextSize">  Start </p>  </button>
-      <button type="button" id = "btnHaltOS" name="brnHaltOS" style = "margin-left: 50px;" onclick="TSOS.Control.hostBtnHaltOS_click(this);"  tabindex="1"  class="btn   btn-group-lg navbar-btn navBarTextSize"><p class ="navBarTextSize">  Halt </p>  </button>
-      <button type="button" id = "btnReset"  name="brnReset" style = "margin-left: 50px;" onclick="TSOS.Control.hostBtnReset_click(this);"   tabindex="2"  class="btn  navbar-btn btn-group-lg navBarTextSize"> <p class ="navBarTextSize">  Reset </p></button>
-      <span id="statusMsg"class ="navbar-text navBarTextSize" style = "margin-left: 50px;">Status: </span>
-      <span id = "currentTime" style = "margin-left: 50px;" class ="navbar-text navBarTextSize"></span>
-      <span id = "currentDate" style = "margin-left: 50px;" class ="navbar-text navBarTextSize"></span>
+    <form class="navbar-form navbar-right"
+          style = "margin-right: 50px;  border-left: thick solid #C0C0C0;" >
+
+        <div class="form-group">
+
+           <button type="button" 
+              id="btnStepOS"  
+              name="brnStepOS" 
+              style="margin-left: 60px; float: left;" 
+              onclick="TSOS.Control.hostBtnStepOS_click(this);" 
+              tabindex="0"  
+              class="btn  btn-group-lg navbar-btn btn-unselectedMode outline ">
+
+              <p  class ="navBarButtonText">
+                  <i class="fa fa-step-forward"></i></p>              
+              <p class = "navBarButtonText">Step</p> 
+              </button>
+
+             <button type="button" 
+              id="btnRunOS"  
+              name="brnRunOS" 
+              style="margin-left: 60px; float: right;" 
+              onclick="TSOS.Control.hostBtnRunOS_click(this);" 
+              tabindex="0"  
+              class="btn  btn-group-lg navbar-btn btn-selectedMode outline pull-right">
+
+              <p  class ="navBarButtonText">
+                  <i class="fa fa-play"></i></p>              
+              <p class = "navBarButtonText">Run</p> </button>    
+                   
+         </div>   
+        <p style = "color: #C0C0C0; text-align: center; font-size: 16pt; margin-top: 5px; margin-left: 50px;"> Execution Mode </p> 
+    </form>
   </div><!-- /.container-fluid -->
 </nav>
+<div id="divMain" style="width:100%;"> 
 
-<div id="divMain" style="width:100%;">
+<div id = "leftNav" style=" float: left; margin-left: 25px; width: 700px; ">
 
-<div id = "leftNav" style=" float: left; margin-left: 25px; width: 40%; ">
+  <div id="divConsole" class="form-group" style=" width: 800px; margin-left: 25px;">
 
-<div id="divConsole" class="form-group" style="width:100%; height:45%; margin-left: 25px;">
+
+  <div  id = "systemInformationSection" 
+        class = "systemInformation panel"
+        style="width:500px">      
+          <h3 id = "statusArea"> Status: </h3> 
+          <h3 id = "timeArea" >Time:  </h3>
+          <h3 id = "dateArea" >Date:  </h3>
+   </div>
+
+
       <canvas id="display"
               width="500px"
               height="500px"
               tabindex="3">
       </canvas>
-   </div>
 
-  <div id="divLog" class="form-group " style = "float:left; width: 100%;">
-    <div style = "width: 100%;"> <h2> Host Log </h2> </div>
-    <textarea class="form-control hostLog" rows="13" id="taHostLog" name="taHostLog" disabled="true"></textarea>
-  </div>
+     <div id="divLog" class="form-group " style = "float:left; width: 700px;">
+       <div style = "width: 500px;"> <h2> Host Log </h2> </div>
+       <textarea class="form-control hostLog" rows="13" id="taHostLog" name="taHostLog" disabled="true"></textarea>
+    </div>
+
+</div>
+
+  
   
    </div>
 
-        <div id="rightNav" style = "float: left; margin-left: 35px; width: 55%;">
+        <div id="rightNav" style = "float: left; margin-left: 75px; width: 50%;">
 
      <div  id="divUserProgramInput" class="form-group" style = "float: left: width: 100%;">
      <h2> User Program Input </h2>
       <textarea class="form-control hostLog" rows="5" id="taProgramInput" name="taProgramInput" ></textarea>
     </div>
-
-         
-
          <div class="form-group" id="cpuStat" style = "float: left; width: 100%;">
           
-             <h2> CPU Statistics</h2> 
+             <h2> CPU </h2> 
            
             <table class="table" id="cpuStatTable" >
               <thead>
@@ -106,12 +204,12 @@
               </thead>
               <tbody>
                 <tr>
-                  <td>$0000</td>
-                  <td>$0000</td>
-                  <td>$0000</td>
-                  <td>$0000</td>
-                  <td>$0000</td>
-                  <td>$0000</td>
+                  <td>00</td>
+                  <td>00</td>
+                  <td>00</td>
+                  <td>00</td>
+                  <td>00</td>
+                  <td>00</td>
                 </tr>
               </tbody>
             </table>
@@ -132,12 +230,12 @@
               </thead>
               <tbody>
                 <tr>
-                  <td>0000</td>
-                  <td>0000</td>
-                  <td>0000</td>
-                  <td>0000</td>
-                  <td>0000</td>
-                  <td>0000</td>
+                  <td>00</td>
+                  <td>00</td>
+                  <td>00</td>
+                  <td>00</td>
+                  <td>00</td>
+                  <td>00</td>
                 </tr>
               </tbody>
             </table>
@@ -145,7 +243,7 @@
 
           <div id="wrapper" style = " height: 25%; width: 100%; overflow:hidden;" > 
             <div class="form-group" id="memoryInfo">
-              <h2>Memory Information</h2>
+              <h2>Main Memory</h2>
              <table class="table" id="memoryInfoTable" >
               <thead>
                   <th>0</th>
@@ -159,326 +257,7 @@
               </thead>
                
                <tbody>
-                 <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
+                
               </tbody>
             </table>
           </div>

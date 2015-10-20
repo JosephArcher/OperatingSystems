@@ -1,4 +1,7 @@
-///<reference path="os/collections.ts" />
+///<reference path="os/collections.ts" /> // Imported in order to use linked list data type
+/// <reference path="jquery.d.ts" />
+
+
 /* ------------
    Globals.ts
    Global CONSTANTS and _Variables.
@@ -7,33 +10,39 @@
    This code references page numbers in the text book:
    Operating System Concepts 8th edition by Silberschatz, Galvin, and Gagne.  ISBN 978-0-470-12872-5
    ------------ */
-// This is a random comment so I can test to see if gulp is working and should be deleted
+
 //
 // Global CONSTANTS (TypeScript 1.5 introduced const. Very cool.)
 //
+
 const APP_NAME: string    = "Joe/S";   // Joe is Love Joe is Lyfe
-const APP_VERSION: string = "0.02";   // What did you expect?
+const APP_VERSION: string = "0.02";   // Second Project so second version ? 
 
 const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 1000 = 1 second.
 
+// Timer Interrupt
 const TIMER_IRQ: number = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
-                              // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
-const KEYBOARD_IRQ: number = 1;
+          
+// Keyboard Interrupt    
+const KEYBOARD_IRQ: number = 1;  // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 
 // This is for the Blue Screen Of Death command
 const BSOD_IRQ: number = 2; 
 
-// Print Operation system call
-const PRINT_IRQ: number = 3; 
+// Print Integer Operation system call
+const PRINT_INTEGER_IRQ: number = 3; 
+
+// Print string Opertion system call
+const PRINT_STRING_IRQ: number = 4; 
 
 // Break Operation system call
-const BREAK_IRQ: number = 4; 
+const BREAK_IRQ: number = 5; 
 
 // Invalid Op Code
-const INVALID_OPCODE_IRQ: number = 5; 
+const INVALID_OPCODE_IRQ: number = 6; 
 
 // Incorrect use of an Op Code
-const INVALID_OPCODE_USE_IRQ: number = 6; 
+const INVALID_OPCODE_USE_IRQ: number = 7; 
 
 
 // Process States as consts for the Process Control Blocks
@@ -43,12 +52,20 @@ const PROCESS_STATE_WAITING: string     = "WAITING";
 const PROCESS_STATE_READY: string       = "READY"; 
 const PROCESS_STATE_TERMINATED: string  = "TERMINATED"; 
 
-//
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 
+// Used to track if the OS is currently turned on or off
+var _SystemIsOn = false;
+
+
+// Single Step Mode
+var _SingleStepMode = false;
+var _AllowNextCycle = false;
+
+
 // Used to create the auto incrementing process ID's for the Process Control Blocks
-var _ProcessCounterID = -1;
+var _ProcessCounterID: number = -1;
 
 // Create an image global for the blue screen of death
 var BSOD_IMAGE = new Image();
@@ -64,8 +81,8 @@ var _MemoryBlock0: TSOS.MemoryBlock;
 // The Manager for the Memory
 var _MemoryManager0: TSOS.MemoryManager; 
 
-// Create the Ready Queue as a Linked List of Process Control Blocks
-var _ReadyQueue: collections.LinkedList<TSOS.ProcessControlBlock>;
+// Current Process
+var _CurrentProcess: TSOS.ProcessControlBlock;
 
 var _OSclock: number = 0;  // Page 23.
 
@@ -84,6 +101,13 @@ var _Kernel: TSOS.Kernel;
 var _KernelInterruptQueue;          // Initializing this to null (which I would normally do) would then require us to specify the 'any' type, as below.
 var _KernelInputQueue: any = null;  // Is this better? I don't like uninitialized variables. But I also don't like using the type specifier 'any'
 var _KernelBuffers: any[] = null;   // when clearly 'any' is not what we want. There is likely a better way, but what is it?
+
+// Create the Ready Queue as a Linked List of Process Control Blocks
+var _ReadyQueue: collections.LinkedList<TSOS.ProcessControlBlock>;
+
+// Create the Resident Queue as a Queue
+var _ResidentQueue: TSOS.Queue;
+
 
 // Standard input and output
 var _StdIn;    // Same "to null or not to null" issue as above.
@@ -104,6 +128,21 @@ var _CpuStatisticsTable: TSOS.CpuStatisticsTable;
 // Process Control Block Table
 var _ProcessControlBlockTableElement: HTMLTableElement;
 var _ProcessControlBlockTable: TSOS.ProcessControlBlockTable;
+
+// Single Step Stuff
+var _SingleStepToggle: HTMLInputElement;
+var _SingleStepButton: HTMLButtonElement;
+
+// Program Running Spinner
+var _ProgramSpinner: HTMLElement;
+
+// System Information
+var _SystemInformationInterface: TSOS.SystemInformationSection;
+
+// The HTML Elements for the System Information
+var _StatusSectionElement: HTMLElement;
+var _DateSectionElement: HTMLElement;
+var _TimeSectionElement: HTMLElement;
 
 // At least this OS is not trying to kill you. (Yet.)
 var _SarcasticMode: boolean = false;

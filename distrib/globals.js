@@ -1,4 +1,5 @@
-///<reference path="os/collections.ts" />
+///<reference path="os/collections.ts" /> // Imported in order to use linked list data type
+/// <reference path="jquery.d.ts" />
 /* ------------
    Globals.ts
    Global CONSTANTS and _Variables.
@@ -7,35 +8,41 @@
    This code references page numbers in the text book:
    Operating System Concepts 8th edition by Silberschatz, Galvin, and Gagne.  ISBN 978-0-470-12872-5
    ------------ */
-// This is a random comment so I can test to see if gulp is working and should be deleted
 //
 // Global CONSTANTS (TypeScript 1.5 introduced const. Very cool.)
 //
 var APP_NAME = "Joe/S"; // Joe is Love Joe is Lyfe
-var APP_VERSION = "0.02"; // What did you expect?
+var APP_VERSION = "0.02"; // Second Project so second version ? 
 var CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 second.
+// Timer Interrupt
 var TIMER_IRQ = 0; // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
-// NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
-var KEYBOARD_IRQ = 1;
+// Keyboard Interrupt    
+var KEYBOARD_IRQ = 1; // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 // This is for the Blue Screen Of Death command
 var BSOD_IRQ = 2;
-// Print Operation system call
-var PRINT_IRQ = 3;
+// Print Integer Operation system call
+var PRINT_INTEGER_IRQ = 3;
+// Print string Opertion system call
+var PRINT_STRING_IRQ = 4;
 // Break Operation system call
-var BREAK_IRQ = 4;
+var BREAK_IRQ = 5;
 // Invalid Op Code
-var INVALID_OPCODE_IRQ = 5;
+var INVALID_OPCODE_IRQ = 6;
 // Incorrect use of an Op Code
-var INVALID_OPCODE_USE_IRQ = 6;
+var INVALID_OPCODE_USE_IRQ = 7;
 // Process States as consts for the Process Control Blocks
 var PROCESS_STATE_NEW = "NEW";
 var PROCESS_STATE_RUNNING = "RUNNING";
 var PROCESS_STATE_WAITING = "WAITING";
 var PROCESS_STATE_READY = "READY";
 var PROCESS_STATE_TERMINATED = "TERMINATED";
-//
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
+// Used to track if the OS is currently turned on or off
+var _SystemIsOn = false;
+// Single Step Mode
+var _SingleStepMode = false;
+var _AllowNextCycle = false;
 // Used to create the auto incrementing process ID's for the Process Control Blocks
 var _ProcessCounterID = -1;
 // Create an image global for the blue screen of death
@@ -47,8 +54,8 @@ var _CPU; // Utilize TypeScript's type annotation system to ensure that _CPU is 
 var _MemoryBlock0;
 // The Manager for the Memory
 var _MemoryManager0;
-// Create the Ready Queue as a Linked List of Process Control Blocks
-var _ReadyQueue;
+// Current Process
+var _CurrentProcess;
 var _OSclock = 0; // Page 23.
 var _Mode = 0; // (currently unused)  0 = Kernel Mode, 1 = User Mode.  See page 21.
 var _Canvas; // Initialized in Control.hostInit().
@@ -62,6 +69,10 @@ var _Kernel;
 var _KernelInterruptQueue; // Initializing this to null (which I would normally do) would then require us to specify the 'any' type, as below.
 var _KernelInputQueue = null; // Is this better? I don't like uninitialized variables. But I also don't like using the type specifier 'any'
 var _KernelBuffers = null; // when clearly 'any' is not what we want. There is likely a better way, but what is it?
+// Create the Ready Queue as a Linked List of Process Control Blocks
+var _ReadyQueue;
+// Create the Resident Queue as a Queue
+var _ResidentQueue;
 // Standard input and output
 var _StdIn; // Same "to null or not to null" issue as above.
 var _StdOut;
@@ -77,6 +88,17 @@ var _CpuStatisticsTable;
 // Process Control Block Table
 var _ProcessControlBlockTableElement;
 var _ProcessControlBlockTable;
+// Single Step Stuff
+var _SingleStepToggle;
+var _SingleStepButton;
+// Program Running Spinner
+var _ProgramSpinner;
+// System Information
+var _SystemInformationInterface;
+// The HTML Elements for the System Information
+var _StatusSectionElement;
+var _DateSectionElement;
+var _TimeSectionElement;
 // At least this OS is not trying to kill you. (Yet.)
 var _SarcasticMode = false;
 // Global Device Driver Objects - page 12

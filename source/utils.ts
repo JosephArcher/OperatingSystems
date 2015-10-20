@@ -1,3 +1,5 @@
+  /// <reference path="jquery.d.ts" />
+  ///<reference path="globals.ts" />
 /* --------
    Utils.ts
 
@@ -18,6 +20,117 @@ module TSOS {
             - "g" makes is global, so we get all the whitespace.
             - "" is nothing, which is what we replace the whitespace with.
             */
+        }
+        /**
+         * Used to clear the user input field when the O/S is turned off
+         */ 
+        public static clearUserInput(): void {
+
+        var userInputHTML = <HTMLInputElement>document.getElementById("taProgramInput"); 
+
+        userInputHTML.value = "";
+
+
+        }
+        /**
+         * Used to clear the CPU UI table when the O/S is turned off
+         */
+        public static clearCpuUI(): void {
+          _CpuStatisticsTable.setProgramCounter("00");
+          _CpuStatisticsTable.setInstructionRegister("00");
+          _CpuStatisticsTable.setAccumulator("00");
+          _CpuStatisticsTable.setXRegister("00");
+          _CpuStatisticsTable.setYRegister("00");
+          _CpuStatisticsTable.setZFlag("00");
+        }
+        /**
+         * Used to handle the UI changes when the power is turned on
+         */
+        public static togglePowerOn(): void {
+
+          _ProgramSpinner.style.color = "#00B200";
+         
+          $(function() {
+            $("#btnStartOS").removeClass("btn-navPowerOffBorder");
+            $("#btnStartOS").addClass("btn-navPowerOnBorder");
+          });
+
+        }
+        /**
+         * Used to handle the UI changes when the power is turned off
+         */
+        public static togglePowerOff(): void {
+
+            _ProgramSpinner.style.color = "#FF0000";
+            this.endProgramSpinner();
+
+            $(function() {
+              $("#btnStartOS").removeClass("btn-navPowerOnBorder");
+              $("#btnStartOS").addClass("btn-navPowerOffBorder");
+            });
+            this.clearUserInput();
+            this.clearCpuUI();
+            _MemoryInformationTable.fillRows();
+            _Console.clearScreen();
+            _SystemInformationInterface.setStatusMessage("");
+        }
+        /**
+         * Used to start the spinner when the the O/S executes a user process
+         */ 
+        public static startProgramSpinner() {
+
+           $(function() {
+              $("#programSpinner").addClass("fa-spin");
+          });
+
+        }
+        /**
+         * Used the stop the spinner when the O/S finishes user execution
+         */
+        public static endProgramSpinner() {
+
+          $(function() {
+
+            $("#programSpinner").removeClass("fa-spin");
+
+          });
+
+        }
+        /**
+         * Used to handle the UI changes when the users enters step mode
+         */
+        public static toggleStepModeOn(){
+
+          $(function() {
+            $("#btnStepForward").addClass("see");
+            $("#btnStepForward").removeClass("inv");
+
+
+            $("#btnStepOS").removeClass("btn-unselectedMode");
+            $("#btnStepOS").addClass("btn-selectedMode");
+
+            $("#btnRunOS").removeClass("btn-selectedMode");
+            $("#btnRunOS").addClass("btn-unselectedMode");
+          });
+
+        }
+        /**
+         * Used to handle the UI changes when the user enters run mode
+         */
+        public static toggleRunModeOn() {
+
+            $(function() {
+
+            $("#btnStepForward").removeClass("see");
+            $("#btnStepForward").addClass("inv");
+
+
+            $("#btnRunOS").removeClass("btn-unselectedMode");
+            $("#btnRunOS").addClass("btn-selectedMode");
+
+            $("#btnStepOS").removeClass("btn-selectedMode");
+            $("#btnStepOS").addClass("btn-unselectedMode");
+          });
         }
         /**
          * Used to convert a decimal string into a hex string
@@ -49,9 +162,9 @@ module TSOS {
 
         }
         /**
-         * check to see if the user supplied process ID exists and can be run
+         * Check to see if the user supplied process ID exists and can be run
            @Params {String} - The process ID of the process you wish you check
-           @Returns {Boolean} - YES    If process exists
+           @Returns {Boolean} - TRUE    If process exists
                               - FALSE  Process does not exist
         */
         public static isExistingProcess(processID: string): boolean {
@@ -69,9 +182,12 @@ module TSOS {
             }
           }
           return false;
-        }
-        
-        // Takes a given string and returns it in reverse
+        }       
+         /**
+         * Returns the reverse of the given string i
+           @Params {String} - The string you wish to be reversed
+           @Returns {String} - THe reverse of the input
+        */
         public static reverseString(str) {
             var answer = "";
 
@@ -80,30 +196,6 @@ module TSOS {
             }
             return answer;
         }
-     //   public static setFreeMemoryInfo(row:number, column:number, value: string): void {
-     //     // var currentRow = _MemoryInfoTable.rows[row];
-     //     // var currentCol = _MemoryInfoTable.cols[column];
-        
-     //   var currentRow:  HTMLTableRowElement = <HTMLTableRowElement>_MemoryInformationTableElement.rows.item(row + 1);
-     //   var currentCell: HTMLTableCellElement = <HTMLTableCellElement>currentRow.cells.item(column);
-     //   currentCell.innerHTML = value;
-     //   //console.log(currentCell.innerHTML + "    CurrentCell");
-         
-         
-
-         
-     //  }
-     //  public static setHalfFreeMemoryInfo(row: number, column: number, value: string): void {
-     //  // var currentRow = _MemoryInfoTable.rows[row];
-     //  // var currentCol = _MemoryInfoTable.cols[column];
-        
-     //  var currentRow: HTMLTableRowElement = <HTMLTableRowElement>_MemoryInformationTableElement.rows.item(row + 1);
-     //  var currentCell: HTMLTableCellElement = <HTMLTableCellElement>currentRow.cells.item(column);
-     //  var oldValue = currentCell.innerHTML;
-     //  currentCell.innerHTML = oldValue + value;
-      
-     // }
-
        /**
          * Used find the current row the given address is in
            @Params {Number} - A memory address in decimal
@@ -124,11 +216,23 @@ module TSOS {
           console.log(columnNumber);
           return columnNumber;
         }
+        /**
+         * Used to check the state of the single step toggle
+         * @Returns {Boolean} True - If the toggle is checked
+                              False - If the toggle is not checked
+        */
+        public static isSingleStep(): boolean {
+
+          if(_SingleStepMode == true){
+            return true;
+          }
+          return false;
+        }
         /*
           This method is used to get the current date 
           and return a nicely formated string (mm/dd/yyyy) 
         */
-        public static getDate(): string {
+        public static getTime(): string {
             var date = new Date();
             // Get the current date 1 - 31
             var day = date.getDate();
@@ -144,14 +248,14 @@ module TSOS {
             var timeMin = date.getMinutes();
             var timeSec = date.getSeconds();
 
-            return  " Time: " + timeHours + ":" + timeMin + ":" + timeSec + "";
+            return  timeHours + ":" + timeMin + ":" + timeSec + "";
 
         }
           /*
           This method is used to get the current time
           and return a nicely formated string (hr:min:sec)
         */
-        public static getTime(): string {
+        public static getDate(): string {
 
             var date = new Date();
             // Get the current date 1 - 31
@@ -168,11 +272,11 @@ module TSOS {
             var timeMin = date.getMinutes();
             var timeSec = date.getSeconds();
 
-            return "Date: " + month + "/" + day + "/" + year ;
+            return month + "/" + day + "/" + year ;
 
         }
-        /*
-          This method is used to create a blue screen of death which is drawn in the console
+         /**
+         * Used to draw the blue screen of death on the console
         */
         public static createBSOD(): void {
                      
@@ -248,6 +352,14 @@ module TSOS {
                   console.log("This should never happen");
             }
             return answer;
+        }
+        public static hexToAscii(hexString: string): string {
+
+          console.log("Hex Value is " + hexString);
+          var test = String.fromCharCode(parseInt(hexString, 16))
+          console.log("Ascii Value is " + test);
+          return test;
+
         }
         /*
            This method is used to convert keypress to its SpecialCharacter 

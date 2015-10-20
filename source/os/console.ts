@@ -32,7 +32,7 @@ module TSOS {
             this.clearScreen();
             this.resetXY();
         }
-        private clearScreen(): void {
+        public clearScreen(): void {
             _DrawingContext.clearRect(0, 0, _Canvas.width, _Canvas.height);
         }
         private resetXY(): void {

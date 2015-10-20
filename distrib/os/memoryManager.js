@@ -64,6 +64,7 @@ var TSOS;
         */
         MemoryManager.prototype.setByte = function (index, value) {
             this.memory.memoryBlock[index] = new TSOS.Byte(index, value);
+            console.log("Setting memory address " + index + " To the value of " + value);
             _MemoryInformationTable.setCellData(index, value);
         };
         return MemoryManager;

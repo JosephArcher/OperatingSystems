@@ -132,9 +132,12 @@ var TSOS;
                 _StdOut.advanceLine();
             }
             // ... and finally write the prompt again.
-            if (fn != this.shellRun) {
-                this.putPrompt();
+            if (fn == this.shellRun && _CurrentProcess != null) {
+                if (_CurrentProcess.getProcessID() == args) {
+                    return;
+                }
             }
+            this.putPrompt();
         };
         Shell.prototype.parseInput = function (buffer) {
             var retVal = new TSOS.UserCommand();
@@ -214,7 +217,7 @@ var TSOS;
                 for (var i = 0; i < args.length; i++) {
                     output = output + args[i] + " ";
                 }
-                statusMsg.innerHTML = "Status: " + output;
+                _SystemInformationInterface.setStatusMessage(output);
             }
             else {
                 _StdOut.putText("Usage: status <string>  Please supply a string.");
@@ -222,7 +225,7 @@ var TSOS;
         };
         Shell.prototype.shellBSOD = function () {
             var params = "";
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(BSOD_IRQ, params)); // Create a new Interupt to handle the Blue Screen of death and add it to the queue                   
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(BSOD_IRQ, params)); // Create a new Interupt to handle the Blue Screen of death and add it to the queue    
         };
         /**
          * used to load the user program in the text area into main memory
@@ -231,21 +234,37 @@ var TSOS;
             // load the program into memory 
             _Kernel.loadUserProgram();
         };
+        /**
+        * Used to run a user program that is currently in main memory
+        */
         Shell.prototype.shellRun = function (args) {
             var userInput = args;
-            var process;
+            var process = true;
             // Check to see if anything is in the ready queue
-            if (_ReadyQueue.size() < 0) {
-                _StdOut.putText("No user program is loaded, please load a program using the load command");
+            // if (_CurrentProcess != null) {
+            //   
+            //  }else{
+            //     _StdOut.putText("No user program is loaded, please load a program using the load command");
+            //   
+            //   }
+            // Check the user Input for a PID and then see if that current one exists in the queue          
+            // process = Utils.isExistingProcess(args);
+            if (_CurrentProcess == null) {
+                process = false;
+                _StdOut.putText("Sorry, the process ID that you entered does not exist");
                 return;
             }
-            // Check the user Input for a PID and then see if that current one exists in the queue          
-            process = TSOS.Utils.isExistingProcess(args);
+            if (_CurrentProcess.getProcessID() != userInput) {
+                _StdOut.putText("Sorry, the process ID that you entered does not match any currently loaded processes");
+                process = false;
+                return;
+            }
             if (process == true) {
-                var currentProcess = _ReadyQueue.first();
-                currentProcess.setProcessState(PROCESS_STATE_RUNNING);
-                _CPU.beginExecuting(currentProcess);
+                // var currentProcess = <TSOS.ProcessControlBlock> _ReadyQueue.first();
+                _CurrentProcess.setProcessState(PROCESS_STATE_RUNNING);
+                _CPU.beginExecuting(_CurrentProcess);
                 _CPU.isExecuting = true;
+                TSOS.Utils.startProgramSpinner();
             }
             else {
                 _StdOut.putText("Sorry, the process ID that you entered does not exist");

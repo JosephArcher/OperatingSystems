@@ -16,12 +16,16 @@ module TSOS {
 
 		// A description of the Op Code
 		public description: string = "";
+
+		// DataBytesUsed
+		public numberOfDataBytes: number = 0;
 		
-		constructor(func: any,opCode = "", description = "") {
+		constructor(func: any,opCode: string, description: string, numberofDataBytes: number ) {
 
 			this.function = func;
 			this.opCode = opCode;
 			this.description = description;
+			this.numberOfDataBytes = numberofDataBytes;
 		}
 	}
 }

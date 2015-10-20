@@ -3,6 +3,7 @@
 ///<reference path="cpu.ts" />
 ///<reference path="memory.ts" />
 ///<reference path="../os/canvastext.ts" />
+///<reference path="../os/systemInformationSection.ts" />
 
 /* ------------
      Control.ts
@@ -58,7 +59,24 @@ module TSOS {
 
             // Process Control Block Display for the UI
             _ProcessControlBlockTableElement = <HTMLTableElement>document.getElementById('processControlBlockTable');
-             
+
+            // Single Step Display Initalization
+            _SingleStepToggle = <HTMLInputElement>document.getElementById("singleStepToggle");
+
+            // Program Spinner
+            _ProgramSpinner = <HTMLElement>document.getElementById("programSpinner");
+
+            // Status section
+            _StatusSectionElement = <HTMLElement> document.getElementById("statusArea");
+
+            // Data section
+            _DateSectionElement = <HTMLElement> document.getElementById("dateArea");
+
+            // Time section
+            _TimeSectionElement = <HTMLElement> document.getElementById("timeArea");
+
+            
+           
             // Check for our testing and enrichment core, which
             // may be referenced here (from index.html) as function Glados().
             if (typeof Glados === "function") {
@@ -68,7 +86,6 @@ module TSOS {
                 _GLaDOS.init();
             }
         }
-
         public static hostLog(msg: string, source: string = "?"): void {
             // Note the OS CLOCK.
             var clock: number = _OSclock;
@@ -89,29 +106,45 @@ module TSOS {
         // Host Events
         //
         public static hostBtnStartOS_click(btn): void {
-            // Disable the (passed-in) start button...
-            btn.disabled = true;
 
-            // .. enable the Halt and Reset buttons ...
-            (<HTMLButtonElement>document.getElementById("btnHaltOS")).disabled = false;
-            (<HTMLButtonElement>document.getElementById("btnReset")).disabled = false;
+           // When the power button is clicked need to check the current state of the system
 
-            // .. set focus on the OS console display ...
-            document.getElementById("display").focus();
+            if(_SystemIsOn == false) { // If the system is currently off
 
-            // ... Create and initialize the CPU (because it's part of the hardware)  ...
-            _CPU = new Cpu();  // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
-            _CPU.init();       //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
+                _SystemIsOn = true; // Turn the system on
+             
+                // .. enable the Halt and Reset buttons ...
+               // (<HTMLButtonElement>document.getElementById("btnHaltOS")).disabled = false;
+                (<HTMLButtonElement>document.getElementById("btnReset")).disabled = false;
 
-            // Create and initalize the Memory for the CPU
-            _MemoryBlock0 = new MemoryBlock();
-            _MemoryBlock0.init();
+                // .. set focus on the OS console display ...
+                document.getElementById("display").focus();
+
+                // ... Create and initialize the CPU (because it's part of the hardware)  ...
+                _CPU = new Cpu();  // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
+                _CPU.init();       //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
+
+                // Create and initalize the Memory for the CPU
+                _MemoryBlock0 = new MemoryBlock();
+                _MemoryBlock0.init();
             
-            // ... then set the host clock pulse ...
-            _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
-            // .. and call the OS Kernel Bootstrap routine.
-            _Kernel = new Kernel();
-            _Kernel.krnBootstrap();  // _GLaDOS.afterStartup() will get called in there, if configured.
+                // ... then set the host clock pulse ...
+                _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
+                // .. and call the OS Kernel Bootstrap routine.
+                _Kernel = new Kernel();
+                _Kernel.krnBootstrap();  // _GLaDOS.afterStartup() will get called in there, if configured.     
+
+                Utils.togglePowerOn();   // Handle what happens to the UI when the system turns on      
+            }
+            // System is already on and need to turn it off 
+            else {
+                _SystemIsOn = false; // Turn the system off
+                Utils.togglePowerOff(); // Handle what happens to the UI when the system turns off
+                _SystemInformationInterface.systemOffMode();
+                _ProcessControlBlockTable.clearTable();
+                // Call the halt button becuase that is really what this is supposed to be
+                this.hostBtnHaltOS_click(null);
+            }          
         }
 
         public static hostBtnHaltOS_click(btn): void {
@@ -121,9 +154,32 @@ module TSOS {
             _Kernel.krnShutdown();
             // Stop the interval that's simulating our clock pulse.
             clearInterval(_hardwareClockID);
+
             // TODO: Is there anything else we need to do here?
         }
+         /**
+         * Called when the step button is clicked on the UI
+         * Used to set the global step boolean to false
+        */
+        public static hostBtnStepOS_click(btn): void {  
 
+                   _SingleStepMode = true; // Turn on single step moode
+                   Utils.toggleStepModeOn(); // Handle the UI for single step mode
+        }
+        /**
+         * What happens when the user is in single step mode and wants to step forward
+         */
+        public static hostBtnStepForward_click(btn): void {
+            _AllowNextCycle = true; // Allow the CPU to complete another cycle
+        }
+        /**
+         * What happens when the user wants to switch to run mode
+         */ 
+        public static hostBtnRunOS_click(btn): void {
+            _SingleStepMode = false; // Turn off single step mode a.k.a. turn on run mode
+            _AllowNextCycle = true; // Allow the CPU to cycle 
+            Utils.toggleRunModeOn(); // Handle the UI for turning off single step mode
+        }
         public static hostBtnReset_click(btn): void {
             // The easiest and most thorough way to do this is to reload (not refresh) the document.
             location.reload(true);

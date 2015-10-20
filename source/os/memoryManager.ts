@@ -85,6 +85,8 @@ module TSOS {
 			
 			this.memory.memoryBlock[index] = new Byte(index, value);
 
+			console.log("Setting memory address " + index + " To the value of " + value);
+
 			_MemoryInformationTable.setCellData(index, value);
 			
 		}

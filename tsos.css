@@ -29,19 +29,38 @@ h3 {
   font-weight: normal;
   font-style: normal;
 }
-
+.inv {
+  visibility: hidden;
+}
+.see {
+  visibility: visible;
+}
+.verticalLine {
+    border-left: thick solid #C0C0C0;
+}
+.vertical-Align {
+    vertical-align: middle;
+}
 #display {
   border: 2px solid black;
   cursor: default;
 }
-.navBarTextSize {
+.navBarButtonText {
   font-size: 20pt;
+  font-family: "Courier New", Courier, monospace;
+}
+.systemInformation {
+    width: 700px;
 }
 .normal_button {
   width: 100px;
 }
+
 .hostLog {
   resize: none;
+}
+.dateTimeArea {
+  font-size: 15pt;
 }
 .footerText {
   color: black;
@@ -49,3 +68,30 @@ h3 {
   font-size: 8pt;
   text-align: center;
 }
+.name{
+  margin-left: 125px;
+  font-size: 80pt;
+  font-family: Helvetica;
+
+}
+.our_content {
+  /* Initially we don't want any height, and we want the contents to be hidden */
+  max-height: 0;
+  overflow: hidden;
+
+  /* Set our transitions up. */
+  -webkit-transition: max-height 0.8s;
+  -moz-transition: max-height 0.8s;
+  transition: max-height 0.8s;
+}
+.outside_box:hover .our_content {
+  /* On hover, set the max-height to something large. In this case there's an obvious limit. */
+  max-height: 200px;
+}
+.fa-spin {
+  -webkit-animation: spin 2s infinite linear;
+  -moz-animation: spin 2s infinite linear;
+  -o-animation: spin 2s infinite linear;
+  animation: spin 2s infinite linear;
+}
+

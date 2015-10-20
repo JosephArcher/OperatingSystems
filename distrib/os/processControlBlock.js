@@ -8,7 +8,7 @@ var TSOS;
         function ProcessControlBlock() {
             this.processID = 0;
             this.processState = "";
-            this.programCounter = 0;
+            this.programCounter = -1;
             this.Acc = 0;
             this.Xreg = 0;
             this.Yreg = 0;
