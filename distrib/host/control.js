@@ -60,6 +60,10 @@ var TSOS;
             _DateSectionElement = document.getElementById("dateArea");
             // Time section
             _TimeSectionElement = document.getElementById("timeArea");
+            // Resient List
+            _ResidentListTableElement = document.getElementById("residentListTableElement");
+            // Ready Queue
+            _ReadyQueueTableElement = document.getElementById("readyQueueTableElement");
             // Check for our testing and enrichment core, which
             // may be referenced here (from index.html) as function Glados().
             if (typeof Glados === "function") {

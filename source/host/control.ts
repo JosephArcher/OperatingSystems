@@ -76,6 +76,11 @@ module TSOS {
             _TimeSectionElement = <HTMLElement> document.getElementById("timeArea");
 
             
+            // Resient List
+            _ResidentListTableElement = <HTMLTableElement> document.getElementById("residentListTableElement");
+
+            // Ready Queue
+            _ReadyQueueTableElement = <HTMLTableElement> document.getElementById("readyQueueTableElement");
            
             // Check for our testing and enrichment core, which
             // may be referenced here (from index.html) as function Glados().

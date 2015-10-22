@@ -36,6 +36,10 @@ var PROCESS_STATE_RUNNING = "RUNNING";
 var PROCESS_STATE_WAITING = "WAITING";
 var PROCESS_STATE_READY = "READY";
 var PROCESS_STATE_TERMINATED = "TERMINATED";
+// The base addresses for each memory partition
+var MEMORY_PARTITION_0_BASE_ADDRESS = 0;
+var MEMORY_PARTITION_1_BASE_ADDRESS = 256;
+var MEMORY_PARTITION_2_BASE_ADDRESS = 512;
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 // Used to track if the OS is currently turned on or off
@@ -51,9 +55,9 @@ var BSOD_IMAGE = new Image();
 BSOD_IMAGE.src = "https://neosmart.net/wiki/wp-content/uploads/sites/5/2013/08/unmountable-boot-volume.png";
 var _CPU; // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
 // The Memory for the cpu
-var _MemoryBlock0;
+var _MemoryBlock;
 // The Manager for the Memory
-var _MemoryManager0;
+var _MemoryManager;
 // Current Process
 var _CurrentProcess;
 var _OSclock = 0; // Page 23.
@@ -99,6 +103,14 @@ var _SystemInformationInterface;
 var _StatusSectionElement;
 var _DateSectionElement;
 var _TimeSectionElement;
+// Resident List UI
+var _ResidentListTableElement;
+var _ResidentListTable;
+//Ready Queue UI
+var _ReadyQueueTableElement;
+var _ReadyQueueTable;
+// CPU Scheduler
+var _CPUScheduler;
 // At least this OS is not trying to kill you. (Yet.)
 var _SarcasticMode = false;
 // Global Device Driver Objects - page 12

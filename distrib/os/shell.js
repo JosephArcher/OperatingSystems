@@ -50,6 +50,20 @@ var TSOS;
             //Run
             sc = new TSOS.ShellCommand(this.shellRun, "run", "- Runs a program already in memory");
             this.commandList[this.commandList.length] = sc;
+            //ClearMem
+            sc = new TSOS.ShellCommand(this.clearMem, "clearmem", "-Clears all memory partitions");
+            this.commandList[this.commandList.length] = sc;
+            //RunAll
+            sc = new TSOS.ShellCommand(this.runAll, "runall", "Executes all programs");
+            this.commandList[this.commandList.length] = sc;
+            // Quantum <int>
+            sc = new TSOS.ShellCommand(this.quantum, "quantum", "<int> - Sets the Round Robin Quantum (Measured in clock ticks)");
+            this.commandList[this.commandList.length] = sc;
+            // PS 
+            sc = new TSOS.ShellCommand(this.ps, "ps", "-Displays the PIDs of all active processes");
+            this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.kill, "kill", "<PID> - Kills the active process");
+            this.commandList[this.commandList.length] = sc;
             // help
             sc = new TSOS.ShellCommand(this.shellHelp, "help", "- This is the help command. Seek help.");
             this.commandList[this.commandList.length] = sc;
@@ -265,6 +279,29 @@ var TSOS;
                 _CPU.beginExecuting(_CurrentProcess);
                 _CPU.isExecuting = true;
                 TSOS.Utils.startProgramSpinner();
+            }
+            else {
+                _StdOut.putText("Sorry, the process ID that you entered does not exist");
+            }
+        };
+        Shell.prototype.clearMem = function (args) {
+            console.log("Clearing all memory partitions");
+        };
+        Shell.prototype.runAll = function (args) {
+            console.log("Running all user processes");
+        };
+        Shell.prototype.quantum = function (newQuantum) {
+            console.log("Setting the Round Robin Quantum to... " + newQuantum);
+            _CPUScheduler.setQuantum(newQuantum);
+        };
+        Shell.prototype.ps = function (args) {
+            console.log("Displaying all active PIDS");
+        };
+        Shell.prototype.kill = function (args) {
+            console.log("Killing process " + args);
+            if (TSOS.Utils.isExistingProcess(args) == true) {
+                _ReadyQueueTable.removeRow(args);
+                _StdOut.putText("Deleted process");
             }
             else {
                 _StdOut.putText("Sorry, the process ID that you entered does not exist");

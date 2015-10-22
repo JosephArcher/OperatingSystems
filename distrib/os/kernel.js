@@ -8,6 +8,9 @@
 ///<reference path="MemoryInformationTable.ts" />
 ///<reference path="ProcessControlBlockTable.ts" />
 ///<reference path="systemInformationSection.ts" />
+///<reference path="ResidentListTable.ts" />
+///<reference path="ReadyQueueTable.ts" />
+///<reference path="cpuScheduler.ts" />
 /* ------------
      Kernel.ts
 
@@ -29,8 +32,9 @@ var TSOS;
         //
         Kernel.prototype.krnBootstrap = function () {
             TSOS.Control.hostLog("bootstrap", "host"); // Use hostLog because we ALWAYS want this, even if _Trace is off.
-            //Creaste a Memory Manager with a memory block
-            _MemoryManager0 = new TSOS.MemoryManager(_MemoryBlock0);
+            _MemoryBlock = new TSOS.MemoryBlock();
+            _MemoryBlock.init();
+            _MemoryManager = new TSOS.MemoryManager(_MemoryBlock);
             // Initialize our global queues.
             _KernelInterruptQueue = new TSOS.Queue(); // A (currently) non-priority queue for interrupt requests (IRQs).
             _KernelBuffers = new Array(); // Buffers... for the kernel.
@@ -65,6 +69,17 @@ var TSOS;
             _ProcessControlBlockTable = new TSOS.ProcessControlBlockTable(_ProcessControlBlockTableElement);
             // Initalize the System InformationInferface with its HTML Elements
             _SystemInformationInterface = new TSOS.SystemInformationSection(_StatusSectionElement, _DateSectionElement, _TimeSectionElement);
+            //Initalize the Resident List
+            _ResidentListTable = new TSOS.ResidentListTable(_ResidentListTableElement);
+            // Initalize the Ready Queue
+            _ReadyQueueTable = new TSOS.ReadyQueueTable(_ReadyQueueTableElement);
+            _CPUScheduler = new TSOS.CpuScheduler();
+            _ResidentListTable.addNewProcess(new TSOS.ProcessControlBlock());
+            _ResidentListTable.addNewProcess(new TSOS.ProcessControlBlock());
+            _ResidentListTable.addNewProcess(new TSOS.ProcessControlBlock());
+            _ReadyQueueTable.addNewProcess(new TSOS.ProcessControlBlock());
+            _ReadyQueueTable.addNewProcess(new TSOS.ProcessControlBlock());
+            _ReadyQueueTable.addNewProcess(new TSOS.ProcessControlBlock());
             // Launch the shell.
             this.krnTrace("Creating and Launching the shell.");
             _OsShell = new TSOS.Shell();
@@ -178,14 +193,14 @@ var TSOS;
         Kernel.prototype.writeStringConsole = function (startAddress) {
             var memLoc = startAddress - 1;
             //  console.log("Write a string out to the console!");
-            var nextByte = _MemoryManager0.getByte(memLoc);
+            var nextByte = _MemoryManager.getByte(memLoc);
             var nextValue = "";
             // Loop untill the null terminated string ends
             while (nextValue != "00") {
                 // Increase the memory location 
                 memLoc = 1 + memLoc;
                 // Get the next
-                var byte = _MemoryManager0.getByte(memLoc);
+                var byte = _MemoryManager.getByte(memLoc);
                 // console.log("Value of the Byte is :  " + byte.getValue());
                 // var test = <Byte>_MemoryManager0.getByte(parseInt(byte.getValue(),16 ));
                 // Print the next character to the console
@@ -246,7 +261,7 @@ var TSOS;
             // Set the counter to zero to load the user program into memory 0000
             var counter = 0;
             // Clear the current memory
-            _MemoryManager0.clearMemory();
+            _MemoryManager.clearMemory();
             // Create a placeholder string to help with placing of hex digits used later in for loop
             var placeholder = "";
             // Get the element where the user input is kept
@@ -275,7 +290,7 @@ var TSOS;
                             placeholder = userInput.charAt(i);
                         }
                         else if (placeholder.length == 1) {
-                            _MemoryManager0.setByte(counter, placeholder + userInput.charAt(i));
+                            _MemoryManager.setByte(counter, placeholder + userInput.charAt(i));
                             placeholder = ""; // wipe the placeholder
                             // Increment the counter used to load programs
                             counter = counter + 1;

@@ -8,6 +8,9 @@
 ///<reference path="MemoryInformationTable.ts" />
 ///<reference path="ProcessControlBlockTable.ts" />
 ///<reference path="systemInformationSection.ts" />
+///<reference path="ResidentListTable.ts" />
+///<reference path="ReadyQueueTable.ts" />
+///<reference path="cpuScheduler.ts" />
 
 /* ------------
      Kernel.ts
@@ -30,8 +33,9 @@ module TSOS {
 
             Control.hostLog("bootstrap", "host");  // Use hostLog because we ALWAYS want this, even if _Trace is off.
 
-            //Creaste a Memory Manager with a memory block
-            _MemoryManager0 = new MemoryManager(_MemoryBlock0);
+            _MemoryBlock = new MemoryBlock();
+            _MemoryBlock.init();
+            _MemoryManager = new MemoryManager(_MemoryBlock);
            
             // Initialize our global queues.
             _KernelInterruptQueue = new Queue();  // A (currently) non-priority queue for interrupt requests (IRQs).
@@ -79,7 +83,24 @@ module TSOS {
 
             // Initalize the System InformationInferface with its HTML Elements
             _SystemInformationInterface = new SystemInformationSection(_StatusSectionElement, _DateSectionElement, _TimeSectionElement);
-              
+
+            //Initalize the Resident List
+            _ResidentListTable = new ResidentListTable(_ResidentListTableElement);
+
+            // Initalize the Ready Queue
+            _ReadyQueueTable = new ReadyQueueTable(_ReadyQueueTableElement);
+           
+            _CPUScheduler = new CpuScheduler();
+
+           _ResidentListTable.addNewProcess(new ProcessControlBlock() );
+            _ResidentListTable.addNewProcess(new ProcessControlBlock() );
+           _ResidentListTable.addNewProcess(new ProcessControlBlock() );
+
+           _ReadyQueueTable.addNewProcess(new ProcessControlBlock());
+
+           _ReadyQueueTable.addNewProcess(new ProcessControlBlock());
+
+           _ReadyQueueTable.addNewProcess(new ProcessControlBlock());
             // Launch the shell.
             this.krnTrace("Creating and Launching the shell.");
             _OsShell = new Shell();
@@ -201,7 +222,7 @@ module TSOS {
 
           //  console.log("Write a string out to the console!");
 
-            var nextByte: TSOS.Byte = <Byte> _MemoryManager0.getByte(memLoc); 
+            var nextByte: TSOS.Byte = <Byte> _MemoryManager.getByte(memLoc); 
 
             var nextValue: string = ""; 
            
@@ -212,7 +233,7 @@ module TSOS {
                 memLoc = 1 + memLoc;
 
                 // Get the next
-                var byte = <Byte>_MemoryManager0.getByte(memLoc);
+                var byte = <Byte>_MemoryManager.getByte(memLoc);
 
                // console.log("Value of the Byte is :  " + byte.getValue());
 
@@ -289,7 +310,7 @@ module TSOS {
             var counter = 0;
 
             // Clear the current memory
-            _MemoryManager0.clearMemory();
+            _MemoryManager.clearMemory();
 
             // Create a placeholder string to help with placing of hex digits used later in for loop
             var placeholder = "";
@@ -329,7 +350,7 @@ module TSOS {
                         // If the first part of an instruction already exists then concat them and set the byte
                         else if (placeholder.length == 1) {
 
-                           _MemoryManager0.setByte(counter, placeholder + userInput.charAt(i));
+                           _MemoryManager.setByte(counter, placeholder + userInput.charAt(i));
 
                             placeholder = ""; // wipe the placeholder
 

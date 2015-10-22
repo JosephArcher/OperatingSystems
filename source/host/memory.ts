@@ -8,17 +8,19 @@
 module TSOS {
 
 	export class MemoryBlock {
-
-		// The block of memory to be stored as a array
-		public memoryBlock = [];
 		
-		public constructor() {}
-
+		public memoryBlock = [];       // The partition of memory to be stored as a array of bytes
+		
+		public constructor() {
+		}
+		/**
+		 * Used to create 768 bytes in memory
+		 */
 		public init () {
-			// Create the 265 byte memory block	
-			for (var i = 0; i < 255; i++) {
-				// Create each byte
-				this.memoryBlock[i] = new Byte(i, "00");
+			
+			// Creates 768 bytes in memory from the starting address
+			for (var i = 0; i < 768; i++) {    // Create the 768 byte memory block					
+				this.memoryBlock[i] = new Byte(i, "00");   // Create each byte
 			}		
 		}
 	}

@@ -3,6 +3,7 @@
 ///<reference path="../globals.ts" />
 ///<reference path="../utils.ts" />
 ///<reference path="../host/byte.ts" />
+///<reference path="../host/memory.ts" />
 
 /**
  * This class is used to handle the memory and the operations that need to be performed on it
@@ -12,63 +13,100 @@ module TSOS {
 
 	export class MemoryManager {
 
-		public  memory: TSOS.MemoryBlock;
-		public  counter: number = 0;
-		private processID = 0;
-		public  currentProcess: TSOS.ProcessControlBlock = null;
-		public  currentMemoryLocation = 0;
-		private placeholder = "";
+		public  memoryBlock: TSOS.MemoryBlock;						  // An array of 768 byte memory partitions
+		public  currentProcess: TSOS.ProcessControlBlock = null;      // The current procss being executed by the CPU
+		private memoryPartitionCounter: number = 0;                   // The counter for the memory loading
 
-		constructor(block) {
+		private processID = 0;										 //		
+		public  currentMemoryLocation = 0;                           //
+		private placeholder = "";                                    //
+		
 
-			this.memory = block;
-		}
-		public printBlock(): void {
+		constructor(theMemoryBlock: TSOS.MemoryBlock) {
 
-			var nextByte: TSOS.Byte;
-
-			for (var i = 0; i < 255; i++) {
-				nextByte = <Byte> this.memory.memoryBlock[i];
-				console.log("Next Byte Address:  " + nextByte.getAddress() + "  Value: " + nextByte.getValue() + "" );
-			}
+			this.memoryBlock = theMemoryBlock;
 		}
 		/**
-		 * CLears the current memory by setting each byte equal to "00"
-		*/
-		public clearMemory(): void {
+		 * Returns the next available memory partition in memory
+		 * @Return respose {number} - The index of the next memory partition
+		 */
+		public getNextAvailableMemoryPartition(): number {
 
+			// Save the value of the current counter to the variable to return as the answer
+			var nextPartitionIndex: number = this.memoryPartitionCounter;
 
-			for (var i = 0; i < 255; i++) {
+			// Increment the counter in order to keep track of switching between memory partitions
+			this.incrementMemoryPartitionCounter();
 
-				this.memory.memoryBlock[i] = new Byte(i, "00");
+			// Return the actual nextPartition because we saved it in the variable
+			return nextPartitionIndex;
+			
+		}
+		// Used to increment the nextMemoryPartitionCounter but handles the logic by using the length of the memoryPartitionArray
+		public incrementMemoryPartitionCounter(): void {
+
+			// Figure out what the next value will be
+			var possibleNewValue = this.memoryPartitionCounter + 1;
+
+			// Check this value against the the # of all possible partitions indexs
+			if(possibleNewValue > this.memoryPartitionArray.length -1) { // If the next possible value is now greater then is should be then we need to wrap back to zero
+				this.memoryPartitionCounter = 0;
+			}
+			else { // If the next possible value is actually possible then set counter
+				this.memoryPartitionCounter = possibleNewValue;
 			}
 
-			console.log("Memory was cleared");
+		}
+		/**
+		 * "Clears" the memoryPartition at the index given
+		 * @Params index {Number} - The index of memory partition you want to clear
+		 */
+		public clearMemoryBlock(): void {
+
+			for (var i = 0; i < 768; i++) {
+
+				this.memoryBlock[i] = new Byte(i, "00");
+			}
+		}
+		public convertLogicalToPhysicalAddress(logicalAddress: number): number {
+
+			var physicalAddress: number = 0;
+
+			return physicalAddress;
+		}
+		public convertPhysicalToLogicalAddrss(physicalAddrss: number): number {
+
+			var logicalAddress: number = 0;
+			return logicalAddress;
 
 		}
 		/**
 		 * Returns the byte at the given index in the memory
-		 * @Params index {Number} - The index of the byte you want
-		 * @Return respose {Byte} - The byte at the given location
+		 * @Params partitionIndex {Number} - The index of the partition in memory you want to access
+		 * 		   byteIndex      {Number} - The index of the byte in the memory partion you want to access
+		 * @Return respose        {Byte}   - The byte at the given location
 		 */
-		public getByte(index: number ): TSOS.Byte {
+		public getByte(byteIndex:number ): TSOS.Byte {
 
-			var response: TSOS.Byte =  <Byte> this.memory.memoryBlock[index];
+			var physicalAddress = this.convertLogicalToPhysicalAddress(byteIndex);
+
+			var response: TSOS.Byte =  <Byte> this.memoryBlock[physicalAddress];
 
 			return <Byte> response;
 		}
 		/**
 		 * Returns the bytes at the given indexs in the memory
-		 * @Params index1 {Number} - The index of the byte you want
-		 		   index2 {Number} - The index of the byte you want
-		 * @Return respose {Array} - The byteArray of the bytes at the given location
+		 * @Params partitionIndex {Number} - The index of the partition in memory you want to access
+		 		   byteIndex1     {Number} - The index of the byte you want
+		 		   byteIndex2     {Number} - The index of the byte you want
+		 * @Return respose        {Array}  - The byteArray of the bytes at the given location
 		 */
-		public getTwoBytes(index1: number, index2: number) {
+		public getTwoBytes(partitionIndex: number, byteIndex1: number, byteIndex2: number) {
 
 			var byteArray = [];
 
-			var byte1: TSOS.Byte = <Byte> this.memory.memoryBlock[index1];
-			var byte2: TSOS.Byte = <Byte> this.memory.memoryBlock[index2];
+			var byte1: TSOS.Byte = <Byte> this.memoryPartitionArray[partitionIndex].memoryPartition[byteIndex1];
+			var byte2: TSOS.Byte = <Byte> this.memoryPartitionArray[partitionIndex].memoryPartition[byteIndex2];
 
 			byteArray[0] = byte1;
 			byteArray[1] = byte2;
@@ -77,17 +115,18 @@ module TSOS {
 		}
 		/**
 		 * Sets the value of the byte in memory at the given index
-		 * @Params index {Number} - The index of the byte you wish to change
-		 * 
+		 * @Params  partitionIndex {Number} - The index of the partition in memory you want to access
+		 			byteIndex      {Number} - The index of the byte you wish to change
+		 			byteValue      {String} - The value to set the byte in memory to
 		 * 
 		*/
-		public setByte(index: number, value: string): void {
+		public setByte(partitionIndex: number, byteIndex: number, byteValue: string): void {
 			
-			this.memory.memoryBlock[index] = new Byte(index, value);
+			this.memoryPartitionArray[partitionIndex].memoryPartition[byteIndex] = new Byte(byteIndex, byteValue);
 
-			console.log("Setting memory address " + index + " To the value of " + value);
+			console.log("Setting memory address " + byteIndex + " To the value of " + byteValue);
 
-			_MemoryInformationTable.setCellData(index, value);
+			_MemoryInformationTable.setCellData(byteIndex, byteValue);
 			
 		}
 	}

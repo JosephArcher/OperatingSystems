@@ -52,6 +52,12 @@ const PROCESS_STATE_WAITING: string     = "WAITING";
 const PROCESS_STATE_READY: string       = "READY"; 
 const PROCESS_STATE_TERMINATED: string  = "TERMINATED"; 
 
+// The base addresses for each memory partition
+const MEMORY_PARTITION_0_BASE_ADDRESS: number = 0;
+const MEMORY_PARTITION_1_BASE_ADDRESS: number = 256;
+const MEMORY_PARTITION_2_BASE_ADDRESS: number = 512;
+
+
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 
@@ -76,10 +82,10 @@ BSOD_IMAGE.src = "https://neosmart.net/wiki/wp-content/uploads/sites/5/2013/08/u
 var _CPU: TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
 
 // The Memory for the cpu
-var _MemoryBlock0: TSOS.MemoryBlock;  
+var _MemoryBlock: TSOS.MemoryBlock;
 
 // The Manager for the Memory
-var _MemoryManager0: TSOS.MemoryManager; 
+var _MemoryManager: TSOS.MemoryManager; 
 
 // Current Process
 var _CurrentProcess: TSOS.ProcessControlBlock;
@@ -143,6 +149,17 @@ var _SystemInformationInterface: TSOS.SystemInformationSection;
 var _StatusSectionElement: HTMLElement;
 var _DateSectionElement: HTMLElement;
 var _TimeSectionElement: HTMLElement;
+
+// Resident List UI
+var _ResidentListTableElement: HTMLTableElement;
+var _ResidentListTable: TSOS.ResidentListTable;
+
+//Ready Queue UI
+var _ReadyQueueTableElement: HTMLTableElement;
+var _ReadyQueueTable: TSOS.ReadyQueueTable;
+
+// CPU Scheduler
+var _CPUScheduler: TSOS.CpuScheduler;
 
 // At least this OS is not trying to kill you. (Yet.)
 var _SarcasticMode: boolean = false;
