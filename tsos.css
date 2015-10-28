@@ -22,13 +22,43 @@ h2 {
   font-weight: normal;
   font-style: normal;
 }
-
+.stackedPanel{
+  width: 50%;
+  float: left;
+}
 h3 {
   font-family: Helvetica, Verdana, Arial, sans-serif;
   font-size: 16pt;
   font-weight: normal;
   font-style: normal;
 }
+.right{
+  float: right;
+}
+.test { 
+    display: block;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: auto;
+    margin-right: auto;
+    border-style: inset;
+    border-width: 1px;
+} 
+::-webkit-scrollbar-track {
+      background-color: #b46868;
+} /* the new scrollbar will have a flat appearance with the set background color */
+ 
+::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.2); 
+} /* this will style the thumb, ignoring the track */
+ 
+::-webkit-scrollbar-button {
+      background-color: #7c2929;
+} /* optionally, you can style the top and the bottom buttons (left and right for horizontal bars) */
+ 
+::-webkit-scrollbar-corner {
+      background-color: black;
+} /* if both the vertical and the horizontal bars appear, then perhaps the right bottom corner also needs to be styled */
 .inv {
   visibility: hidden;
 }
@@ -41,11 +71,28 @@ h3 {
 .vertical-Align {
     vertical-align: middle;
 }
+#systemInformationPanelHeading{
+  font-size: 15pt;
+}
 #display {
   border: 2px solid black;
   cursor: default;
 }
+.panel-default {
+     color: black;
+     background-color: white !important;
+     font-size: 20pt;
+     font-family: "Courier New", Courier, monospace;
+}
+.panel-default > .panel-heading {
+  color: #C0C0C0;
+  background-color: black !important;
+  border-color:  #C0C0C0 !important;
+  font-size: 20pt;
+  font-family: "Courier New", Courier, monospace;
+}
 .navBarButtonText {
+  color: #C0C0C0;
   font-size: 20pt;
   font-family: "Courier New", Courier, monospace;
 }
@@ -70,7 +117,7 @@ h3 {
 }
 .name{
   margin-left: 125px;
-  font-size: 80pt;
+  font-size: 70pt;
   font-family: Helvetica;
 
 }

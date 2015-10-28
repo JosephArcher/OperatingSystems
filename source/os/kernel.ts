@@ -11,6 +11,7 @@
 ///<reference path="ResidentListTable.ts" />
 ///<reference path="ReadyQueueTable.ts" />
 ///<reference path="cpuScheduler.ts" />
+///<reference path="timer.ts" />
 
 /* ------------
      Kernel.ts
@@ -33,21 +34,27 @@ module TSOS {
 
             Control.hostLog("bootstrap", "host");  // Use hostLog because we ALWAYS want this, even if _Trace is off.
 
+            // Initalize the memory blocks
             _MemoryBlock = new MemoryBlock();
             _MemoryBlock.init();
-            _MemoryManager = new MemoryManager(_MemoryBlock);
+
+            // Initalize the memory partition array
+
+            _MemoryManager = new MemoryManager(_MemoryBlock, _MemoryPartitionArray);
+           // _MemoryManager.printAllMemoryPartitions();
+
+            console.log(_MemoryManager.getTotalMemorySize() + " JOE THE MEMORY SIZE IS");
            
             // Initialize our global queues.
-            _KernelInterruptQueue = new Queue();  // A (currently) non-priority queue for interrupt requests (IRQs).
-            _KernelBuffers = new Array();         // Buffers... for the kernel.
-            _KernelInputQueue = new Queue();      // Where device input lands before being processed out somewhere.   
+            _KernelInterruptQueue = new Queue();   // A (currently) non-priority queue for interrupt requests (IRQs).
+            _KernelBuffers = new Array();          // Buffers... for the kernel.
+            _KernelInputQueue = new Queue();       // Where device input lands before being processed out somewhere.   
 
-            // Initialize the Ready Queue 
-            _ReadyQueue = new collections.LinkedList<TSOS.ProcessControlBlock>();
-
-            // Initialize the Resident Queue 
-            _ResidentQueue = new Queue();
+            _ReadyQueue = new ReadyQueue();        // Initialize the Ready Queue             
+            _ResidentList = new ReadyQueue();      // Initialize the Resident Queue 
+            _TerminatedProcessQueue = new Queue(); // Initalize the Terminated Process Queue
             
+
             // Initialize the console.
             _Console = new Console();          // The command line interface / console I/O device.
             _Console.init();
@@ -58,9 +65,6 @@ module TSOS {
 
             // Initalize the Process Control Block Counter 
             _ProcessCounterID = -1;
-
-            // Initalize the Current Process Control Block global
-            _CurrentProcess = null;
 
             // Load the Keyboard Device Driver
             this.krnTrace("Loading the keyboard device driver.");
@@ -89,18 +93,13 @@ module TSOS {
 
             // Initalize the Ready Queue
             _ReadyQueueTable = new ReadyQueueTable(_ReadyQueueTableElement);
-           
+ 
+            // Timer
+            _Timer = new Timer();
+
+            // CPU Scheduling 
             _CPUScheduler = new CpuScheduler();
 
-           _ResidentListTable.addNewProcess(new ProcessControlBlock() );
-            _ResidentListTable.addNewProcess(new ProcessControlBlock() );
-           _ResidentListTable.addNewProcess(new ProcessControlBlock() );
-
-           _ReadyQueueTable.addNewProcess(new ProcessControlBlock());
-
-           _ReadyQueueTable.addNewProcess(new ProcessControlBlock());
-
-           _ReadyQueueTable.addNewProcess(new ProcessControlBlock());
             // Launch the shell.
             this.krnTrace("Creating and Launching the shell.");
             _OsShell = new Shell();
@@ -140,12 +139,25 @@ module TSOS {
                 var interrupt = _KernelInterruptQueue.dequeue();
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed. 
+                console.log("About to cycle the CPU");
+           
+                    // Checks to see if the single step mode is checked and if so do not allow the next cpu to cycle
+                    if ((_SingleStepMode == true && _AllowNextCycle == true) || (_SingleStepMode == false)) {
 
-                // Checks to see if the single step mode is checked and if so do not allow the next cpu to cycle
-                if ( (_SingleStepMode == true && _AllowNextCycle == true) || (_SingleStepMode == false) ) {
-                    _CPU.cycle();
-                }
-            } else {                      // If there are no interrupts and there is nothing being executed then just be idle. {
+                        // Cycle the CPU
+                        _CPU.cycle();
+
+                        // Decrement the timer by one and check to see if it is finished
+                        if (_Timer.decreaseTimerByOne() == TIMER_FINISHED) {
+                            console.log("The Timer is finished/ Creating an interrupt");
+                            // Create new interrupt to signal the end of the timer
+                            _KernelInterruptQueue.enqueue(new Interrupt(TIMER_IRQ, TIMER_ENDED_PROCESS));
+                        } else {
+                            // If the timer is not finished then do nothing
+                        }
+                    }
+
+            } else {// If there are no interrupts and there is nothing being executed then just be idle. :(
                 this.krnTrace("Idle");
             }
         }
@@ -166,8 +178,7 @@ module TSOS {
             Devices.hostDisableKeyboardInterrupt();
             // Put more here.
         }
-
-        public krnInterruptHandler(irq, params) {
+        public krnInterruptHandler(irq, params)  {
             // This is the Interrupt Handler Routine.  See pages 8 and 560.
             // Trace our entrance here so we can compute Interrupt Latency by analyzing the log file later on. Page 766.
             this.krnTrace("Handling IRQ~" + irq);
@@ -194,7 +205,7 @@ module TSOS {
                     this.invalidOpCode(params);
                     break;
                 case BREAK_IRQ:                         // Break
-                    this.endProcess();
+                   this.krnBreakISR()
                     break;
                 case BSOD_IRQ:                          //Blue Screen of death Test Case
                     this.krnTrapError("BSOD Command");
@@ -202,20 +213,218 @@ module TSOS {
                 case INVALID_OPCODE_USE_IRQ:            // Invalid Op Code 
                     this.badOpCodeUsage(params);
                     break;
+                case MEMORY_OUT_OF_BOUNDS_IRQ:
+                    this.memoryOutOfBounds(params);
+                    break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }
         }
+        public memoryOutOfBounds(params: string) {
+            this.krnTrapError("BSOD Command");
+
+        }
+        /**
+         * used to handle the timer interrupt
+         */
         public krnTimerISR() {
+
             // The built-in TIMER (not clock) Interrupt Service Routine (as opposed to an ISR coming from a device driver). {
             // Check multiprogramming parameters and enforce quanta here. Call the scheduler / context switch here if necessary.
+            console.log("THE TIMER HAS ENDED RING RING RING");
+
+            // Clear the timer and turn it off
+            _Timer.clearTimer();  
+
+            // End the current process
+            this.endProcess(_CPUScheduler.getCurrentProcess(), TIMER_ENDED_PROCESS); 
         }
+        /**
+         *  Used to handle the break interrupt
+         */
+        public krnBreakISR() {
+
+            console.log("The Break Interrupt has been hit");
+
+            // End the current process
+            this.endProcess(_CPUScheduler.getCurrentProcess(), BREAK_ENDED_PROCESS);
+        }
+        /**
+         * Used to switch between processes
+         * @Params nextProcessToRun {ProcessControlBlock} - The Next Process to be run by the cpu
+         */
+        public contextSwitch() {
+           
+            console.log("Performing a context swtich with processes");
+
+            // Save the state of the current process into its PCB Block
+            this.stateSave();
+
+            // Get the next process to be run on the CPU
+            var nextProcess = _CPUScheduler.getNextProcess(); // Calls the CPU Scheduler and returns the next process to run 
+
+            // Start the next process by calling stateRestore
+            this.startProcess(nextProcess);
+        }
+        /**
+         * Used to store the current CPU information into the current process control block
+         * Part of the context switch
+         */
+        public stateSave(): void {
+
+            _Kernel.krnTrace("CPU Scheduler: Saving the state of PCB " + _CPUScheduler.currentProcess.getProcessID());
+
+             console.log("Saving the State");
+
+             // Save the current CPU Register values into the process control block
+            _CPUScheduler.currentProcess.setProgramCounter(_CPU.PC);
+            _CPUScheduler.currentProcess.setAcc(_CPU.Acc);
+            _CPUScheduler.currentProcess.setXReg(_CPU.Xreg);
+            _CPUScheduler.currentProcess.setYReg(_CPU.Yreg);
+            _CPUScheduler.currentProcess.setZFlag(_CPU.Zflag);
+            
+        }
+        /**
+         * Used to set the current CPU information with the next process in order to run it correctly
+         * @Params process {ProcessControlBlock} - The process that is being used to set the CPU
+         */
+        public stateRestore(process: ProcessControlBlock): void {
+
+            _Kernel.krnTrace("CPU Scheduler: Restoring the state of process" + _CPUScheduler.currentProcess.getProcessID());
+
+            console.log("Restoring the State");
+            // Set the Current Process equal to the process that was just restored
+            _CPUScheduler.currentProcess = <TSOS.ProcessControlBlock> process;
+
+            _CPU.PC     = process.getProgramCounter();
+            _CPU.Acc    = process.getAcc();
+            _CPU.Xreg   = process.getXReg();
+            _CPU.Yreg   = process.getYReg();
+            _CPU.Zflag  = process.getZFlag();
+
+        }  
+        /**
+         * Used to create a new process
+         * @Params baseAddress {Number} - The base address of the process in memory
+         *         limitAddress{Number} - The limit address of the process in memory 
+         * @Returns {Number} - The ID of the newly created process
+         */
+        public createProcess(baseAddress: number , limitAddress: number): TSOS.ProcessControlBlock {
+
+            // Create the new process
+            var newProcess: TSOS.ProcessControlBlock = new ProcessControlBlock();
+
+            // Set the base and limit registers of the process
+            newProcess.setBaseReg(baseAddress);
+            newProcess.setLimitReg(limitAddress);
+
+            // Add the newly created process to the end of the resident list
+            _ResidentList.enqueue(newProcess);
+
+            // Return the ID of the newly created process
+            return <TSOS.ProcessControlBlock> newProcess;
+        }
+        /*
+         * Used to set the _CPU.isExecuting Property to True
+         * This also calls the UI stuff that should happen when the CPU starts executing user programs
+         */
+        public startProcess(process: TSOS.ProcessControlBlock): void {
+
+            console.log("The process to start it " + process);
+
+            // Sets the Cpu to executing
+            _CPU.isExecuting = true;
+            
+            // Load the PCB into the CPU to start the program
+            this.stateRestore(process);
+
+            // Handle UI from having programs executing
+            Utils.startProgramSpinner();
+
+            // Set a new Timer for the length of the current Quanta
+            _Timer.setNewTimer(_CPUScheduler.getQuantum());
+
+            // Set the state of the process to running
+            process.setProcessState(PROCESS_STATE_RUNNING);
+          
+        }
+        /**
+        * Used to end the given process and decide what to do next
+        * @Params process {ProcessControlBlock} - The process that is being ended
+                  callee  {String}              - The service that is ending the process
+        */
+        public endProcess(process: TSOS.ProcessControlBlock, callee: string) {
+
+            // First, check to see why the process was ended 
+
+            // If the timer ended the process because of a scheduling algorithm
+            if (callee == TIMER_ENDED_PROCESS) {
+
+                // The process is not finished because of break so add it to the end of the ready queue
+                _ReadyQueue.enqueue(process);
+
+                // Context Switch to figure out what to do next
+                this.contextSwitch();
+                               
+            }
+            // If the break instruction was read then terminate the program
+            else if (callee == BREAK_ENDED_PROCESS) {
+
+               // Terminate the process
+                this.terminateProcess(process);
+
+                // Check to see if another process wants to execute
+                if (_ReadyQueue.getSize() > 0) {    
+                    // If another process is currently active
+                    this.contextSwitch();      // Context Switch
+                }
+                else {
+                    // If no other process exists then stop CPU
+                    this.stopCpuExecution();  // Stop the CPU
+                }
+            }
+            else{
+                console.log("This should never happen");
+            }  
+        }
+        public terminateProcess(process: TSOS.ProcessControlBlock) {
+
+            console.log("Terminating a process " + process.getProcessID());
+
+            // Set the state of the process to terminated
+            process.setProcessState(PROCESS_STATE_TERMINATED);
+
+            // Remove the process from memory and update the UI Table
+            _MemoryManager.clearMemoryPartition(process);
+
+            // Add the process to the terminated process queue for later use
+            _TerminatedProcessQueue.enqueue(process);
+        }
+        /*
+         * Used to set the _CPU.isExecuting Property to False
+         * This also calls the UI stuff that should happen when the CPU stops executing user programs
+         */
+        public stopCpuExecution(): void {
+
+            console.log("Stopping the CPU execution becuase no processes are currently active");
+            // Stop the Cpu from executing
+            _CPU.isExecuting = false;
+
+            // Handle the UI from having no programs execuing
+            Utils.endProgramSpinner();
+
+            _Console.advanceLine();
+            _OsShell.putPrompt(); 
+            _CPUScheduler.currentProcess = null;
+        }
+
         //
         // System Calls... that generate software interrupts via tha Application Programming Interface library routines.
         //
+
         /**
          * Used to write a string to the console
-         */
+         */      
         public writeStringConsole(startAddress: number) {
 
             var memLoc = startAddress - 1;
@@ -262,30 +471,7 @@ module TSOS {
             _Console.advanceLine();
             //_CPU.beginExecuting( _ReadyQueue.first() );
         }
-         /**
-         * Used to end the current process
-         */
-        public endProcess() {
-
-            // Set the global to no executing
-            _CPU.isExecuting = false;  
-
-            // Update and display the PCB Contents
-            //var holder = <TSOS.ProcessControlBlock>_ReadyQueue.first();
-
-            //holder.setProcessState(PROCESS_STATE_TERMINATED);
-           _ProcessControlBlockTable.updateTableContents();
-           // _ReadyQueue.clear();
-           // console.log(_ReadyQueue.size() + 'after clear ');
-
-
-            _StdOut.putText("Program Finished Running");
-            _Console.advanceLine();
-            _OsShell.putPrompt(); 
-            Utils.endProgramSpinner();
-            _CurrentProcess = null;
-
-        }
+        
         public badOpCodeUsage(userMsg) {
             _CPU.isExecuting = false;
            // this.writeConsole(userMsg);
@@ -302,79 +488,6 @@ module TSOS {
         //
         // OS Utility Routines
         //
-        public loadUserProgram():void {
-
-            console.log("Loading a new user program!");
-
-            // Set the counter to zero to load the user program into memory 0000
-            var counter = 0;
-
-            // Clear the current memory
-            _MemoryManager.clearMemory();
-
-            // Create a placeholder string to help with placing of hex digits used later in for loop
-            var placeholder = "";
-
- 
-            // Get the element where the user input is kept
-            var userInputHTML = <HTMLInputElement>document.getElementById("taProgramInput"); 
-
-            // Store the input as a string
-            var userInput: string = userInputHTML.value; 
-
-            // If the user has no input then cant validate it
-            if (userInput.length < 1) {
-                _StdOut.putText("No user code was found");
-            }
-            // Create a regular expression for only hex digits and spaces
-            var regex = /[0-9A-Fa-f\s]/;
-
-            // Loop over the current input
-            for (var i = 0; i < userInput.length; i++) {
-
-                // If the character fails to pass the test than input is invalid
-                if (regex.test(userInput.charAt(i)) === false) {
-
-                    _StdOut.putText("Error, the code is invalid because it contains something other than a space or hex digit");
-                    return;
-                }
-                else {
-
-                    //Check to see if the character is a space
-                    if (userInput.charAt(i) != " ") {
-                        // Checks to see if the placeholder is empty 
-                        if (placeholder.length == 0) {
-                            // If empty then not a full instruction and need to save it and read another one
-                            placeholder = userInput.charAt(i);
-                        }
-                        // If the first part of an instruction already exists then concat them and set the byte
-                        else if (placeholder.length == 1) {
-
-                           _MemoryManager.setByte(counter, placeholder + userInput.charAt(i));
-
-                            placeholder = ""; // wipe the placeholder
-
-                            // Increment the counter used to load programs
-                            counter = counter + 1;
-                        }
-                        else {
-                            // we should never get here!
-                            console.log("This should never happen");
-                        }
-                    }
-                }
-            }
-
-            // Create a new process control block
-            _CurrentProcess = new ProcessControlBlock();
-
-            // Add the new PCB to the queue to be run
-           // _ReadyQueue.add(processControlBlock);
-            
-            // Tell the user the code was valid and report the process ID to them
-            _StdOut.putText("Code Validated and assigned a Process ID of " + _CurrentProcess.processID); 
-
-        }
         public krnTrace(msg: string) {
              // Check globals to see if trace is set ON.  If so, then (maybe) log the message.
              if (_Trace) {

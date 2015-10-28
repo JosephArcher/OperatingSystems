@@ -1,79 +1,31 @@
-<<<<<<< HEAD
-Browser-based Operating System in TypeScript
-============================================
+iProject3 Requirements Status List
+----------------------------------
 
-This is the Operating Systems class initial project.
-See http://www.labouseur.com/courses/os/ for details.
-Fork this (or clone, but fork is probably better in case Alan changes anything about the initial project) into your own private repository. Then add Alan (userid Labouseur) as a collaborator.
+			Requirements												  Status
+           ---------------                                                -------------
 
-Setup TypeScript
-================
+1. Add a shell commmand, clearmem, to clear all memory partitions         | Completed
+2. Add a shell command,  runall, to execute all the programs at once      | Not Finished
+3. Add a shell commmand, quantum <int> , to let the user set the..        | Completed
+4  Add a shell commmand, ps, to display the PID's of all active processes | Completed
+5. Add a shell commmand, kill <pid>, to kill an active process            | Completed
+6. Add base and limit registers to memoryAccessCode and PCB               | Not Finished
+7. Enforce memory partition boundaries at all times                       | Testing
+8. Create a Resident List for the loaded processes                        | Completed
+9. Create a Ready Queue for the running processes                         | Completed
+10. Instantiate a PCB for each loaded program in the resident list        | Completed
+11. Display the ready queue and its PCB contents in real time             | Testing
+12. Develop a CPU Scheduler with round Robin implemented                  | Testing
+13. Log all Scheduling Events                                             | Testing
+14. Implement Context Switching                                           | Not Finished
+15. Handle Errors                                                         | Not Finished
 
-1. Install the [npm](https://www.npmjs.org/) package manager if you don't already have it.
-1. Run `npm install -g typescript` to get the TypeScript Compiler. (You may need to do this as root.)
-
-
-Workflow
-=============
-
-Some IDEs (e.g., Visual Studio, IntelliJ, others) natively support TypeScript-to-JavaScript compilation.
-If your development environment does not then you'll need to automate the process with something like Gulp.
-
-
-Setup Gulp
-==========
-
-1. `npm install gulp` to get the Gulp Task Runner.
-1. `npm install gulp-tsc` to get the Gulp TypeScript plugin.
-
-
-Run `gulp` at the command line in the root directory of this project.
-Edit your TypeScript files in the source/scripts directory in your favorite editor.
-Visual Studio and IntelliJ have some tools that make debugging, syntax highlighting, and lots more quite easy.
-WebStorm looks like a nice option as well.
-
-Gulp will automatically:
-
-* Watch for changes in your source/scripts/ directory for changes to .ts files and run the TypeScript Compiler on them.
-* Watch for changes to your source/styles/ directory for changes to .css files and copy them to the distrib/ folder if you have them there.
-
-
-Gulp FAQs
-=========
-
-**Why are we using Gulp?**
-Gulp is a tool that allows you to automate workflow tasks.
-In this instance, we want it to watch our directory for changes and automatically run the TypeScript compiler on the source files to output JS to a distribution folder.
-We also use it to copy over .css files to our distribution folder.
-
-**Copying over CSS files to a dist folder? That seems useless**
-Well, in this case, it pretty much is, but it keeps your development consistent.
-(For the purposes of this project, feel free to put your CSS in the same directory as index.html. That said...) 
-You keep your source in the source directory, and you keep what you want to output to the user in the dist directory.
-In more mature front-end environments, you may be utilizing a CSS-preprocessor like LESS or SASS.
-This setup would allow you to keep your .less or .scss files in the source/styles directory, then output the compiled css folders to the dist/styles directory.
-
-**What other cool things can I do with Gulp?**
-If you were in a production environment where you wanted to obfuscate your code, you can use Gulp to automatically run things like [Uglify](https://github.com/terinjokes/gulp-uglify) on your JS/CSS.
-Or if you wanted to [minify your CSS](https://www.npmjs.org/package/gulp-minify-css).
-It is NOT recommended to do this for this project as you and Alan will need to read and debug this code, and allow GLaDOS to run code against yours.
-
-**Where can I get more info on Gulp?**
-[Right this way!](http://gulpjs.com/)
-
-
-A Few Notes
-===========
-
-**What's TypeScript?**
-TypeScript is a language that allows you to write in a statically-typed language that outputs standard JavaScript.
-It's all kinds of awesome.
-
-**Why should I use it?**
-This will be especially helpful for an OS or a Compiler that may need to run in the browser as you will have all of the great benefits of type checking built right into your language.
-
-**Where can I get more info on TypeScript**
-[Right this way!](http://www.typescriptlang.org/)
-=======
-# OperatingSystems
->>>>>>> ccfead564f462fbc8440ec6e6d5ab1b786e08c6c
+U/I List
+------------------------
+1. Fix nav bar
+2. Fix HTML when repositioning so the main display area is broken up in thirds...
+   nicely with the bottom two rows being split in half
+3. Finish start up animation
+4. Check marks start visible and red then fade to green when starting up
+5. Fade the Power from red to green as turning on
+6. Fix closing animation so open sections will auto collapse 

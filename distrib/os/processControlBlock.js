@@ -14,9 +14,13 @@ var TSOS;
             this.Yreg = 0; // Y Flag 
             this.Zflag = 0; // Z Flag   
             this.baseReg = 0; // Base Register
-            this.limitReg = 0; // Limit Register
+            this.limitReg = 256; // Limit Register
+            this.creationCycle = 0; // The cycle the process was created in
+            this.terminationCycle = 0; // The cycle the process was terminated
+            this.waitingTime = 0; // The number of cycles the process has waited
             this.processID = this.assignNextProcessID();
             this.processState = PROCESS_STATE_NEW;
+            console.log("Creating new PCB");
         }
         /**
          * Used to auto increment the Process ID for a ProcessControlBlock on creation
@@ -42,7 +46,7 @@ var TSOS;
          * @Returns {Number} The next ID
         */
         ProcessControlBlock.prototype.getProcessID = function () {
-            return this.processID + "";
+            return this.processID;
         };
         /**
          * Sets the current state of the process
@@ -74,7 +78,7 @@ var TSOS;
          *
         */
         ProcessControlBlock.prototype.getProgramCounter = function () {
-            return this.programCounter + "";
+            return this.programCounter;
         };
         /**
          * Sets the current accumulator register with the given value
@@ -90,7 +94,7 @@ var TSOS;
          *
         */
         ProcessControlBlock.prototype.getAcc = function () {
-            return this.Acc + "";
+            return this.Acc;
         };
         /**
          * Sets the current x register with the given value
@@ -106,7 +110,7 @@ var TSOS;
          *
         */
         ProcessControlBlock.prototype.getXReg = function () {
-            return this.Xreg + "";
+            return this.Xreg;
         };
         /**
          * Sets the current y register with the given value
@@ -122,7 +126,7 @@ var TSOS;
          *
         */
         ProcessControlBlock.prototype.getYReg = function () {
-            return this.Yreg + "";
+            return this.Yreg;
         };
         /**
          * Sets the current z register with the given value
@@ -138,7 +142,7 @@ var TSOS;
          *
         */
         ProcessControlBlock.prototype.getZFlag = function () {
-            return this.Zflag + "";
+            return this.Zflag;
         };
         /**
          * Sets the current base register with the given value
@@ -171,6 +175,52 @@ var TSOS;
         */
         ProcessControlBlock.prototype.getLimitReg = function () {
             return this.limitReg;
+        };
+        /**
+         * Sets the creation cycle of the process with the given value
+         * @Params value {Number} - The cycle number when the proces was created
+         *
+        */
+        ProcessControlBlock.prototype.setCreationCycle = function (value) {
+            this.creationCycle = value;
+        };
+        /**
+         * Returns the creation cycle of the process
+         * @Return {Number} - The cycle number when the process was created
+         *
+        */
+        ProcessControlBlock.prototype.getCreationCycle = function () {
+            return this.creationCycle;
+        };
+        /**
+         * Sets the termination cycle of the process with the given value
+         * @Params value {Number} - The cycle number the process was terminated
+         *
+        */
+        ProcessControlBlock.prototype.setTerminationCycle = function (value) {
+            this.terminationCycle = value;
+        };
+        /**
+         * Returns the termination cycle of the process
+         * @Return {Number} - The cylce number the process was terminated
+         *
+        */
+        ProcessControlBlock.prototype.getTerminationCycle = function () {
+            return this.terminationCycle;
+        };
+        /**
+         * Increments the waiting time counter for this process
+        */
+        ProcessControlBlock.prototype.incrementWaitingTime = function () {
+            this.waitingTime = this.waitingTime + 1;
+        };
+        /**
+         * Returns the current total waiting time of the process
+         * @Return {Number} - The current waiting time of the process
+         *
+        */
+        ProcessControlBlock.prototype.getWaitingTime = function () {
+            return this.waitingTime;
         };
         return ProcessControlBlock;
     })();

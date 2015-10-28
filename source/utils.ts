@@ -49,13 +49,36 @@ module TSOS {
         public static togglePowerOn(): void {
 
           _ProgramSpinner.style.color = "#00B200";
-         
-          $(function() {
-            $("#btnStartOS").removeClass("btn-navPowerOffBorder");
-            $("#btnStartOS").addClass("btn-navPowerOnBorder");
-          });
 
-        }
+      $(document).ready(function() {
+
+        $("#btnStartOS").removeClass("btn-navPowerOffBorder");
+        $("#btnStartOS").addClass("btn-navPowerOnBorder");
+
+       
+          $("#systemInformationPanel").animate({ width: '100%' }, "slow");
+          $("#systemInformationPanelCheck").fadeIn(); 
+
+          $("#userProgramInputPanel").animate({ width: '100%' }, "slow");
+          $("#userProgramInputPanelCheck").fadeIn(); 
+
+          $("#residentListPanel").animate({ width: '100%' }, "slow");
+          $("#residentListPanelCheck").fadeIn(); 
+
+          $("#readyQueuePanel").animate({ width: '100%' }, "slow");
+          $("#readyQueuePanelCheck").fadeIn(); 
+
+          $("#cpuStatPanel").animate({ width: '100%' }, "slow");
+          $("#cpuStatPanelCheck").fadeIn(); 
+
+          $("#processControlBlockPanel").animate({ width: '100%' }, "slow");
+          $("#processControlBlockPanelCheck").fadeIn(); 
+
+          $("#mainMemoryPanel").animate({ width: '100%' }, "slow");   
+          $("#mainMemoryPanelCheck").fadeIn(); 
+         });    
+       }
+
         /**
          * Used to handle the UI changes when the power is turned off
          */
@@ -67,7 +90,31 @@ module TSOS {
             $(function() {
               $("#btnStartOS").removeClass("btn-navPowerOnBorder");
               $("#btnStartOS").addClass("btn-navPowerOffBorder");
+
+              $("#systemInformationPanel").animate({ width: '45%' }, "slow");
+              $("#systemInformationPanelCheck").fadeOut();
+
+              $("#userProgramInputPanel").animate({ width: '45%' }, "slow");
+              $("#userProgramInputPanelCheck").fadeOut();
+
+              $("#residentListPanel").animate({ width: '45%' }, "slow");
+              $("#residentListPanelCheck").fadeOut();
+
+              $("#readyQueuePanel").animate({ width: '45%' }, "slow");
+              $("#readyQueuePanelCheck").fadeOut();
+
+              $("#cpuStatPanel").animate({ width: '45%' }, "slow");
+              $("#cpuStatPanelCheck").fadeOut();
+
+              $("#processControlBlockPanel").animate({ width: '45%' }, "slow");
+              $("#processControlBlockPanelCheck").fadeOut();
+
+              $("#mainMemoryPanel").animate({ width: '55%' }, "slow");
+              $("#mainMemoryPanelCheck").fadeOut(); 
+
+
             });
+
             this.clearUserInput();
             this.clearCpuUI();
             _MemoryInformationTable.fillRows();
@@ -171,9 +218,9 @@ module TSOS {
 
           var nextProcess;
 
-          for (var i = 0; i < _ReadyQueue.size(); i++) {
+          for (var i = 0; i < _ReadyQueue.getSize(); i++) {
 
-            nextProcess = <TSOS.ProcessControlBlock>_ReadyQueue.elementAtIndex(i);
+           // nextProcess = <TSOS.ProcessControlBlock>_ReadyQueue.elementAtIndex(i);
 
             if (nextProcess.getProcessID() == processID) {
               console.log(nextProcess.getProcessID() + " 1");

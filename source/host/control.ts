@@ -75,7 +75,7 @@ module TSOS {
             // Time section
             _TimeSectionElement = <HTMLElement> document.getElementById("timeArea");
 
-            
+           
             // Resient List
             _ResidentListTableElement = <HTMLTableElement> document.getElementById("residentListTableElement");
 
@@ -130,8 +130,8 @@ module TSOS {
                 _CPU.init();       //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
 
                 // Create and initalize the Memory for the CPU
-                _MemoryBlock0 = new MemoryBlock();
-                _MemoryBlock0.init();
+                _MemoryBlock = new MemoryBlock();
+                _MemoryBlock.init();
             
                 // ... then set the host clock pulse ...
                 _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);

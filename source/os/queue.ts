@@ -38,23 +38,5 @@ module TSOS {
             }
             return retVal;
         }
-        public returnAllProcessIds() {
-
-            var nextProcessBlock;
-            var processArray = new Array();
-
-            for (var i = 0; i < this.getSize(); i++) {
-                nextProcessBlock = this.q[i];
-                processArray.push(nextProcessBlock.processID);
-            }
-            console.log(processArray);
-            return processArray;
-        }
-        public getNextProcess(){
-
-            var nextPCB = <ProcessControlBlock> this.q[0];
-
-            return nextPCB;
-        }
     }
 }

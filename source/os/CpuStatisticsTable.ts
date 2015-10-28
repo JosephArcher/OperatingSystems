@@ -46,7 +46,7 @@ module TSOS {
 
 			this.currentRow = <HTMLTableRowElement>this.table.rows.item(1);
 			this.currentCell = <HTMLTableCellElement>this.currentRow.cells.item(1);
-
+			
 			this.currentCell.innerHTML = value;
 		}
 		/**

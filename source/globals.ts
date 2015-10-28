@@ -1,6 +1,6 @@
-///<reference path="os/collections.ts" /> // Imported in order to use linked list data type
+///<reference path="os/collections.ts" />
 /// <reference path="jquery.d.ts" />
-
+///<reference path="os/ReadyQueue.ts" />
 
 /* ------------
    Globals.ts
@@ -11,117 +11,163 @@
    Operating System Concepts 8th edition by Silberschatz, Galvin, and Gagne.  ISBN 978-0-470-12872-5
    ------------ */
 
-//
-// Global CONSTANTS (TypeScript 1.5 introduced const. Very cool.)
-//
+//********************************************************\\
+//                 Global CONSTANTS                       \\
+//********************************************************\\
 
+// Application Information
 const APP_NAME: string    = "Joe/S";   // Joe is Love Joe is Lyfe
-const APP_VERSION: string = "0.02";   // Second Project so second version ? 
+const APP_VERSION: string = "0.03";   //  For iProject3 - Due the same day fallout 4 comes out? illuminati? 
 
+// System 
 const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 1000 = 1 second.
 
-// Timer Interrupt
-const TIMER_IRQ: number = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
-          
-// Keyboard Interrupt    
-const KEYBOARD_IRQ: number = 1;  // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
+// Interrupts
+const TIMER_IRQ: number = 0;                  // Timer         
+const KEYBOARD_IRQ: number = 1;               // Keyboard 
+const BSOD_IRQ: number = 2;                   // Blue Screen of Death
+const PRINT_INTEGER_IRQ: number = 3;          // Print Integer
+const PRINT_STRING_IRQ: number = 4;           // Print String
+const BREAK_IRQ: number = 5;                  // Break
+const INVALID_OPCODE_IRQ: number = 6;         // Invalid Op Code
+const INVALID_OPCODE_USE_IRQ: number = 7;     // Invalid Op Code Usage
+const MEMORY_OUT_OF_BOUNDS_IRQ: number = 8;   // Memory Out of Bounds
 
-// This is for the Blue Screen Of Death command
-const BSOD_IRQ: number = 2; 
+// Process States as consts for the Process Control Blocks // Process States \\   
+const PROCESS_STATE_NEW: string         = "NEW";           //   * New
+const PROCESS_STATE_RUNNING: string     = "RUNNING";       //   * Running
+const PROCESS_STATE_WAITING: string     = "WAITING";       //   * Waiting
+const PROCESS_STATE_READY: string       = "READY";         //   * Ready
+const PROCESS_STATE_TERMINATED: string  = "TERMINATED";    //   * Terminated
 
-// Print Integer Operation system call
-const PRINT_INTEGER_IRQ: number = 3; 
+// TImer States		
+const TIMER_IS_SET: string = "SET";                       // * Set
+const TIMER_IS_OFF: string = "OFF";                       // * OFF
+const TIMER_NOT_FINISHED: string = "TIMER_NOT_FINISHED";  // * Timer not finished yet
+const TIMER_FINISHED: string = "TIMER_FINISHED";          // * Timer is finished
 
-// Print string Opertion system call
-const PRINT_STRING_IRQ: number = 4; 
+// Not Really Sure What to Call These Yet
+const TIMER_ENDED_PROCESS: string = "TIMER";              // * The timer has been called and ended the user process
+const BREAK_ENDED_PROCESS: string = "BREAK";              // * The break instruction was called and ended the user process
 
-// Break Operation system call
-const BREAK_IRQ: number = 5; 
+// Memory Partition Stuff
+const MEMORY_PARTITION_SIZE: number = 256;             // The size of each memory partition
+const MEMORY_PARTITION_0_BASE_ADDRESS: number = 0;     // Partition 1
+const MEMORY_PARTITION_1_BASE_ADDRESS: number = 256;   // Partition 2
+const MEMORY_PARTITION_2_BASE_ADDRESS: number = 512;   // Partition 3 
 
-// Invalid Op Code
-const INVALID_OPCODE_IRQ: number = 6; 
+// CPU Scheduling Algorithms
+const ROUND_ROBIN: string = "Round Robin";  // Round Robin
 
-// Incorrect use of an Op Code
-const INVALID_OPCODE_USE_IRQ: number = 7; 
+//********************************************************\\
+//                 Global Variables                       \\
+//********************************************************\\
+// TODO: 
+//   1. Make a global object and use that instead of the "_" naming convention in the global namespace.
 
+//********************************************************\\
+//                O/S  Variables                          \\
+//********************************************************\\
 
-// Process States as consts for the Process Control Blocks
-const PROCESS_STATE_NEW: string         = "NEW";
-const PROCESS_STATE_RUNNING: string     = "RUNNING"; 
-const PROCESS_STATE_WAITING: string     = "WAITING"; 
-const PROCESS_STATE_READY: string       = "READY"; 
-const PROCESS_STATE_TERMINATED: string  = "TERMINATED"; 
+// The Choo Choo CPU
+var _CPU: TSOS.Cpu; 
 
-// The base addresses for each memory partition
-const MEMORY_PARTITION_0_BASE_ADDRESS: number = 0;
-const MEMORY_PARTITION_1_BASE_ADDRESS: number = 256;
-const MEMORY_PARTITION_2_BASE_ADDRESS: number = 512;
+// The Cool Console
+var _Console: TSOS.Console;
 
+var _Canvas: HTMLCanvasElement;            // Canvas used to draw console UI
+var _DrawingContext: any;                  // Used to track the drawing context of the Console Canvas
+var _DefaultFontFamily: string = "sans";   // Sets the consoles default font
+var _DefaultFontSize: number = 13;         // Sets the consoles default font size
+var _FontHeightMargin: number = 4;         // Sets the consoles default font height margin
 
-// Global Variables
-// TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
+// I/O Fo Sho Yo
+var _StdIn;     // Input
+var _StdOut;    // Output
+
+// The Super Slick Scheduler
+var _CPUScheduler: TSOS.CpuScheduler;
+
+// The Sharp Shell
+var _OsShell: TSOS.Shell;
+
+// The Magnificent Memory
+var _MemoryBlock: TSOS.MemoryBlock;
+
+// The Mighty Memory Mananger
+var _MemoryManager: TSOS.MemoryManager; 
+
+// The Mysterious Mode
+var _Mode: number = 0;  // 0 = Kernel Mode |  1 = User Mode
+
+// The Hardy Hardware Clock
+var _hardwareClockID: number = null;
+
+// The Kooky Kernel
+var _Kernel: TSOS.Kernel;
+
+// The Timely Timer
+var _Timer: TSOS.Timer;
+
+// The Impressive Interrupt Queue
+var _KernelInterruptQueue;         
+
+// The Impacfull Input Queue
+var _KernelInputQueue: any = null;  
+
+// The Bashful Kernel Buffers
+var _KernelBuffers: any[] = null;   
+
+// The Silly Sarcastic Mode
+var _SarcasticMode: boolean = false;
+
+// The Trendy Trace
+var _Trace: boolean = true;  // Default the OS trace to be on.
+
+// The Obnoxioius OS Clock
+var _OSclock: number = 0;  
+
+// An Array of all the available memory partitions available to the operating system
+var _MemoryPartitionArray = [];
+
+// Adding the Const Partition Base values to the array
+_MemoryPartitionArray[0] = MEMORY_PARTITION_0_BASE_ADDRESS // Partition 0
+_MemoryPartitionArray[1] = MEMORY_PARTITION_1_BASE_ADDRESS // Partition 1
+_MemoryPartitionArray[2] = MEMORY_PARTITION_2_BASE_ADDRESS // Partition 2
 
 // Used to track if the OS is currently turned on or off
 var _SystemIsOn = false;
 
+// CPU Cycle Counter 
+var _cpuCycleCounter: number = 0; // Counts the number of times the CPU has cycled 
 
 // Single Step Mode
 var _SingleStepMode = false;
 var _AllowNextCycle = false;
 
-
-// Used to create the auto incrementing process ID's for the Process Control Blocks
+// The Percise Process Counter
 var _ProcessCounterID: number = -1;
 
-// Create an image global for the blue screen of death
-var BSOD_IMAGE = new Image();
 
-// Get the Image from the web
-BSOD_IMAGE.src = "https://neosmart.net/wiki/wp-content/uploads/sites/5/2013/08/unmountable-boot-volume.png"; 
+//********************************************************\\
+//              CPU Scheduling Variables                  \\
+//********************************************************\\
 
-var _CPU: TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
+// The CPU Scheduling Queues
+var _TerminatedProcessQueue: TSOS.Queue;  // Completed Process Queue: Used to Store each PCB once it has been completed
+var _ReadyQueue: TSOS.ReadyQueue;             // Queue of all of the currently running processes
+var _ResidentList: TSOS.ReadyQueue;           // Stores a list of all loaded processes
 
-// The Memory for the cpu
-var _MemoryBlock: TSOS.MemoryBlock;
+//********************************************************\\
+//             Device Driver Variables                    \\
+//********************************************************\\
 
-// The Manager for the Memory
-var _MemoryManager: TSOS.MemoryManager; 
+// Global Device Driver Objects - page 12
+var _krnKeyboardDriver; //  = null;
 
-// Current Process
-var _CurrentProcess: TSOS.ProcessControlBlock;
-
-var _OSclock: number = 0;  // Page 23.
-
-var _Mode: number = 0;     // (currently unused)  0 = Kernel Mode, 1 = User Mode.  See page 21.
-
-var _Canvas: HTMLCanvasElement;         // Initialized in Control.hostInit().
-var _DrawingContext: any; // = _Canvas.getContext("2d");  // Assigned here for type safety, but re-initialized in Control.hostInit() for OCD and logic.
-var _DefaultFontFamily: string = "sans";        // Ignored, I think. The was just a place-holder in 2008, but the HTML canvas may have use for it.
-var _DefaultFontSize: number = 13;
-var _FontHeightMargin: number = 4;              // Additional space added to font size when advancing a line.
-
-var _Trace: boolean = true;  // Default the OS trace to be on.
-
-// The OS Kernel and its queues.
-var _Kernel: TSOS.Kernel;
-var _KernelInterruptQueue;          // Initializing this to null (which I would normally do) would then require us to specify the 'any' type, as below.
-var _KernelInputQueue: any = null;  // Is this better? I don't like uninitialized variables. But I also don't like using the type specifier 'any'
-var _KernelBuffers: any[] = null;   // when clearly 'any' is not what we want. There is likely a better way, but what is it?
-
-// Create the Ready Queue as a Linked List of Process Control Blocks
-var _ReadyQueue: collections.LinkedList<TSOS.ProcessControlBlock>;
-
-// Create the Resident Queue as a Queue
-var _ResidentQueue: TSOS.Queue;
-
-
-// Standard input and output
-var _StdIn;    // Same "to null or not to null" issue as above.
-var _StdOut;
-
-// UI
-var _Console: TSOS.Console;
-var _OsShell: TSOS.Shell;
+//********************************************************\\
+//                  UI Variables                          \\
+//********************************************************\\
 
 // Memory Information Table
 var _MemoryInformationTableElement: HTMLTableElement;
@@ -158,16 +204,15 @@ var _ResidentListTable: TSOS.ResidentListTable;
 var _ReadyQueueTableElement: HTMLTableElement;
 var _ReadyQueueTable: TSOS.ReadyQueueTable;
 
-// CPU Scheduler
-var _CPUScheduler: TSOS.CpuScheduler;
+// Create an image global for the blue screen of death
+var BSOD_IMAGE = new Image();
 
-// At least this OS is not trying to kill you. (Yet.)
-var _SarcasticMode: boolean = false;
+// Get the Image from the web
+BSOD_IMAGE.src = "https://neosmart.net/wiki/wp-content/uploads/sites/5/2013/08/unmountable-boot-volume.png"; 
 
-// Global Device Driver Objects - page 12
-var _krnKeyboardDriver; //  = null;
-
-var _hardwareClockID: number = null;
+//********************************************************\\
+//               Testing Variables                        \\
+//********************************************************\\
 
 // For testing (and enrichment)...
 var Glados: any = null;  // This is the function Glados() in glados.js on Labouseur.com.
