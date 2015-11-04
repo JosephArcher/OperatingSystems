@@ -239,6 +239,21 @@ module TSOS {
             // Kill the current process 
 
 
+            // Check to see if another process wants to execute
+            if (_ReadyQueue.getSize() > 0) {   
+
+                // Get the next process
+                var nextProcess: TSOS.ProcessControlBlock = _CPUScheduler.getNextProcess();
+
+                // Start the next process
+                _KernelInterruptQueue.enqueue(new Interrupt(START_PROCESS_IRQ, nextProcess));
+
+            }
+            else {
+                // If no other process exists then stop CPU
+                this.stopCpuExecution();  // Stop the CPU
+            }
+
         }
         /**
          *  Used to handle the break interrupt
@@ -412,34 +427,36 @@ module TSOS {
             // Start next Process
             _KernelInterruptQueue.enqueue(new Interrupt(START_PROCESS_IRQ, nextProcess));
         }
-        public terminateProcess(process: TSOS.ProcessControlBlock) {
+        /**
+         * used to terminate a currenlty running process and remove it fromt he ready qyeye
+         */
+        public terminateProcess(processID: number) {
 
-            console.log("Terminating a process " + process.getProcessID());
+            // Initalize the variables
+            var theProcessID = processID;
 
-            // Set the state of the process to terminated
-            process.setProcessState(PROCESS_STATE_TERMINATED);
 
-           //_ReadyQueue.removeElementByProccessId(process);
+            // Check to see if any processes are currently active
+            var allPids = _ReadyQueue.getAllPids();
 
-            console.log("The size of the ready queue after termination is " + _ReadyQueue.getSize());
-
-            // Remove the process from memory and update the UI Table
-            _MemoryManager.clearMemoryPartition(process);
-
-            // Add the process to the terminated process queue for later use
-            _TerminatedProcessQueue.enqueue(process);
-            console.log("RIGHT UNDER THE TERMINATION BOOO BEEE");
-            // Check to see if another process wants to execute
-            if (_ReadyQueue.getSize() > 0) {    
-                // If another process is currently active
-                // this.contextSwitch();      // Context Switch
-                _KernelInterruptQueue.enqueue(new Interrupt(CONTEXT_SWITCH_IRQ, process));
+            if (allPids.length == 0) {
+                _StdOut.putText("Sorry, unable to kill anything because no processes are currently active");
+                return;
             }
-            else {
-                // If no other process exists then stop CPU
-                this.stopCpuExecution();  // Stop the CPU
-                console.log("SKLDFJLKSDJFLKSJDFLKJSDKLFJSDKLFJSKDL:FJ:KLSDFJLK:SDJFLSJDK:LFJSK STOOOOOOOOOOOOOOOOOOOOOOOOOOOP THE CPU");
+
+            // Next check to see if the process that the user is trying to kill is iside of the ready queue
+            for (var i = 0; i < allPids.length; i++) {
+
+                // check the args and each character from the PIDS for a match
+                if (args == allPids.charAt(i)) {
+                    // If a match is found then need to remove that element from the ready queue and report back to the user then end
+                    _ReadyQueue = _ReadyQueue.removeElementAtIndex(i);
+                    _StdOut.putText("Process " + theProcessID + " was successfully killed... R.I.P.");
+                    return;
+                }
             }
+            // If not match is found the the loop ends then the process that the user is trying to kill does not exist
+            _StdOut.putText("Sorry, the process you are trying to kill is not currently active"); 
         }
         /*
          * Used to set the _CPU.isExecuting Property to False
