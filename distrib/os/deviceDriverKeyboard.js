@@ -31,10 +31,6 @@ var TSOS;
         };
         DeviceDriverKeyboard.prototype.krnKbdDispatchKeyPress = function (params) {
             // Parse the params.    TODO: Check that the params are valid and osTrapError if not.
-            if (_CPU.isExecuting == true) {
-                console.log("Preventing keyboard press");
-                return;
-            }
             var keyCode = params[0];
             var isShifted = params[1];
             var nextCharacter = "";

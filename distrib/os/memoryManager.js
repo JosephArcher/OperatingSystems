@@ -34,16 +34,14 @@ var TSOS;
             // Initalize variables
             var len = _ResidentList.getSize();
             var nextProcess;
-            console.log("The Process ID is " + processID);
+            //console.log("The Process ID is " + processID );
             if (len < 1) {
                 return null;
             }
             for (var i = 0; i < len; i++) {
                 nextProcess = _ResidentList.getElementAt(i);
-                console.log("TEST: 1   " + nextProcess.getProcessID());
-                console.log("TEST: 2   " + processID);
                 if (nextProcess.getProcessID() == processID) {
-                    console.log("ThE NEXT PROCES IS MEMEORY WAS FOUND AND IT IS " + nextProcess.getBaseReg());
+                    console.log("The next process to run starts at address " + nextProcess.getBaseReg());
                     return nextProcess;
                 }
             }
@@ -63,18 +61,14 @@ var TSOS;
             // Get the base address of the current process
             baseAddressValue = process.getBaseReg(); // Get the processes base address
             limitAddressValue = process.getLimitReg(); // Get the processes limit address
-            console.log(baseAddressValue + ' Test for joe base address');
-            console.log(limitAddressValue + " Test for joe limit address");
             // Check to see if the requested memory address is both...
             // 1. More than the smallest possible address 
             // 2. Less than the largest possible address
             if ((requestedMemoryAddress <= limitAddressValue) && (function (requestedMemoryAddress) { return baseAddressValue; })) {
                 // Means the process can safely access the memory location and return true
-                console.log("has accesss");
                 return true;
             }
             // If either of the two bounds are passed and return false
-            console.log("no accesss");
             return false;
         };
         /**
@@ -116,8 +110,7 @@ var TSOS;
                 else {
                 }
             }
-            console.log(" The Base address to clear starts at ..." + theMemoryPartition);
-            console.log("The size of the ready queue is ..." + _ResidentList.getSize());
+            console.log("The size of the resident list is ..." + _ResidentList.getSize());
             // Clear the memory blocks at those locations
             for (var i = theMemoryPartition; i < theMemoryPartition + 256; i++) {
                 this.memoryBlock[i] = new TSOS.Byte(i, "00");
@@ -161,8 +154,6 @@ var TSOS;
             var nextMemoryAddress = 0; // The value of the next memory address
             // Get the next base address to write the user program
             var nextBaseMemoryPartitionAddress = this.getNextAvailableMemoryPartition();
-            console.log("Loading a new user program starting at the base address of... " + nextBaseMemoryPartitionAddress);
-            console.log("User Program Length = " + userProgram.length);
             //loop over the length of the user program 
             for (var i = 0; i < userProgram.length; i = i + 2) {
                 // Get the next two hex digits to form a byte
@@ -173,14 +164,13 @@ var TSOS;
                 // Place the byte in memory
                 // The byte index will be the base memory partition being used + the offst
                 // The value if the combination of both the hex numbers;
-                console.log("Loading: " + nextByteValue + "   In the memory location of  " + nextMemoryAddress);
                 _MemoryManager.memoryBlock[nextMemoryAddress] = new TSOS.Byte(nextMemoryAddress, nextByteValue);
                 _MemoryInformationTable.setCellData(nextMemoryAddress, nextByteValue);
                 // Increment the offset
                 baseMemoryOffset = baseMemoryOffset + 1;
             }
             // Create a new process control block
-            var newProcess = _Kernel.createProcess(nextBaseMemoryPartitionAddress, 256);
+            var newProcess = _Kernel.createProcess(nextBaseMemoryPartitionAddress);
             // Return the newly created process ID 
             return newProcess.getProcessID();
         };
@@ -190,7 +180,6 @@ var TSOS;
         MemoryManager.prototype.convertLogicalToPhysicalAddress = function (logicalAddress) {
             var physicalAddress = 0;
             physicalAddress = logicalAddress + _CPUScheduler.getCurrentProcess().getBaseReg();
-            console.log("The Next physiucal address is right fucking here " + physicalAddress);
             return physicalAddress;
         };
         /**
@@ -249,9 +238,9 @@ var TSOS;
         MemoryManager.prototype.setByte = function (byteIndex, byteValue) {
             // Need to check to make sure that the indexs the current process is trying to access is within bounds
             if (this.hasAccessToMemoryAddress(byteIndex, _CPUScheduler.getCurrentProcess()) == true) {
-                this.memoryBlock[byteIndex] = new TSOS.Byte(byteIndex, byteValue);
-                //console.log("Setting memory address " + byteIndex + " To the value of " + byteValue);
-                _MemoryInformationTable.setCellData(byteIndex, byteValue);
+                var physicalAddress = this.convertLogicalToPhysicalAddress(byteIndex);
+                this.memoryBlock[physicalAddress] = new TSOS.Byte(physicalAddress, byteValue);
+                _MemoryInformationTable.setCellData(physicalAddress, byteValue);
             }
             else {
                 // Create and Interrupt because the memory has execceded its bounds

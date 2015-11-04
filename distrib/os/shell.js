@@ -288,8 +288,10 @@ var TSOS;
             if (nextProcessControlBlock != null) {
                 // Tell the user
                 _StdOut.putText("The Process exists");
-                // Add the process to the ready queue
-                _CPUScheduler.runProcess(nextProcessControlBlock);
+                // Instead of starting process just add to the ready queue then call something
+                _ReadyQueue.enqueue(nextProcessControlBlock);
+                // Start the next process
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(START_PROCESS_IRQ, _CPUScheduler.getNextProcess()));
             }
             else {
                 // Tell the user and do nothing
@@ -307,8 +309,11 @@ var TSOS;
                 _StdOut.putText("Running All Processes");
                 // Loop over the resident list and add each process in order to the ready queue
                 for (var i = 0; i < _ResidentList.getSize(); i++) {
-                    _CPUScheduler.runProcess(_ResidentList.getElementAt(i)); // Add the process to the ready queue to be executed
+                    // Instead of starting process just add to the ready queue then call something
+                    _ReadyQueue.enqueue(_ResidentList.getElementAt(i));
                 }
+                // Start the next process
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(START_PROCESS_IRQ, _CPUScheduler.getNextProcess()));
             }
             else {
                 // Tell the user and do nothing
@@ -353,24 +358,18 @@ var TSOS;
          * Used to stop and kill a currently active process
          */
         Shell.prototype.kill = function (args) {
-            // Check to see if any processes are currently active
-            var allPids = _ReadyQueue.getAllPids();
-            if (allPids.length == 0) {
-                _StdOut.putText("Sorry, unable to kill anything because no processes are currently active");
-                return;
-            }
-            // Next check to see if the process that the user is trying to kill is iside of the ready queue
-            for (var i = 0; i < allPids.length; i++) {
-                // check the args and each character from the PIDS for a match
-                if (args == allPids.charAt(i)) {
-                    // If a match is found then need to remove that element from the ready queue and report back to the user then end
-                    _ReadyQueue = _ReadyQueue.removeElementAtIndex(i);
-                    _StdOut.putText("Process " + args + " was successfully killed... R.I.P.");
-                    return;
+            // Check the size of the ready queue
+            if (_ReadyQueue.getSize() > 0) {
+                // Check to see if the process the user wants to kill is active
+                if (_ReadyQueue.isExistingProcessId(args) == false) {
                 }
+                // Create an interrupt for the process
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_PROCESS_IRQ, args));
             }
-            // If not match is found the the loop ends then the process that the user is trying to kill does not exist
-            _StdOut.putText("Sorry, the process you are trying to kill is not currently active");
+            else {
+                // Tell the user the error and do nothing
+                _StdOut.putText("Sorry, no processes are currently running... ");
+            }
         };
         Shell.prototype.shellHelp = function (args) {
             _StdOut.putText("Commands:");

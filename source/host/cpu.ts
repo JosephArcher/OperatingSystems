@@ -158,7 +158,7 @@ module TSOS {
        */
         public loadAccumulatorConstant() {
 
-            console.log("Loading the accumulator with a constant");
+          //  console.log("Loading the accumulator with a constant");
 
             // Get the next byte from memory to use as a constant value
             var nextMemoryLocation = <Byte>_MemoryManager.getByte(_CPU.PC + 1); 
@@ -173,7 +173,7 @@ module TSOS {
        //  */
         public loadAccumulatorMemory(): void {
 
-          console.log("Loading the accumulator from memory");
+      //    console.log("Loading the accumulator from memory");
 
            // Get the next two bytes from memory in an array
            var nextTwoBytes = _MemoryManager.getTwoBytes(_CPU.PC + 1, _CPU.PC + 2);
@@ -193,7 +193,7 @@ module TSOS {
         */
         public storeAccumulatorMemory(): void {
 
-           console.log("Storing the accumulator in memory");
+         //  console.log("Storing the accumulator in memory");
 
             // Get the next two bytes from memory
             var nextTwoBytes = _MemoryManager.getTwoBytes(_CPU.PC + 1, _CPU.PC + 2);
@@ -212,7 +212,7 @@ module TSOS {
        //  */
         public addWithCarry(): void {
 
-            console.log("Adding with carry");
+          //  console.log("Adding with carry");
 
             // Get the next two bytes from memory
             var nextTwoBytes = _MemoryManager.getTwoBytes(_CPU.PC + 1, _CPU.PC + 2);
@@ -233,7 +233,7 @@ module TSOS {
         */
         public loadXRegistrarWithConstant(): void {
 
-            console.log("Loading the X reg with a constant");
+         //   console.log("Loading the X reg with a constant");
 
             // Get the next byte from memory to use as a constant value
             var nextMemoryLocation = <Byte>_MemoryManager.getByte(_CPU.PC + 1);
@@ -248,7 +248,7 @@ module TSOS {
         */
         public loadXRegistrarFromMemory(): void {
 
-            console.log("Loading the x Reg from memory");
+       //     console.log("Loading the x Reg from memory");
             
             // Get the next two bytes from memory
             var nextTwoBytes = _MemoryManager.getTwoBytes(_CPU.PC + 1, _CPU.PC + 2);
@@ -265,7 +265,7 @@ module TSOS {
         */
         public loadYRegistrarWithConstant(): void {
 
-          console.log("Loading the y reg with a constant");
+       //   console.log("Loading the y reg with a constant");
 
           // Get the next byte from memory to use as a constant value
           var nextMemoryLocation = <Byte>_MemoryManager.getByte(_CPU.PC + 1);
@@ -297,14 +297,14 @@ module TSOS {
         */
         public noOperation(): void {
              // Do Nothing
-            console.log("No Operation");
+           // console.log("No Operation");
         }
         /**
          *  Break (Which really is a system call)
         */
         public breakOperation(): void {
-             console.log("The break operation "); 
-            _Kernel.createAndQueueInterrupt(BREAK_IRQ, false);
+            // console.log("The break operation "); 
+            _Kernel.createAndQueueInterrupt(BREAK_IRQ, _CPUScheduler.getCurrentProcess());
         }
        //  /**
        //   * Comapares a byte in memory to the x reg ands sets the z flag if equal
@@ -313,7 +313,7 @@ module TSOS {
         public compareByte(): void {
 
 
-             console.log("Comparing Bytes Operation");
+           //  console.log("Comparing Bytes Operation");
 
             // Get the next two bytes from memory
             var nextTwoBytes = _MemoryManager.getTwoBytes(_CPU.PC + 1, _CPU.PC + 2);
@@ -326,12 +326,12 @@ module TSOS {
            var byteValue = parseInt(testByte.getValue(), 16);
 
             if(_CPU.Xreg == byteValue) {
-               console.log("Equal");
+             //  console.log("Equal");
                 _CPU.Zflag = 1;             
                 return;
              }
            else {
-                console.log("Not Equal");
+              //  console.log("Not Equal");
                 _CPU.Zflag = 0;
                 return;
              }
@@ -342,11 +342,11 @@ module TSOS {
        //  */
         public branchBytes(): void {
 
-          console.log("Branch Operation");
+       //   console.log("Branch Operation");
 
           if(_CPU.Zflag == 0) {
 
-            console.log("Z flag is zero");
+         //   console.log("Z flag is zero");
 
             // Get the next byte from memory to use as a constant value
             var nextMemoryLocation = <Byte>_MemoryManager.getByte(_CPU.PC + 1);
@@ -358,7 +358,7 @@ module TSOS {
 
             if(newPC > 256) {
               newPC = newPC - 256;
-              console.log("New pc value is" + newPC);
+           //   console.log("New pc value is" + newPC);
               _CPU.PC = newPC;
             } 
             else {
@@ -366,7 +366,7 @@ module TSOS {
             }
           }
           else {
-            console.log("Z flag is not zero");
+          //  console.log("Z flag is not zero");
           }
        }
        //  /**
@@ -375,7 +375,7 @@ module TSOS {
        //  */
         public incrementByte(): void {
 
-          console.log("Increment Bytes Operation ");
+        //  console.log("Increment Bytes Operation ");
 
           var nextTwoBytes = _MemoryManager.getTwoBytes(_CPU.PC + 1, _CPU.PC + 2);
 
@@ -396,12 +396,12 @@ module TSOS {
        // */
         public systemCall(): void {
 
-          console.log("System Call operation");
+          //console.log("System Call operation");
             
           // #$01 in X reg = print the integer stored in the Y register.
           if (_CPU.Xreg == 1) {
-            console.log("Pringing an int");
-            console.log("value of y reg is " + _CPU.Yreg);
+          //  console.log("Pringing an int");
+          //  console.log("value of y reg is " + _CPU.Yreg);
 
              // Create an interrupt and add it to the queue        
             _KernelInterruptQueue.enqueue(new Interrupt(PRINT_INTEGER_IRQ, _CPU.Yreg));
@@ -449,11 +449,11 @@ module TSOS {
 
             // Check if single step is enabled and if so handle it
             if(_SingleStepMode == true) {
-                console.log("Single step mode is enabled!");
+              //  console.log("Single step mode is enabled!");
                 _AllowNextCycle = false;
             }
             else {
-                console.log("Single step mode is not enabled!");
+              //  console.log("Single step mode is not enabled!");
                 _AllowNextCycle = true;               
             } 
         }
@@ -464,8 +464,6 @@ module TSOS {
 
           // Use the current program counter to find the next logical address
           var nextMemoryLocation = _CPU.PC;
-
-          console.log("Fetching the next instruction with a PC of..." + nextMemoryLocation);
 
           // Get the next Byte at the Location
           var nextByte: TSOS.Byte = _MemoryManager.getByte(nextMemoryLocation); // This find the physical location
@@ -483,7 +481,7 @@ module TSOS {
          */ 
         public decodeInstruction(nextInstructionFromMemory: string): TSOS.Instruction {
 
-          console.log("Decoding the next instruction");
+      //    console.log("Decoding the next instruction");
 
           // Initalize variables used during the loop below
           var nextOpCode: Instruction;
@@ -502,7 +500,7 @@ module TSOS {
             }
           }
           // Invalid Op Code
-          console.log("Invalid Op Code");
+       //   console.log("Invalid Op Code");
 
           // Create an interrupt and add it to the queue
           _Kernel.createAndQueueInterrupt(INVALID_OPCODE_IRQ, nextInstructionFromMemory);
@@ -514,7 +512,7 @@ module TSOS {
          */
         public executeInstruction(nextInstruction: TSOS.Instruction): void {
 
-          console.log("Executing the next instruction..." + nextInstruction.opCode);
+      //    console.log("Executing the next instruction..." + nextInstruction.opCode);
 
           // Get the function we need to call on execution from the Instruction Object
           var  nextInstructionFunction =  nextInstruction.function; 
@@ -538,7 +536,7 @@ module TSOS {
             // Find the location in memory to load from
             var location = parseInt(Utils.hexToDecimal(hexLocation), 10); //This is the location in memory
 
-            console.log("The location to load from is .. " + location);
+      //      console.log("The location to load from is .. " + location);
 
             // Return it to the user
             return location;   // The address in memory

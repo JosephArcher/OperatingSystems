@@ -402,9 +402,9 @@ module TSOS {
         }
         public static hexToAscii(hexString: string): string {
 
-          console.log("Hex Value is " + hexString);
+        //  console.log("Hex Value is " + hexString);
           var test = String.fromCharCode(parseInt(hexString, 16))
-          console.log("Ascii Value is " + test);
+        //  console.log("Ascii Value is " + test);
           return test;
 
         }

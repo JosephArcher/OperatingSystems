@@ -388,9 +388,15 @@ module TSOS {
             // Tell the user
             _StdOut.putText("The Process exists");
 
-            // Add the process to the ready queue
-            _CPUScheduler.runProcess(nextProcessControlBlock);
+            // Instead of starting process just add to the ready queue then call something
+            _ReadyQueue.enqueue(nextProcessControlBlock);
+            
+            // Start the next process
+            _KernelInterruptQueue.enqueue(new Interrupt(START_PROCESS_IRQ, _CPUScheduler.getNextProcess()));
+            // Start the process
+           // _KernelInterruptQueue.enqueue(new Interrupt(START_PROCESS_IRQ, nextProcessControlBlock));
           }
+
           // If the process does not exist
           else{
               // Tell the user and do nothing
@@ -411,8 +417,15 @@ module TSOS {
 
                 // Loop over the resident list and add each process in order to the ready queue
                 for (var i = 0; i < _ResidentList.getSize(); i++) {
-                    _CPUScheduler.runProcess(_ResidentList.getElementAt(i)); // Add the process to the ready queue to be executed
+
+                    // Instead of starting process just add to the ready queue then call something
+                    _ReadyQueue.enqueue(_ResidentList.getElementAt(i));
+
+                  
                 }
+                  // Start the next process
+                 _KernelInterruptQueue.enqueue(new Interrupt(START_PROCESS_IRQ, _CPUScheduler.getNextProcess() ));
+
             }
             // If not processes exist
             else{
@@ -456,34 +469,28 @@ module TSOS {
             }    
             // Write the out a message to the user with the with all the active pid's
             _StdOut.putText(outputString);
-
         }
         /**
          * Used to stop and kill a currently active process
          */
-        public kill(args){
+        public kill(args) {
 
-           // Check to see if any processes are currently active
-            var allPids = _ReadyQueue.getAllPids();
+          // Check the size of the ready queue
+          if(_ReadyQueue.getSize() > 0) {
 
-            if (allPids.length == 0){
-                _StdOut.putText("Sorry, unable to kill anything because no processes are currently active");
-                return;
-            }
+              // Check to see if the process the user wants to kill is active
+              // if(_ReadyQueue.isExistingProcessId(args) == false){
+              //     // Tell the user the error and do nothing
+              // }
 
-            // Next check to see if the process that the user is trying to kill is iside of the ready queue
-            for (var i = 0; i < allPids.length; i++) {
-
-                // check the args and each character from the PIDS for a match
-                if(args == allPids.charAt(i)) {
-                    // If a match is found then need to remove that element from the ready queue and report back to the user then end
-                   _ReadyQueue =  _ReadyQueue.removeElementAtIndex(i);
-                    _StdOut.putText("Process " + args + " was successfully killed... R.I.P.");
-                    return;
-                }
-            }
-            // If not match is found the the loop ends then the process that the user is trying to kill does not exist
-            _StdOut.putText("Sorry, the process you are trying to kill is not currently active");           
+              // Create an interrupt for the process
+              _KernelInterruptQueue.enqueue(new Interrupt(TERMINATE_PROCESS_IRQ, args));
+          }
+          // No Proceseses are active
+          else {
+               // Tell the user the error and do nothing
+              _StdOut.putText("Sorry, no processes are currently running... ");
+          }
         }
         public shellHelp(args) {
             _StdOut.putText("Commands:");

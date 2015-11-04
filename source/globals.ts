@@ -32,6 +32,10 @@ const BREAK_IRQ: number = 5;                  // Break
 const INVALID_OPCODE_IRQ: number = 6;         // Invalid Op Code
 const INVALID_OPCODE_USE_IRQ: number = 7;     // Invalid Op Code Usage
 const MEMORY_OUT_OF_BOUNDS_IRQ: number = 8;   // Memory Out of Bounds
+const CREATE_PROCESSS_IRQ: number = 9;        // Create a new process
+const START_PROCESS_IRQ: number = 10; 		  // Start a new  process
+const TERMINATE_PROCESS_IRQ: number = 11;     // Terminate a  process
+const CONTEXT_SWITCH_IRQ: number = 12;        // Context Swtich Between Processes
 
 // Process States as consts for the Process Control Blocks // Process States \\   
 const PROCESS_STATE_NEW: string         = "NEW";           //   * New
@@ -87,7 +91,7 @@ var _StdOut;    // Output
 
 // The Super Slick Scheduler
 var _CPUScheduler: TSOS.CpuScheduler;
-
+console.log(_CPUScheduler + " SDFKLJSDKLFJSLKDFJLKSDJFKLSJDFKLSDF");
 // The Sharp Shell
 var _OsShell: TSOS.Shell;
 

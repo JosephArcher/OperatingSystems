@@ -57,22 +57,26 @@ var TSOS;
         };
         ReadyQueueTable.prototype.addNewProcess = function (newProcess) {
             console.log(this.table.rows.length + "ROWDSFSDFSDSF");
-            this.addRow();
+            this.addRow(newProcess);
         };
-        ReadyQueueTable.prototype.addRow = function () {
+        ReadyQueueTable.prototype.addRow = function (process) {
             var row = this.table.insertRow(this.numberOfRows());
-            var cell0 = row.insertCell(0);
-            var cell1 = row.insertCell(1);
-            var cell2 = row.insertCell(2);
-            var cell3 = row.insertCell(3);
-            var cell4 = row.insertCell(4);
-            var cell5 = row.insertCell(5);
-            cell0.innerHTML = "00";
-            cell1.innerHTML = "00";
-            cell2.innerHTML = "00";
-            cell3.innerHTML = "00";
-            cell4.innerHTML = "00";
-            cell5.innerHTML = "00";
+            var cell0 = row.insertCell(0); // State
+            var cell1 = row.insertCell(1); // PC
+            var cell2 = row.insertCell(2); // ACC
+            var cell3 = row.insertCell(3); // X
+            var cell4 = row.insertCell(4); // Y
+            var cell5 = row.insertCell(5); // Z
+            var cell6 = row.insertCell(6); // PID
+            var cell7 = row.insertCell(7); // Base
+            cell0.innerHTML = process.getProcessState();
+            cell1.innerHTML = process.getProgramCounter() + "";
+            cell2.innerHTML = process.getAcc() + "";
+            cell3.innerHTML = process.getXReg() + "";
+            cell4.innerHTML = process.getYReg() + "";
+            cell5.innerHTML = process.getZFlag() + "";
+            cell6.innerHTML = process.getProcessID() + "";
+            cell7.innerHTML = process.getBaseReg() + "";
         };
         ReadyQueueTable.prototype.removeRow = function (rowNumber) {
             this.table.deleteRow(rowNumber);

@@ -45,7 +45,7 @@ module TSOS {
 			var len = _ResidentList.getSize();
 			var nextProcess:TSOS.ProcessControlBlock;
 
-			console.log("The Process ID is " + processID );
+			//console.log("The Process ID is " + processID );
 
         	if(len < 1) {
 				return null;
@@ -54,12 +54,9 @@ module TSOS {
 			for (var i = 0; i < len; i++) {
 				nextProcess = <TSOS.ProcessControlBlock> _ResidentList.getElementAt(i);
 
-				console.log("TEST: 1   " + nextProcess.getProcessID());
-				console.log("TEST: 2   " + processID);
-
 				if(nextProcess.getProcessID() == processID) {
 					
-					console.log("ThE NEXT PROCES IS MEMEORY WAS FOUND AND IT IS " +  nextProcess.getBaseReg() ) ;
+					console.log("The next process to run starts at address " +  nextProcess.getBaseReg() ) ;
 					return <TSOS.ProcessControlBlock> nextProcess;
 				}
 			}
@@ -82,20 +79,15 @@ module TSOS {
 			baseAddressValue = process.getBaseReg();        // Get the processes base address
 			limitAddressValue = process.getLimitReg();      // Get the processes limit address
 
-			console.log(baseAddressValue + ' Test for joe base address');
-			console.log(limitAddressValue + " Test for joe limit address");
-
         	// Check to see if the requested memory address is both...
         	// 1. More than the smallest possible address 
         	// 2. Less than the largest possible address
         	if( (requestedMemoryAddress <= limitAddressValue) && (requestedMemoryAddress => baseAddressValue) ) {
 
         		// Means the process can safely access the memory location and return true
-				console.log("has accesss");
         		return true
         	}
         	// If either of the two bounds are passed and return false
-			console.log("no accesss");
 			return false;
     	}
 		/**
@@ -148,9 +140,7 @@ module TSOS {
 			 	}
 
 			}
-
-			console.log(" The Base address to clear starts at ..." + theMemoryPartition);
-			console.log("The size of the ready queue is ..." + _ResidentList.getSize());
+			console.log("The size of the resident list is ..." + _ResidentList.getSize());
 
 			// Clear the memory blocks at those locations
 			for (var i = theMemoryPartition; i < theMemoryPartition + 256; i++){
@@ -207,9 +197,6 @@ module TSOS {
 			// Get the next base address to write the user program
 			var nextBaseMemoryPartitionAddress: number = this.getNextAvailableMemoryPartition();
 
-			console.log("Loading a new user program starting at the base address of... " + nextBaseMemoryPartitionAddress);
-			console.log("User Program Length = " + userProgram.length);
-
 			//loop over the length of the user program 
 			for (var i = 0; i < userProgram.length; i = i + 2) { // Grab two hex numbers each loop cycle to form the bytes
 
@@ -221,7 +208,6 @@ module TSOS {
 				// Place the byte in memory
 				// The byte index will be the base memory partition being used + the offst
 				// The value if the combination of both the hex numbers;
-				console.log("Loading: " + nextByteValue + "   In the memory location of  " + nextMemoryAddress);
 				_MemoryManager.memoryBlock[nextMemoryAddress] = new Byte(nextMemoryAddress , nextByteValue);
 				_MemoryInformationTable.setCellData(nextMemoryAddress, nextByteValue);
 
@@ -229,9 +215,9 @@ module TSOS {
 				baseMemoryOffset = baseMemoryOffset + 1;
 			}    
 
-
+		
 		     // Create a new process control block
-			var newProcess: TSOS.ProcessControlBlock = _Kernel.createProcess(nextBaseMemoryPartitionAddress, 256);
+			var newProcess: TSOS.ProcessControlBlock = _Kernel.createProcess(nextBaseMemoryPartitionAddress);
 				
             // Return the newly created process ID 
             return newProcess.getProcessID();
@@ -243,7 +229,7 @@ module TSOS {
 
 			var physicalAddress: number = 0;
 			physicalAddress = logicalAddress + _CPUScheduler.getCurrentProcess().getBaseReg();
-			console.log("The Next physiucal address is right fucking here " + physicalAddress);
+		
 			return physicalAddress;
 		}
 		/**
@@ -260,6 +246,7 @@ module TSOS {
 
 				// Convert the logical address to the physical address
 				var physicalAddress = this.convertLogicalToPhysicalAddress(byteIndex);
+
 
 				// Get the location from the memory block using the physical address
 				var response: TSOS.Byte = <Byte>this.memoryBlock[physicalAddress];
@@ -286,7 +273,7 @@ module TSOS {
 			var byteArray = [];
 
 			// Need to check to make sure that the indexs the current process is trying to access is within bounds
-			if( (this.hasAccessToMemoryAddress(byteIndex1, _CPUScheduler.getCurrentProcess()) == true) && (this.hasAccessToMemoryAddress(byteIndex2, _CPUScheduler.getCurrentProcess()) == true)) {
+			if( (this.hasAccessToMemoryAddress(byteIndex1, _CPUScheduler.getCurrentProcess()   ) == true) && (this.hasAccessToMemoryAddress(byteIndex2, _CPUScheduler.getCurrentProcess()) == true)) {
 
 				var physicalAddress1 = this.convertLogicalToPhysicalAddress(byteIndex1);
 				var physicalAddress2 = this.convertLogicalToPhysicalAddress(byteIndex2);
@@ -316,11 +303,11 @@ module TSOS {
 			// Need to check to make sure that the indexs the current process is trying to access is within bounds
 			if (this.hasAccessToMemoryAddress(byteIndex, _CPUScheduler.getCurrentProcess()) == true) { // The current process is able to access the memory location
 
-				this.memoryBlock[byteIndex] = new Byte(byteIndex, byteValue);
+				var physicalAddress = this.convertLogicalToPhysicalAddress(byteIndex);
 
-				//console.log("Setting memory address " + byteIndex + " To the value of " + byteValue);
+				this.memoryBlock[physicalAddress] = new Byte(physicalAddress, byteValue);
 
-				_MemoryInformationTable.setCellData(byteIndex, byteValue);
+				_MemoryInformationTable.setCellData(physicalAddress, byteValue);
 
 			}
 			else { // The current process is unable to access the memory location 

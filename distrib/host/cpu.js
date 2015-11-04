@@ -95,7 +95,7 @@ var TSOS;
         * Uses the next byte for the constant value
        */
         Cpu.prototype.loadAccumulatorConstant = function () {
-            console.log("Loading the accumulator with a constant");
+            //  console.log("Loading the accumulator with a constant");
             // Get the next byte from memory to use as a constant value
             var nextMemoryLocation = _MemoryManager.getByte(_CPU.PC + 1);
             // Set the accumulator to the deciamal value of the next Byte
@@ -106,7 +106,7 @@ var TSOS;
         //   * Uses the next 2 bytes as the memory address
         //  */
         Cpu.prototype.loadAccumulatorMemory = function () {
-            console.log("Loading the accumulator from memory");
+            //    console.log("Loading the accumulator from memory");
             // Get the next two bytes from memory in an array
             var nextTwoBytes = _MemoryManager.getTwoBytes(_CPU.PC + 1, _CPU.PC + 2);
             var loadLocation = _CPU.findLoadLocation(nextTwoBytes);
@@ -119,7 +119,7 @@ var TSOS;
          * Uses the next 2 bytes as the memory address
         */
         Cpu.prototype.storeAccumulatorMemory = function () {
-            console.log("Storing the accumulator in memory");
+            //  console.log("Storing the accumulator in memory");
             // Get the next two bytes from memory
             var nextTwoBytes = _MemoryManager.getTwoBytes(_CPU.PC + 1, _CPU.PC + 2);
             var loadLocation = _CPU.findLoadLocation(nextTwoBytes);
@@ -133,7 +133,7 @@ var TSOS;
         //   * Uses the next 2 bytes as the memory address
         //  */
         Cpu.prototype.addWithCarry = function () {
-            console.log("Adding with carry");
+            //  console.log("Adding with carry");
             // Get the next two bytes from memory
             var nextTwoBytes = _MemoryManager.getTwoBytes(_CPU.PC + 1, _CPU.PC + 2);
             var loadLocation = _CPU.findLoadLocation(nextTwoBytes);
@@ -147,7 +147,7 @@ var TSOS;
          * Uses the next byte as the value
         */
         Cpu.prototype.loadXRegistrarWithConstant = function () {
-            console.log("Loading the X reg with a constant");
+            //   console.log("Loading the X reg with a constant");
             // Get the next byte from memory to use as a constant value
             var nextMemoryLocation = _MemoryManager.getByte(_CPU.PC + 1);
             // Set the accumulator to the deciamal value of the next Byte
@@ -158,7 +158,7 @@ var TSOS;
          * Uses the next 2 bytes as the memory address
          */
         Cpu.prototype.loadXRegistrarFromMemory = function () {
-            console.log("Loading the x Reg from memory");
+            //     console.log("Loading the x Reg from memory");
             // Get the next two bytes from memory
             var nextTwoBytes = _MemoryManager.getTwoBytes(_CPU.PC + 1, _CPU.PC + 2);
             var loadLocation = _CPU.findLoadLocation(nextTwoBytes);
@@ -170,7 +170,7 @@ var TSOS;
          * Uses the next byte as the value
         */
         Cpu.prototype.loadYRegistrarWithConstant = function () {
-            console.log("Loading the y reg with a constant");
+            //   console.log("Loading the y reg with a constant");
             // Get the next byte from memory to use as a constant value
             var nextMemoryLocation = _MemoryManager.getByte(_CPU.PC + 1);
             // Set the accumulator to the deciamal value of the next Byte
@@ -194,33 +194,33 @@ var TSOS;
         */
         Cpu.prototype.noOperation = function () {
             // Do Nothing
-            console.log("No Operation");
+            // console.log("No Operation");
         };
         /**
          *  Break (Which really is a system call)
         */
         Cpu.prototype.breakOperation = function () {
-            console.log("The break operation ");
-            _Kernel.createAndQueueInterrupt(BREAK_IRQ, false);
+            // console.log("The break operation "); 
+            _Kernel.createAndQueueInterrupt(BREAK_IRQ, _CPUScheduler.getCurrentProcess());
         };
         //  /**
         //   * Comapares a byte in memory to the x reg ands sets the z flag if equal
         //   * Uses the next 2 bytes as the memory address
         //  */
         Cpu.prototype.compareByte = function () {
-            console.log("Comparing Bytes Operation");
+            //  console.log("Comparing Bytes Operation");
             // Get the next two bytes from memory
             var nextTwoBytes = _MemoryManager.getTwoBytes(_CPU.PC + 1, _CPU.PC + 2);
             var loadLocation = _CPU.findLoadLocation(nextTwoBytes);
             var testByte = _MemoryManager.getByte(loadLocation);
             var byteValue = parseInt(testByte.getValue(), 16);
             if (_CPU.Xreg == byteValue) {
-                console.log("Equal");
+                //  console.log("Equal");
                 _CPU.Zflag = 1;
                 return;
             }
             else {
-                console.log("Not Equal");
+                //  console.log("Not Equal");
                 _CPU.Zflag = 0;
                 return;
             }
@@ -230,9 +230,9 @@ var TSOS;
         //   * Uses the next byte as the value
         //  */
         Cpu.prototype.branchBytes = function () {
-            console.log("Branch Operation");
+            //   console.log("Branch Operation");
             if (_CPU.Zflag == 0) {
-                console.log("Z flag is zero");
+                //   console.log("Z flag is zero");
                 // Get the next byte from memory to use as a constant value
                 var nextMemoryLocation = _MemoryManager.getByte(_CPU.PC + 1);
                 var valueToIncrementBy = parseInt(nextMemoryLocation.getValue(), 16);
@@ -240,7 +240,7 @@ var TSOS;
                 var newPC = valueToIncrementBy + currentPC;
                 if (newPC > 256) {
                     newPC = newPC - 256;
-                    console.log("New pc value is" + newPC);
+                    //   console.log("New pc value is" + newPC);
                     _CPU.PC = newPC;
                 }
                 else {
@@ -248,7 +248,6 @@ var TSOS;
                 }
             }
             else {
-                console.log("Z flag is not zero");
             }
         };
         //  /**
@@ -256,7 +255,7 @@ var TSOS;
         //   * Uses the next 2 bytes as the memory address
         //  */
         Cpu.prototype.incrementByte = function () {
-            console.log("Increment Bytes Operation ");
+            //  console.log("Increment Bytes Operation ");
             var nextTwoBytes = _MemoryManager.getTwoBytes(_CPU.PC + 1, _CPU.PC + 2);
             var loadLocation = _CPU.findLoadLocation(nextTwoBytes);
             var testByte = _MemoryManager.getByte(loadLocation);
@@ -270,11 +269,11 @@ var TSOS;
         //  * $02 in X reg = print the 00-terminated string stored at the address in the Y register 
         // */
         Cpu.prototype.systemCall = function () {
-            console.log("System Call operation");
+            //console.log("System Call operation");
             // #$01 in X reg = print the integer stored in the Y register.
             if (_CPU.Xreg == 1) {
-                console.log("Pringing an int");
-                console.log("value of y reg is " + _CPU.Yreg);
+                //  console.log("Pringing an int");
+                //  console.log("value of y reg is " + _CPU.Yreg);
                 // Create an interrupt and add it to the queue        
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_INTEGER_IRQ, _CPU.Yreg));
             }
@@ -310,11 +309,11 @@ var TSOS;
             _CpuStatisticsTable.setInstructionRegister(nextInstructionFromMemory);
             // Check if single step is enabled and if so handle it
             if (_SingleStepMode == true) {
-                console.log("Single step mode is enabled!");
+                //  console.log("Single step mode is enabled!");
                 _AllowNextCycle = false;
             }
             else {
-                console.log("Single step mode is not enabled!");
+                //  console.log("Single step mode is not enabled!");
                 _AllowNextCycle = true;
             }
         };
@@ -324,7 +323,6 @@ var TSOS;
         Cpu.prototype.fetchInstruction = function () {
             // Use the current program counter to find the next logical address
             var nextMemoryLocation = _CPU.PC;
-            console.log("Fetching the next instruction with a PC of..." + nextMemoryLocation);
             // Get the next Byte at the Location
             var nextByte = _MemoryManager.getByte(nextMemoryLocation); // This find the physical location
             // Get the value of the byte            
@@ -338,7 +336,7 @@ var TSOS;
          * If the value that was given does not match any op codes then an interrupt is called to handle the issue
          */
         Cpu.prototype.decodeInstruction = function (nextInstructionFromMemory) {
-            console.log("Decoding the next instruction");
+            //    console.log("Decoding the next instruction");
             // Initalize variables used during the loop below
             var nextOpCode;
             var nextInstructionFunction;
@@ -352,7 +350,7 @@ var TSOS;
                 }
             }
             // Invalid Op Code
-            console.log("Invalid Op Code");
+            //   console.log("Invalid Op Code");
             // Create an interrupt and add it to the queue
             _Kernel.createAndQueueInterrupt(INVALID_OPCODE_IRQ, nextInstructionFromMemory);
             return;
@@ -362,7 +360,7 @@ var TSOS;
          * @Params nextInstruction {Instruction} - The next instruction to be executed by the CPU
          */
         Cpu.prototype.executeInstruction = function (nextInstruction) {
-            console.log("Executing the next instruction..." + nextInstruction.opCode);
+            //    console.log("Executing the next instruction..." + nextInstruction.opCode);
             // Get the function we need to call on execution from the Instruction Object
             var nextInstructionFunction = nextInstruction.function;
             // Execute the function                
@@ -380,7 +378,7 @@ var TSOS;
             var hexLocation = memoryLocation2 + memoryLocation1 + ""; // Flip the values when forming the hex number to handle for little endian
             // Find the location in memory to load from
             var location = parseInt(TSOS.Utils.hexToDecimal(hexLocation), 10); //This is the location in memory
-            console.log("The location to load from is .. " + location);
+            //      console.log("The location to load from is .. " + location);
             // Return it to the user
             return location; // The address in memory
         };

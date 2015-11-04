@@ -329,9 +329,9 @@ var TSOS;
             return answer;
         };
         Utils.hexToAscii = function (hexString) {
-            console.log("Hex Value is " + hexString);
+            //  console.log("Hex Value is " + hexString);
             var test = String.fromCharCode(parseInt(hexString, 16));
-            console.log("Ascii Value is " + test);
+            //  console.log("Ascii Value is " + test);
             return test;
         };
         /*

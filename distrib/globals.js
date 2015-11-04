@@ -27,6 +27,10 @@ var BREAK_IRQ = 5; // Break
 var INVALID_OPCODE_IRQ = 6; // Invalid Op Code
 var INVALID_OPCODE_USE_IRQ = 7; // Invalid Op Code Usage
 var MEMORY_OUT_OF_BOUNDS_IRQ = 8; // Memory Out of Bounds
+var CREATE_PROCESSS_IRQ = 9; // Create a new process
+var START_PROCESS_IRQ = 10; // Start a new  process
+var TERMINATE_PROCESS_IRQ = 11; // Terminate a  process
+var CONTEXT_SWITCH_IRQ = 12; // Context Swtich Between Processes
 // Process States as consts for the Process Control Blocks // Process States \\   
 var PROCESS_STATE_NEW = "NEW"; //   * New
 var PROCESS_STATE_RUNNING = "RUNNING"; //   * Running
@@ -70,6 +74,7 @@ var _StdIn; // Input
 var _StdOut; // Output
 // The Super Slick Scheduler
 var _CPUScheduler;
+console.log(_CPUScheduler + " SDFKLJSDKLFJSLKDFJLKSDJFKLSJDFKLSDF");
 // The Sharp Shell
 var _OsShell;
 // The Magnificent Memory

@@ -44,7 +44,7 @@ var TSOS;
                 // Decrement the time remaining
                 this.timeRemaining = this.timeRemaining - 1;
                 // Check to see if the time remaining is less than 0
-                if (this.timeRemaining < 0) {
+                if (this.timeRemaining <= 0) {
                     return TIMER_FINISHED;
                 }
                 else {

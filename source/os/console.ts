@@ -70,9 +70,6 @@ module TSOS {
             // Get the width of the character that we need to backspace
             var lastCharacterWidth = CanvasTextFunctions.measure(this.currentFont, this.currentFontSize, lastCharacter);
 
-
-           // console.log(" the last character in the buffer is ... " + lastCharacter);
-
             // Next see if the character was drawn on the previous line and we have to move the x and y pos
             if(this.currentXPosition - lastCharacterWidth < -1) {
                 // Still working on this feature
@@ -124,7 +121,6 @@ module TSOS {
                 if (chr === String.fromCharCode(13)) { //     Enter key
                     // The enter key marks the end of a console command, so ...
                     // ... tell the shell ... 
-                   // console.log("Enter was pressed ..." + this.buffer);
 
                     if (this.buffer != "") { // Check to make sure that we dont add a blank command to the history
 
