@@ -8,32 +8,32 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var TSOS;
 (function (TSOS) {
-    var ReadyQueue = (function (_super) {
-        __extends(ReadyQueue, _super);
-        function ReadyQueue() {
+    var ResidentList = (function (_super) {
+        __extends(ResidentList, _super);
+        function ResidentList() {
             _super.apply(this, arguments);
         }
-        ReadyQueue.prototype.removeElementAtIndex = function (index) {
+        ResidentList.prototype.removeElementAtIndex = function (index) {
             console.log('THE index is ' + index);
-            var tempQueue = new ReadyQueue();
-            if (_ReadyQueue.getSize() == 0) {
+            var tempQueue = new ResidentList();
+            if (_ResidentList.getSize() == 0) {
                 console.log("TEMP QUEUE : THE SIZE WAS ZERO");
                 return tempQueue; // do nothing because nothing is in the queue
             }
-            if (_ReadyQueue.getSize() == 1) {
+            if (_ResidentList.getSize() == 1) {
                 // When only one element is in queue then just dequeue it... so it will be an empty queue anyways
                 console.log("TEMP QUEUE : THE SIZE WAS ONE");
                 return tempQueue;
             }
-            if (_ReadyQueue.getSize() > 1) {
+            if (_ResidentList.getSize() > 1) {
                 // When more than one element is in the queue then need to do some ugly shit... srry
-                var len = _ReadyQueue.getSize();
+                var len = _ResidentList.getSize();
                 var nextElement;
                 console.log("TEMP QUEUE : THE SIZE WAS " + len);
                 // Loop over the entire queue 
                 for (var i = 0; i < len; i++) {
                     // Get the next Elment in the queue
-                    nextElement = _ReadyQueue.getElementAt(i);
+                    nextElement = _ResidentList.getElementAt(i);
                     if (i == index) {
                     }
                     else {
@@ -46,13 +46,13 @@ var TSOS;
                 return tempQueue;
             }
         };
-        ReadyQueue.prototype.getElementIndexByProccessId = function (process) {
+        ResidentList.prototype.getElementIndexByProccessId = function (process) {
             var theProcessId = process.getProcessID();
             var nextProcess;
             var nextProcessId;
-            var len = _ReadyQueue.getSize();
+            var len = _ResidentList.getSize();
             for (var i = 0; i < len; i++) {
-                nextProcess = _ReadyQueue.getElementAt(i);
+                nextProcess = _ResidentList.getElementAt(i);
                 // Get the next process ID
                 nextProcessId = nextProcess.getProcessID();
                 // Check for match
@@ -61,7 +61,7 @@ var TSOS;
                 }
             }
         };
-        ReadyQueue.prototype.returnAllProcessIds = function () {
+        ResidentList.prototype.returnAllProcessIds = function () {
             var nextProcessBlock;
             var processArray = new Array();
             for (var i = 0; i < this.getSize(); i++) {
@@ -71,13 +71,13 @@ var TSOS;
             console.log(processArray);
             return processArray;
         };
-        ReadyQueue.prototype.isExistingProcess = function (process) {
+        ResidentList.prototype.isExistingProcess = function (process) {
             return false;
         };
-        ReadyQueue.prototype.getElementAt = function (index) {
+        ResidentList.prototype.getElementAt = function (index) {
             return this.q[index];
         };
-        ReadyQueue.prototype.getAllPids = function () {
+        ResidentList.prototype.getAllPids = function () {
             var PIDString = "";
             var len = this.q.length;
             var nextProcess;
@@ -90,7 +90,7 @@ var TSOS;
             }
             return PIDString;
         };
-        return ReadyQueue;
+        return ResidentList;
     })(TSOS.Queue);
-    TSOS.ReadyQueue = ReadyQueue;
+    TSOS.ResidentList = ResidentList;
 })(TSOS || (TSOS = {}));

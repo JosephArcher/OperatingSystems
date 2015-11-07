@@ -47,7 +47,7 @@ module TSOS {
             _KernelInputQueue = new Queue();       // Where device input lands before being processed out somewhere.   
 
             _ReadyQueue = new ReadyQueue();        // Initialize the Ready Queue             
-            _ResidentList = new ReadyQueue();      // Initialize the Resident Queue 
+            _ResidentList = new ResidentList();    // Initialize the Resident Queue 
             _TerminatedProcessQueue = new Queue(); // Initalize the Terminated Process Queue
             
             // Initialize the console.
@@ -271,12 +271,22 @@ module TSOS {
             // Remove the process from memory and update the UI Table
             _MemoryManager.clearMemoryPartition(process);
 
+             // Get the index of the process in the Resident List
+            var indexOfProcess: number = _ResidentList.getElementIndexByProccessId(process); 
+
+            // Remove the process from the residentList
+            _ResidentList = _ResidentList.removeElementAtIndex(indexOfProcess);
+
+            // Clear the Process from the UI Ready queue
+            _ReadyQueueTable.removeProcessById(process);
+
             // Add the process to the terminated process queue for later use
             _TerminatedProcessQueue.enqueue(process);
 
             // Check to see if another process wants to execute
             if (_ReadyQueue.getSize() > 0) {   
 
+                console.log("IS THIS THE ISSUE BAYBE " + _ReadyQueue.getSize());
                 // Get the next process
                 var nextProcess: TSOS.ProcessControlBlock = _CPUScheduler.getNextProcess();
 
@@ -395,11 +405,14 @@ module TSOS {
 
             // Set the state of the process to running
             theProcess.setProcessState(PROCESS_STATE_RUNNING); 
+
+            // The Ready queue UI for the current running process
+            _ReadyQueueTable.updateProcessById(theProcess);
         }
         /**
          * used to handle the timer interrupt (This is what happens when the currentProcess is paused)
          */
-        public krnTimerISR(process) {
+        public krnTimerISR(process: TSOS.ProcessControlBlock) {
 
             // The built-in TIMER (not clock) Interrupt Service Routine (as opposed to an ISR coming from a device driver). {
             // Check multiprogramming parameters and enforce quanta here. Call the scheduler / context switch here if necessary.
@@ -416,10 +429,12 @@ module TSOS {
             _CPUScheduler.runningProcess.setYReg(_CPU.Yreg);
             _CPUScheduler.runningProcess.setZFlag(_CPU.Zflag);
             _CPUScheduler.runningProcess.setProcessState(PROCESS_STATE_WAITING);
-
-
+            
             // Add the current process back into the queue
             _ReadyQueue.enqueue(_CPUScheduler.getCurrentProcess());
+
+            // Update the UI for the Process
+            _ReadyQueueTable.updateProcessById(_CPUScheduler.getCurrentProcess());
 
             // Get the next process
             var nextProcess: TSOS.ProcessControlBlock = _CPUScheduler.getNextProcess();
@@ -443,17 +458,16 @@ module TSOS {
                 _StdOut.putText("Sorry, unable to kill anything because no processes are currently active");
                 return;
             }
-
             // Next check to see if the process that the user is trying to kill is iside of the ready queue
             for (var i = 0; i < allPids.length; i++) {
 
                 // check the args and each character from the PIDS for a match
-                if (args == allPids.charAt(i)) {
-                    // If a match is found then need to remove that element from the ready queue and report back to the user then end
-                    _ReadyQueue = _ReadyQueue.removeElementAtIndex(i);
-                    _StdOut.putText("Process " + theProcessID + " was successfully killed... R.I.P.");
-                    return;
-                }
+                // if (args == allPids.charAt(i)) {
+                //     // If a match is found then need to remove that element from the ready queue and report back to the user then end
+                //     _ReadyQueue = _ReadyQueue.removeElementAtIndex(i);
+                //     _StdOut.putText("Process " + theProcessID + " was successfully killed... R.I.P.");
+                //     return;
+                // }
             }
             // If not match is found the the loop ends then the process that the user is trying to kill does not exist
             _StdOut.putText("Sorry, the process you are trying to kill is not currently active"); 

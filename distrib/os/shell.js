@@ -256,7 +256,7 @@ var TSOS;
             var placeholder = ""; // Create a placeholder string to help with placing of hex digits used later in for loop
             // Pull the input value from the HTML Element
             var userInputHTML = document.getElementById("taProgramInput");
-            // Save the input as a string
+            // Save the input as a     
             var userInput = userInputHTML.value;
             // *** Validate the User input *** \\
             // If the user has no input then cant validate it
@@ -276,7 +276,7 @@ var TSOS;
             // *** If the flow makes it here then the userInput is valid *** \\  
             // Load the program into memory and clean up the whitespace
             var processID = _MemoryManager.loadProgramIntoMemory(userInput.replace(/ /g, '')); // Load the program into memory and save its process ID to be printed out to user
-            _StdOut.putText("Program loaded and assigned a Process ID of " + processID); // Tell the user the process ID 
+            _StdOut.putText("Program loaded and assigned a Process ID of " + processID + " Size " + _ResidentList.getSize()); // Tell the user the process ID 
         };
         /**
         * Used to run a user program that is currently in main memory
@@ -290,8 +290,13 @@ var TSOS;
                 _StdOut.putText("The Process exists");
                 // Instead of starting process just add to the ready queue then call something
                 _ReadyQueue.enqueue(nextProcessControlBlock);
-                // Start the next process
-                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(START_PROCESS_IRQ, _CPUScheduler.getNextProcess()));
+                // Update the UI with the new process
+                _ReadyQueueTable.addRow(nextProcessControlBlock);
+                // Check to see if the CPU is currently executing
+                if (_CPU.isExecuting != true) {
+                    // Start the next process
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(START_PROCESS_IRQ, _CPUScheduler.getNextProcess()));
+                }
             }
             else {
                 // Tell the user and do nothing
@@ -306,11 +311,13 @@ var TSOS;
             // If at least one process exists
             if (_ResidentList.getSize() > 0) {
                 // Tell the user
-                _StdOut.putText("Running All Processes");
+                _StdOut.putText("Running All Processes size = " + _ResidentList.getSize());
                 // Loop over the resident list and add each process in order to the ready queue
                 for (var i = 0; i < _ResidentList.getSize(); i++) {
                     // Instead of starting process just add to the ready queue then call something
                     _ReadyQueue.enqueue(_ResidentList.getElementAt(i));
+                    // Update the UI with the new process
+                    _ReadyQueueTable.addRow(_ResidentList.getElementAt(i));
                 }
                 // Start the next process
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(START_PROCESS_IRQ, _CPUScheduler.getNextProcess()));
@@ -361,8 +368,9 @@ var TSOS;
             // Check the size of the ready queue
             if (_ReadyQueue.getSize() > 0) {
                 // Check to see if the process the user wants to kill is active
-                if (_ReadyQueue.isExistingProcessId(args) == false) {
-                }
+                // if(_ReadyQueue.isExistingProcessId(args) == false){
+                //     // Tell the user the error and do nothing
+                // }
                 // Create an interrupt for the process
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_PROCESS_IRQ, args));
             }

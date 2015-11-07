@@ -14,7 +14,7 @@
 //********************************************************\\
 // Application Information
 var APP_NAME = "Joe/S"; // Joe is Love Joe is Lyfe
-var APP_VERSION = "0.03"; //  For iProject3 - Due the same day fallout 4 comes out? illuminati? 
+var APP_VERSION = "0.03"; // 
 // System 
 var CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 second.
 // Interrupts
@@ -38,10 +38,10 @@ var PROCESS_STATE_WAITING = "WAITING"; //   * Waiting
 var PROCESS_STATE_READY = "READY"; //   * Ready
 var PROCESS_STATE_TERMINATED = "TERMINATED"; //   * Terminated
 // TImer States		
-var TIMER_IS_SET = "SET"; // * Set
-var TIMER_IS_OFF = "OFF"; // * OFF
-var TIMER_NOT_FINISHED = "TIMER_NOT_FINISHED"; // * Timer not finished yet
-var TIMER_FINISHED = "TIMER_FINISHED"; // * Timer is finished
+var TIMER_IS_SET = "SET"; //  Set
+var TIMER_IS_OFF = "OFF"; //  OFF
+var TIMER_NOT_FINISHED = "TIMER_NOT_FINISHED"; // Timer not finished yet
+var TIMER_FINISHED = "TIMER_FINISHED"; // Timer is finished
 // Not Really Sure What to Call These Yet
 var TIMER_ENDED_PROCESS = "TIMER"; // * The timer has been called and ended the user process
 var BREAK_ENDED_PROCESS = "BREAK"; // * The break instruction was called and ended the user process

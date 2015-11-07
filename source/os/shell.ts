@@ -346,7 +346,7 @@ module TSOS {
             // Pull the input value from the HTML Element
             var userInputHTML = <HTMLInputElement>document.getElementById("taProgramInput"); 
 
-            // Save the input as a string
+            // Save the input as a     
             var userInput: string = userInputHTML.value;
 
             // *** Validate the User input *** \\
@@ -372,7 +372,8 @@ module TSOS {
             // Load the program into memory and clean up the whitespace
             var processID = _MemoryManager.loadProgramIntoMemory(userInput.replace(/ /g, '')); // Load the program into memory and save its process ID to be printed out to user
 
-           _StdOut.putText("Program loaded and assigned a Process ID of " + processID); // Tell the user the process ID 
+           _StdOut.putText("Program loaded and assigned a Process ID of " + processID + " Size " +  _ResidentList.getSize()); // Tell the user the process ID 
+
         }
         /**
         * Used to run a user program that is currently in main memory
@@ -391,14 +392,17 @@ module TSOS {
             // Instead of starting process just add to the ready queue then call something
             _ReadyQueue.enqueue(nextProcessControlBlock);
             
-            // Start the next process
-            _KernelInterruptQueue.enqueue(new Interrupt(START_PROCESS_IRQ, _CPUScheduler.getNextProcess()));
-            // Start the process
-           // _KernelInterruptQueue.enqueue(new Interrupt(START_PROCESS_IRQ, nextProcessControlBlock));
-          }
+            // Update the UI with the new process
+            _ReadyQueueTable.addRow(nextProcessControlBlock);
 
+            // Check to see if the CPU is currently executing
+            if(_CPU.isExecuting != true) {
+                // Start the next process
+                _KernelInterruptQueue.enqueue(new Interrupt(START_PROCESS_IRQ, _CPUScheduler.getNextProcess()));
+            }
+          }
           // If the process does not exist
-          else{
+          else {
               // Tell the user and do nothing
               _StdOut.putText("The Process does not exist");
           }
@@ -413,7 +417,7 @@ module TSOS {
             // If at least one process exists
             if (_ResidentList.getSize() > 0) { 
                 // Tell the user
-                _StdOut.putText("Running All Processes");
+                _StdOut.putText("Running All Processes size = " + _ResidentList.getSize() );
 
                 // Loop over the resident list and add each process in order to the ready queue
                 for (var i = 0; i < _ResidentList.getSize(); i++) {
@@ -421,7 +425,9 @@ module TSOS {
                     // Instead of starting process just add to the ready queue then call something
                     _ReadyQueue.enqueue(_ResidentList.getElementAt(i));
 
-                  
+                    // Update the UI with the new process
+                    _ReadyQueueTable.addRow(_ResidentList.getElementAt(i));
+                 
                 }
                   // Start the next process
                  _KernelInterruptQueue.enqueue(new Interrupt(START_PROCESS_IRQ, _CPUScheduler.getNextProcess() ));

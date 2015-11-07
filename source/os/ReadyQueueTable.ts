@@ -36,41 +36,56 @@ module TSOS {
 
 			this.currentCell.innerHTML = data;
 		}
-        public setProcessStateValue(value: string): void {
-			this.setCellData(1, 0, value);
+        public setProcessStateValue(row: number , value: string): void {
+			this.setCellData(row, 0, value);
         }
-       	public setProgramCounterValue(value: string): void {
-			this.setCellData(1, 1, value);
+       	public setProgramCounterValue(row: number, value: string): void {
+			this.setCellData(row, 1, value);
        	}
-       	public setAccumulatorValue(value: string): void {
-			this.setCellData(1, 2, value);
+		public setAccumulatorValue(row: number, value: string): void {
+			this.setCellData(row, 2, value);
        	}
-		public setXRegisterValue(value: string): void {
-			this.setCellData(1, 3, value);
+		public setXRegisterValue(row: number, value: string): void {
+			this.setCellData(row, 3, value);
 		}
-       	public setYRegisterValue(value: string): void {
-			this.setCellData(1, 4, value);
+       	public setYRegisterValue(row: number, value: string): void {
+			this.setCellData(row, 4, value);
 		}
-		public setZFlagValue(value: string): void {
-			this.setCellData(1, 5, value);
+		public setZFlagValue(row: number, value: string): void {
+			this.setCellData(row, 5, value);
 		}
-		public updateTableContents(): void {
+		public getProcessID(row: number): number {
 
-			this.setProcessStateValue(PROCESS_STATE_TERMINATED);
-			this.setProgramCounterValue(_CPU.PC + "");
-			this.setXRegisterValue(_CPU.Xreg + "");
-			this.setYRegisterValue(_CPU.Yreg + "");
-			this.setAccumulatorValue(_CPU.Acc + "");
-			this.setZFlagValue(_CPU.Zflag + "");
+			var processID: number = 0;
+
+			var test = <HTMLTableRowElement> this.table.rows.item(row);
+
+			var nextTablePID = <HTMLTableCellElement> test.cells.item(6);
+
+			var output: number = parseInt(nextTablePID.innerHTML, 16);
+
+			console.log(output + " Joe this is the table output");
+
+			return output;
 		}
-		public clearTable(): void {
-			this.setProcessStateValue("00");
-			this.setProgramCounterValue("00");
-			this.setXRegisterValue("00");
-			this.setYRegisterValue("00");
-			this.setAccumulatorValue("00");
-			this.setZFlagValue("00");
-		}
+		// public updateTableContents(): void {
+
+		// 	this.setProcessStateValue(PROCESS_STATE_TERMINATED);
+		// 	this.setProgramCounterValue(_CPU.PC + "");
+		// 	this.setXRegisterValue(_CPU.Xreg + "");
+		// 	this.setYRegisterValue(_CPU.Yreg + "");
+		// 	this.setAccumulatorValue(_CPU.Acc + "");
+		// 	this.setZFlagValue(_CPU.Zflag + "");
+		// }
+		// public clearTable(): void {
+
+		// 	this.setProcessStateValue("00");
+		// 	this.setProgramCounterValue("00");
+		// 	this.setXRegisterValue("00");
+		// 	this.setYRegisterValue("00");
+		// 	this.setAccumulatorValue("00");
+		// 	this.setZFlagValue("00");
+		// }
 		public addNewProcess(newProcess: TSOS.ProcessControlBlock): void {
 			console.log(this.table.rows.length + "ROWDSFSDFSDSF");
 			this.addRow(newProcess);
@@ -89,7 +104,6 @@ module TSOS {
 			var cell5 = row.insertCell(5); // Z
 			var cell6 = row.insertCell(6); // PID
 			var cell7 = row.insertCell(7); // Base
-
 	
 			cell0.innerHTML = process.getProcessState();
 			cell1.innerHTML = process.getProgramCounter() + "";
@@ -103,6 +117,72 @@ module TSOS {
 		}
 		public removeRow(rowNumber: number): void{
 			this.table.deleteRow(rowNumber);
+		}
+		public updateProcessById(process: TSOS.ProcessControlBlock){
+
+			// Initalize Variables
+			var nextProcessRowID: number;
+			var theProcessID: number = process.getProcessID();
+			var row: HTMLTableRowElement;
+
+			// If at least one process exists in the ready queue
+			if (_ReadyQueue.getSize() > 0) {
+				// Loop over each row in the table (offset by 1 to account for the heading)
+				for (var i = 0; i < this.numberOfRows(); i++) {
+
+					// Get the ID of the row 
+					nextProcessRowID = this.getProcessID(i);
+
+					// Compare the ID of the row to the ID of the process that is ending
+					if (nextProcessRowID == theProcessID) {
+						console.log("The Process ID matches one in the current table! UPDATING RIGHT NOW BB");
+						// Get the row that matches in order to update its contents
+						row = <HTMLTableRowElement> this.table.rows.item(i);
+										
+						var cell0 = <HTMLTableCellElement>row.cells.item(0); // State
+						var cell1 = <HTMLTableCellElement>row.cells.item(1); // PC
+						var cell2 = <HTMLTableCellElement>row.cells.item(2); // ACC
+						var cell3 = <HTMLTableCellElement>row.cells.item(3); // X
+						var cell4 = <HTMLTableCellElement>row.cells.item(4); // Y
+						var cell5 = <HTMLTableCellElement>row.cells.item(5); // Z
+						var cell6 = <HTMLTableCellElement>row.cells.item(6); // PID
+						var cell7 = <HTMLTableCellElement>row.cells.item(7); // Base
+
+						cell0.innerHTML = process.getProcessState();
+						cell1.innerHTML = process.getProgramCounter() + "";
+						cell2.innerHTML = process.getAcc() + "";
+						cell3.innerHTML = process.getXReg() + "";
+						cell4.innerHTML = process.getYReg() + "";
+						cell5.innerHTML = process.getZFlag() + "";
+						cell6.innerHTML = process.getProcessID() + "";
+						cell7.innerHTML = process.getBaseReg() + "";
+
+					}
+				}
+			}
+		}
+		public removeProcessById(process: TSOS.ProcessControlBlock){
+
+			// Initalize Variables
+			var nextProcessRowID: number;
+			var theProcessID: number = process.getProcessID();
+
+			// If at least one process exists in the ready queue
+			if(_ReadyQueue.getSize() > 0){
+				// Loop over each row in the table (offset by 1 to account for the heading)
+				for (var i = 0; i < this.numberOfRows(); i++) {
+
+					// Get the ID of the row 
+					nextProcessRowID = this.getProcessID(i);
+
+					// Compare the ID of the row to the ID of the process that is ending
+					if(nextProcessRowID == theProcessID) {
+						console.log("THe Process ID matches one in the current table ! fuck yes");
+						// Remove the row that matches to show a process that is ending!
+						this.removeRow(i);
+					}
+				}
+			}
 		}
 	}
 }

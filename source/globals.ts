@@ -17,7 +17,7 @@
 
 // Application Information
 const APP_NAME: string    = "Joe/S";   // Joe is Love Joe is Lyfe
-const APP_VERSION: string = "0.03";   //  For iProject3 - Due the same day fallout 4 comes out? illuminati? 
+const APP_VERSION: string = "0.03";   // 
 
 // System 
 const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 1000 = 1 second.
@@ -45,10 +45,10 @@ const PROCESS_STATE_READY: string       = "READY";         //   * Ready
 const PROCESS_STATE_TERMINATED: string  = "TERMINATED";    //   * Terminated
 
 // TImer States		
-const TIMER_IS_SET: string = "SET";                       // * Set
-const TIMER_IS_OFF: string = "OFF";                       // * OFF
-const TIMER_NOT_FINISHED: string = "TIMER_NOT_FINISHED";  // * Timer not finished yet
-const TIMER_FINISHED: string = "TIMER_FINISHED";          // * Timer is finished
+const TIMER_IS_SET: string = "SET";                       //  Set
+const TIMER_IS_OFF: string = "OFF";                       //  OFF
+const TIMER_NOT_FINISHED: string = "TIMER_NOT_FINISHED";  // Timer not finished yet
+const TIMER_FINISHED: string = "TIMER_FINISHED";          // Timer is finished
 
 // Not Really Sure What to Call These Yet
 const TIMER_ENDED_PROCESS: string = "TIMER";              // * The timer has been called and ended the user process

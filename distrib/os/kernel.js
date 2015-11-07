@@ -43,7 +43,7 @@ var TSOS;
             _KernelBuffers = new Array(); // Buffers... for the kernel.
             _KernelInputQueue = new TSOS.Queue(); // Where device input lands before being processed out somewhere.   
             _ReadyQueue = new TSOS.ReadyQueue(); // Initialize the Ready Queue             
-            _ResidentList = new TSOS.ReadyQueue(); // Initialize the Resident Queue 
+            _ResidentList = new TSOS.ResidentList(); // Initialize the Resident Queue 
             _TerminatedProcessQueue = new TSOS.Queue(); // Initalize the Terminated Process Queue
             // Initialize the console.
             _Console = new TSOS.Console(); // The command line interface / console I/O device.
@@ -209,6 +209,17 @@ var TSOS;
             // Tell the user whats up
             _StdOut.putText("Error, Memory Access Violation");
             // Kill the current process 
+            // Check to see if another process wants to execute
+            if (_ReadyQueue.getSize() > 0) {
+                // Get the next process
+                var nextProcess = _CPUScheduler.getNextProcess();
+                // Start the next process
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(START_PROCESS_IRQ, nextProcess));
+            }
+            else {
+                // If no other process exists then stop CPU
+                this.stopCpuExecution(); // Stop the CPU
+            }
         };
         /**
          *  Used to handle the break interrupt
@@ -223,10 +234,17 @@ var TSOS;
             _CPUScheduler.runningProcess.setProcessState(PROCESS_STATE_TERMINATED); // Update the State to terminated
             // Remove the process from memory and update the UI Table
             _MemoryManager.clearMemoryPartition(process);
+            // Get the index of the process in the Resident List
+            var indexOfProcess = _ResidentList.getElementIndexByProccessId(process);
+            // Remove the process from the residentList
+            _ResidentList = _ResidentList.removeElementAtIndex(indexOfProcess);
+            // Clear the Process from the UI Ready queue
+            _ReadyQueueTable.removeProcessById(process);
             // Add the process to the terminated process queue for later use
             _TerminatedProcessQueue.enqueue(process);
             // Check to see if another process wants to execute
             if (_ReadyQueue.getSize() > 0) {
+                console.log("IS THIS THE ISSUE BAYBE " + _ReadyQueue.getSize());
                 // Get the next process
                 var nextProcess = _CPUScheduler.getNextProcess();
                 // Start the next process
@@ -316,6 +334,8 @@ var TSOS;
             _Timer.setNewTimer(_CPUScheduler.getQuantum());
             // Set the state of the process to running
             theProcess.setProcessState(PROCESS_STATE_RUNNING);
+            // The Ready queue UI for the current running process
+            _ReadyQueueTable.updateProcessById(theProcess);
         };
         /**
          * used to handle the timer interrupt (This is what happens when the currentProcess is paused)
@@ -335,33 +355,30 @@ var TSOS;
             _CPUScheduler.runningProcess.setProcessState(PROCESS_STATE_WAITING);
             // Add the current process back into the queue
             _ReadyQueue.enqueue(_CPUScheduler.getCurrentProcess());
+            // Update the UI for the Process
+            _ReadyQueueTable.updateProcessById(_CPUScheduler.getCurrentProcess());
             // Get the next process
             var nextProcess = _CPUScheduler.getNextProcess();
             // Start next Process
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(START_PROCESS_IRQ, nextProcess));
         };
-        Kernel.prototype.terminateProcess = function (process) {
-            console.log("Terminating a process " + process.getProcessID());
-            // Set the state of the process to terminated
-            process.setProcessState(PROCESS_STATE_TERMINATED);
-            //_ReadyQueue.removeElementByProccessId(process);
-            console.log("The size of the ready queue after termination is " + _ReadyQueue.getSize());
-            // Remove the process from memory and update the UI Table
-            _MemoryManager.clearMemoryPartition(process);
-            // Add the process to the terminated process queue for later use
-            _TerminatedProcessQueue.enqueue(process);
-            console.log("RIGHT UNDER THE TERMINATION BOOO BEEE");
-            // Check to see if another process wants to execute
-            if (_ReadyQueue.getSize() > 0) {
-                // If another process is currently active
-                // this.contextSwitch();      // Context Switch
-                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(CONTEXT_SWITCH_IRQ, process));
+        /**
+         * used to terminate a currenlty running process and remove it fromt he ready qyeye
+         */
+        Kernel.prototype.terminateProcess = function (processID) {
+            // Initalize the variables
+            var theProcessID = processID;
+            // Check to see if any processes are currently active
+            var allPids = _ReadyQueue.getAllPids();
+            if (allPids.length == 0) {
+                _StdOut.putText("Sorry, unable to kill anything because no processes are currently active");
+                return;
             }
-            else {
-                // If no other process exists then stop CPU
-                this.stopCpuExecution(); // Stop the CPU
-                console.log("SKLDFJLKSDJFLKSJDFLKJSDKLFJSDKLFJSKDL:FJ:KLSDFJLK:SDJFLSJDK:LFJSK STOOOOOOOOOOOOOOOOOOOOOOOOOOOP THE CPU");
+            // Next check to see if the process that the user is trying to kill is iside of the ready queue
+            for (var i = 0; i < allPids.length; i++) {
             }
+            // If not match is found the the loop ends then the process that the user is trying to kill does not exist
+            _StdOut.putText("Sorry, the process you are trying to kill is not currently active");
         };
         /*
          * Used to set the _CPU.isExecuting Property to False
