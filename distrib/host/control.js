@@ -61,7 +61,7 @@ var TSOS;
             // Time section
             _TimeSectionElement = document.getElementById("timeArea");
             // Resient List
-            _ResidentListTableElement = document.getElementById("residentListTableElement");
+            _TerminatedProcessTableElement = document.getElementById("terminatedProcessTableElement");
             // Ready Queue
             _ReadyQueueTableElement = document.getElementById("readyQueueTableElement");
             // Check for our testing and enrichment core, which

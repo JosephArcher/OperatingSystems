@@ -364,15 +364,29 @@ var TSOS;
         /**
          * Used to stop and kill a currently active process
          */
-        Shell.prototype.kill = function (args) {
-            // Check the size of the ready queue
-            if (_ReadyQueue.getSize() > 0) {
-                // Check to see if the process the user wants to kill is active
-                // if(_ReadyQueue.isExistingProcessId(args) == false){
-                //     // Tell the user the error and do nothing
-                // }
-                // Create an interrupt for the process
-                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_PROCESS_IRQ, args));
+        Shell.prototype.kill = function (processID) {
+            // Check the size of the ready queue 
+            if (_ReadyQueue.getSize() > 0 || _CPUScheduler.getCurrentProcess() != null) {
+                // Get the process form the  ready queue / _CPU Scheduler }
+                var process = _ReadyQueue.isExistingProcess(processID);
+                console.log(process + " JOE THIS IS THE PRCESS SHISDFJKLSJDL:KFJSKDL:FJ:SKLDFJ:KLSJF:KLSJDF:LKSJD:FLKJSD:");
+                // Check to see if the process exists in ready queue
+                if (process != null) {
+                    _StdOut.putText("R.I.P process " + process.getProcessID());
+                    // TERMINATE  
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_PROCESS_IRQ, process));
+                }
+                else {
+                    // Check to see if process is the current one being executed
+                    if (processID == _CPUScheduler.getCurrentProcess().getProcessID()) {
+                        _StdOut.putText("Killing the current process");
+                        // TERMINATE
+                        _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_PROCESS_IRQ, _CPUScheduler.getCurrentProcess()));
+                    }
+                    else {
+                        _StdOut.putText("The process you are trying to kill does not exist");
+                    }
+                }
             }
             else {
                 // Tell the user the error and do nothing

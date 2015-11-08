@@ -196,7 +196,7 @@
       </h4>
     </div>
     <div id="memoryInfoTableCollapse" class="panel-collapse collapse">
-       <table class="table" id="memoryInfoTable" >
+       <table class="table tableText" id="memoryInfoTable" >
               <thead>
                   <th>0</th>
                   <th>1</th>
@@ -218,29 +218,27 @@
  <div class="panel panel-primary" id = "residentListPanel" style="width: 45%; ">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a data-toggle="collapse" href="#collapse1"> <h4> Resident List <i id= "residentListPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i> </h4> </a>
+        <a data-toggle="collapse" href="#collapse1"> <h4> Terminated Process List <i id= "residentListPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i> </h4> </a>
       </h4>
     </div>
     <div id="collapse1" class="panel-collapse collapse">
-     <table class="table" id="residentListTableElement" >
+     <table class="table tableText" id="terminatedProcessTableElement" >
               <thead>
-                <tr>
+                <tr class="tableText">
                   <th>State</th>
                   <th>PC</th>
                   <th>Acc</th>
                   <th>X</th>
                   <th>Y</th>
                   <th>Z</th>
+                  <th>PID </th>
+                  <th>Base</th>
+                  <th>Turn</th>
+                  <th>Wait</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
                 </tr>
               </tbody>
             </table>
@@ -254,8 +252,8 @@
       </h4>
     </div>
     <div id="cpuStatTableCollapse" class="panel-collapse collapse">
-       <table class="table" id="cpuStatTable" >
-              <thead>
+       <table class="table tableText" id="cpuStatTable" >
+              <thead class="tableText">
                 <tr>
                   <th>PC</th>
                   <th>IR</th>
@@ -291,18 +289,19 @@
       </h4>
     </div>
     <div id="collapse2" class="panel-collapse collapse">
-     <table class="table" id="readyQueueTableElement" >
+     <table class="table tableText" id="readyQueueTableElement" >
               <thead>
                 <tr>
-                 
                   <th>State</th>
                   <th>PC</th>
                   <th>Acc</th>
                   <th>X</th>
                   <th>Y</th>
                   <th>Z</th>
-                   <th>PID </th>
-                   <th>Base</th>
+                  <th>PID </th>
+                  <th>Base</th>
+                  <th>Turn</th>
+                  <th>Wait</th>
                 </tr>
               </thead>
               <tbody>
@@ -324,17 +323,8 @@
     </div>
  
     </div>
-  </div>
-
-    
-
-  
-
-</div>
-
-
-          
-      
+    </div>
+  </div>     
 </div>
 
 

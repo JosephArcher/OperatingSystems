@@ -31,6 +31,7 @@ var CREATE_PROCESSS_IRQ = 9; // Create a new process
 var START_PROCESS_IRQ = 10; // Start a new  process
 var TERMINATE_PROCESS_IRQ = 11; // Terminate a  process
 var CONTEXT_SWITCH_IRQ = 12; // Context Swtich Between Processes
+var END_CPU_IRQ = 13; // Stop the CPU from executing 
 // Process States as consts for the Process Control Blocks // Process States \\   
 var PROCESS_STATE_NEW = "NEW"; //   * New
 var PROCESS_STATE_RUNNING = "RUNNING"; //   * Running
@@ -151,9 +152,9 @@ var _SystemInformationInterface;
 var _StatusSectionElement;
 var _DateSectionElement;
 var _TimeSectionElement;
-// Resident List UI
-var _ResidentListTableElement;
-var _ResidentListTable;
+// Terminated Process List UI
+var _TerminatedProcessTableElement;
+var _TerminatedProcessTable;
 //Ready Queue UI
 var _ReadyQueueTableElement;
 var _ReadyQueueTable;

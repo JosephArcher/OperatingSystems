@@ -15,9 +15,8 @@ var TSOS;
             this.Zflag = 0; // Z Flag   
             this.baseReg = 0; // Base Register
             this.limitReg = 256; // Limit Register
-            this.creationCycle = 0; // The cycle the process was created in
-            this.terminationCycle = 0; // The cycle the process was terminated
-            this.waitingTime = 0; // The number of cycles the process has waited
+            this.turnAroundTime = 0; // Turnaround Time
+            this.waitTime = 0; // Wait Time
             this.processID = this.assignNextProcessID();
             this.processState = PROCESS_STATE_NEW;
             console.log("Creating new PCB");
@@ -161,9 +160,24 @@ var TSOS;
             return this.baseReg;
         };
         /**
-         * Sets the current limit register with the given value
-         * @Params value {Number} - The value to be set
+         * Increments the current turn around time by 1
          *
+        */
+        ProcessControlBlock.prototype.incrementTurnAroundTime = function () {
+            this.turnAroundTime = this.turnAroundTime + 1;
+        };
+        /**
+         * Returns the current turn around time
+         * @Return {Number} - The current turn around time
+         *
+        */
+        ProcessControlBlock.prototype.getTurnAroundTime = function () {
+            return this.turnAroundTime;
+        };
+        /**
+        * Sets the current limit register with the given value
+        * @Params value {Number} - The value to be set
+        *
         */
         ProcessControlBlock.prototype.setLimitReg = function (value) {
             this.limitReg = value;
@@ -177,50 +191,30 @@ var TSOS;
             return this.limitReg;
         };
         /**
-         * Sets the creation cycle of the process with the given value
-         * @Params value {Number} - The cycle number when the proces was created
+         * Increments the current wait time by 1
          *
         */
-        ProcessControlBlock.prototype.setCreationCycle = function (value) {
-            this.creationCycle = value;
+        ProcessControlBlock.prototype.incrementWaitTime = function () {
+            this.waitTime = this.waitTime + 1;
         };
         /**
-         * Returns the creation cycle of the process
-         * @Return {Number} - The cycle number when the process was created
+         * Returns the current wait time
+         * @Return {Number} - The current turn around time
          *
         */
-        ProcessControlBlock.prototype.getCreationCycle = function () {
-            return this.creationCycle;
+        ProcessControlBlock.prototype.getWaitTime = function () {
+            return this.waitTime;
         };
         /**
-         * Sets the termination cycle of the process with the given value
-         * @Params value {Number} - The cycle number the process was terminated
-         *
-        */
-        ProcessControlBlock.prototype.setTerminationCycle = function (value) {
-            this.terminationCycle = value;
-        };
-        /**
-         * Returns the termination cycle of the process
-         * @Return {Number} - The cylce number the process was terminated
-         *
-        */
-        ProcessControlBlock.prototype.getTerminationCycle = function () {
-            return this.terminationCycle;
-        };
-        /**
-         * Increments the waiting time counter for this process
-        */
-        ProcessControlBlock.prototype.incrementWaitingTime = function () {
-            this.waitingTime = this.waitingTime + 1;
-        };
-        /**
-         * Returns the current total waiting time of the process
-         * @Return {Number} - The current waiting time of the process
-         *
-        */
-        ProcessControlBlock.prototype.getWaitingTime = function () {
-            return this.waitingTime;
+         * Checks to see if the process is waiting or not
+         * if the process is waiting increment the counter
+         */
+        ProcessControlBlock.prototype.updateWaitTime = function () {
+            // Check the process state
+            if (this.processState == PROCESS_STATE_WAITING) {
+                // Increment
+                this.incrementWaitTime();
+            }
         };
         return ProcessControlBlock;
     })();

@@ -9,13 +9,13 @@
 
 module TSOS {
 
-	export class ReadyQueueTable {
+	export class TerminatedProcessTable {
 
 		public table: HTMLTableElement;
 
 		/*	     
-		* Row 0: PS - PC - A - XR - YR - ZF  
-		* Row 1: +    +    +   +    +    +     
+		* Row 0: PS - PC - A - XR - YR - ZF - Turnaround - Wait
+		* Row 1: +    +    +   +    +    +  -    +       -  + 
 		*/
 
 		private currentRow: HTMLTableRowElement;
@@ -86,12 +86,12 @@ module TSOS {
 		// 	this.setAccumulatorValue("00");
 		// 	this.setZFlagValue("00");
 		// }
-		public addNewProcess(newProcess: TSOS.ProcessControlBlock): void {
-			console.log(this.table.rows.length + "ROWDSFSDFSDSF");
-			this.addRow(newProcess);
+		// public addNewProcess(newProcess: TSOS.ProcessControlBlock): void {
+		// 	console.log(this.table.rows.length + "ROWDSFSDFSDSF");
+		// 	this.addRow(newProcess);
 
 
-		}
+		// }
 		public addRow(process: TSOS.ProcessControlBlock) {
 
 			var row: HTMLTableRowElement = <HTMLTableRowElement>this.table.insertRow(this.numberOfRows());
@@ -104,7 +104,9 @@ module TSOS {
 			var cell5 = row.insertCell(5); // Z
 			var cell6 = row.insertCell(6); // PID
 			var cell7 = row.insertCell(7); // Base
-	
+			var cell8 = row.insertCell(8); // Turnaround Time
+			var cell9 = row.insertCell(9); // Wait Time
+
 			cell0.innerHTML = process.getProcessState();
 			cell1.innerHTML = process.getProgramCounter() + "";
 			cell2.innerHTML = process.getAcc() + "";
@@ -113,79 +115,79 @@ module TSOS {
 			cell5.innerHTML = process.getZFlag() + "";
 			cell6.innerHTML = process.getProcessID() + "";
 			cell7.innerHTML = process.getBaseReg() + "";
+			cell8.innerHTML = process.getTurnAroundTime() + "";
+			cell9.innerHTML = process.getWaitTime() + "";
+
 
 		}
 		public removeRow(rowNumber: number): void {
 			this.table.deleteRow(rowNumber);
 		}
-		public updateProcessById(process: TSOS.ProcessControlBlock) {
+		// public updateProcessById(process: TSOS.ProcessControlBlock){
 
-			// Initalize Variables
-			var nextProcessRowID: number;
-			var theProcessID: number = process.getProcessID();
-			var row: HTMLTableRowElement;
+		// 	// Initalize Variables
+		// 	var nextProcessRowID: number;
+		// 	var theProcessID: number = process.getProcessID();
+		// 	var row: HTMLTableRowElement;
 
-			// If at least one process exists in the ready queue
-			if (_ReadyQueue.getSize() > 0) {
-				// Loop over each row in the table (offset by 1 to account for the heading)
-				for (var i = 0; i < this.numberOfRows(); i++) {
+		// 	// If at least one process exists in the ready queue
+		// 	if (_ReadyQueue.getSize() > 0) {
+		// 		// Loop over each row in the table (offset by 1 to account for the heading)
+		// 		for (var i = 0; i < this.numberOfRows(); i++) {
 
-					// Get the ID of the row 
-					nextProcessRowID = this.getProcessID(i);
+		// 			// Get the ID of the row 
+		// 			nextProcessRowID = this.getProcessID(i);
 
-					// Compare the ID of the row to the ID of the process that is ending
-					if (nextProcessRowID == theProcessID) {
-						console.log("The Process ID matches one in the current table! UPDATING RIGHT NOW BB");
-						// Get the row that matches in order to update its contents
-						row = <HTMLTableRowElement>this.table.rows.item(i);
+		// 			// Compare the ID of the row to the ID of the process that is ending
+		// 			if (nextProcessRowID == theProcessID) {
+		// 				console.log("The Process ID matches one in the current table! UPDATING RIGHT NOW BB");
+		// 				// Get the row that matches in order to update its contents
+		// 				row = <HTMLTableRowElement> this.table.rows.item(i);
+										
+		// 				var cell0 = <HTMLTableCellElement>row.cells.item(0); // State
+		// 				var cell1 = <HTMLTableCellElement>row.cells.item(1); // PC
+		// 				var cell2 = <HTMLTableCellElement>row.cells.item(2); // ACC
+		// 				var cell3 = <HTMLTableCellElement>row.cells.item(3); // X
+		// 				var cell4 = <HTMLTableCellElement>row.cells.item(4); // Y
+		// 				var cell5 = <HTMLTableCellElement>row.cells.item(5); // Z
+		// 				var cell6 = <HTMLTableCellElement>row.cells.item(6); // PID
+		// 				var cell7 = <HTMLTableCellElement>row.cells.item(7); // Base
 
-						var cell0 = <HTMLTableCellElement>row.cells.item(0); // State
-						var cell1 = <HTMLTableCellElement>row.cells.item(1); // PC
-						var cell2 = <HTMLTableCellElement>row.cells.item(2); // ACC
-						var cell3 = <HTMLTableCellElement>row.cells.item(3); // X
-						var cell4 = <HTMLTableCellElement>row.cells.item(4); // Y
-						var cell5 = <HTMLTableCellElement>row.cells.item(5); // Z
-						var cell6 = <HTMLTableCellElement>row.cells.item(6); // PID
-						var cell7 = <HTMLTableCellElement>row.cells.item(7); // Base
+		// 				cell0.innerHTML = process.getProcessState();
+		// 				cell1.innerHTML = process.getProgramCounter() + "";
+		// 				cell2.innerHTML = process.getAcc() + "";
+		// 				cell3.innerHTML = process.getXReg() + "";
+		// 				cell4.innerHTML = process.getYReg() + "";
+		// 				cell5.innerHTML = process.getZFlag() + "";
+		// 				cell6.innerHTML = process.getProcessID() + "";
+		// 				cell7.innerHTML = process.getBaseReg() + "";
 
-						cell0.innerHTML = process.getProcessState();
-						cell1.innerHTML = process.getProgramCounter() + "";
-						cell2.innerHTML = process.getAcc() + "";
-						cell3.innerHTML = process.getXReg() + "";
-						cell4.innerHTML = process.getYReg() + "";
-						cell5.innerHTML = process.getZFlag() + "";
-						cell6.innerHTML = process.getProcessID() + "";
-						cell7.innerHTML = process.getBaseReg() + "";
+		// 			}
+		// 		}
+		// 	}
+		// }
+		// public removeProcessById(process: TSOS.ProcessControlBlock){
 
-					}
-				}
-			}
-		}
-		public removeProcessById(process: TSOS.ProcessControlBlock) {
+		// 	// Initalize Variables
+		// 	var nextProcessRowID: number;
+		// 	var theProcessID: number = process.getProcessID();
 
-			// Initalize Variables
-			var nextProcessRowID: number;
-			var theProcessID: number = process.getProcessID();
+		// 	// If at least one process exists in the ready queue
+		// 	if(_ReadyQueue.getSize() > 0){
+		// 		// Loop over each row in the table (offset by 1 to account for the heading)
+		// 		for (var i = 0; i < this.numberOfRows(); i++) {
 
-			// If at least one process exists in the ready queue
-			if (_ReadyQueue.getSize() > 0 || _CPUScheduler.getCurrentProcess() != null) {
-				// Loop over each row in the table (offset by 1 to account for the heading)
-				for (var i = 0; i < this.numberOfRows(); i++) {
+		// 			// Get the ID of the row 
+		// 			nextProcessRowID = this.getProcessID(i);
 
-					// Get the ID of the row 
-					nextProcessRowID = this.getProcessID(i);
-
-					// Compare the ID of the row to the ID of the process that is ending
-					if (nextProcessRowID == theProcessID) {
-						console.log("THe Process ID matches one in the current table ! fuck yes");
-						// Remove the row that matches to show a process that is ending!
-						this.removeRow(i);
-					}
-				}
-			}
-			else{
-				console.log("topkek123");
-			}
-		}
+		// 			// Compare the ID of the row to the ID of the process that is ending
+		// 			if(nextProcessRowID == theProcessID) {
+		// 				console.log("THe Process ID matches one in the current table ! fuck yes");
+		// 				// Remove the row that matches to show a process that is ending!
+		// 				this.removeRow(i);
+		// 			}
+		// 		}
+		// 	}
+		// }
 	}
 }

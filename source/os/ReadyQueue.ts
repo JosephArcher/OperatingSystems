@@ -74,10 +74,24 @@
 			console.log(processArray);
 			return processArray;
 		}
-		public isExistingProcess(process: TSOS.ProcessControlBlock): boolean {
+		public isExistingProcess(processID: number) {
 
+			var size: number = this.q.length;
+			var nextProcess: TSOS.ProcessControlBlock;
 
-			return false;
+			// Loop over the queue 
+			for (var i = 0; i < size; i++) {
+
+				nextProcess = <TSOS.ProcessControlBlock>_ReadyQueue.getElementAt(i);
+
+				// Compare the given process ID and the one at the position in the queue
+				if(nextProcess.getProcessID() == processID) {	
+					
+					return  <TSOS.ProcessControlBlock> nextProcess;
+				}
+			}
+			// If process does not exists return null
+			return null;
 		}
 		public getElementAt(index: number) {
 

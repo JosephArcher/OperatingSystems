@@ -130,7 +130,7 @@ var TSOS;
             var nextProcessRowID;
             var theProcessID = process.getProcessID();
             // If at least one process exists in the ready queue
-            if (_ReadyQueue.getSize() > 0) {
+            if (_ReadyQueue.getSize() > 0 || _CPUScheduler.getCurrentProcess() != null) {
                 // Loop over each row in the table (offset by 1 to account for the heading)
                 for (var i = 0; i < this.numberOfRows(); i++) {
                     // Get the ID of the row 
@@ -142,6 +142,9 @@ var TSOS;
                         this.removeRow(i);
                     }
                 }
+            }
+            else {
+                console.log("topkek123");
             }
         };
         return ReadyQueueTable;

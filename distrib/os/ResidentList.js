@@ -6,6 +6,11 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+/**
+ *   Resident List
+ *
+ *	 Queue with extended functionally
+ */
 var TSOS;
 (function (TSOS) {
     var ResidentList = (function (_super) {
@@ -70,9 +75,6 @@ var TSOS;
             }
             console.log(processArray);
             return processArray;
-        };
-        ResidentList.prototype.isExistingProcess = function (process) {
-            return false;
         };
         ResidentList.prototype.getElementAt = function (index) {
             return this.q[index];

@@ -74,10 +74,9 @@ module TSOS {
 
             // Time section
             _TimeSectionElement = <HTMLElement> document.getElementById("timeArea");
-
            
             // Resient List
-            _ResidentListTableElement = <HTMLTableElement> document.getElementById("residentListTableElement");
+            _TerminatedProcessTableElement = <HTMLTableElement> document.getElementById("terminatedProcessTableElement");
 
             // Ready Queue
             _ReadyQueueTableElement = <HTMLTableElement> document.getElementById("readyQueueTableElement");

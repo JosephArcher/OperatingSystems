@@ -1,6 +1,11 @@
-
 ///<reference path="queue.ts" />
 ///<reference path="processControlBlock.ts" />
+
+/**
+ *   Resident List
+ *   
+ *	 Queue with extended functionally  
+ */
 
 module TSOS {
 
@@ -74,11 +79,7 @@ module TSOS {
 			console.log(processArray);
 			return processArray;
 		}
-		public isExistingProcess(process: TSOS.ProcessControlBlock): boolean {
 
-
-			return false;
-		}
 		public getElementAt(index: number) {
 
 			return <TSOS.ProcessControlBlock>this.q[index];

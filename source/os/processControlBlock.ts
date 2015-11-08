@@ -15,9 +15,8 @@ module TSOS {
 		public Zflag: number = 0;              // Z Flag   
 		public baseReg: number = 0;            // Base Register
 		public limitReg: number = 256;         // Limit Register
-		public creationCycle: number = 0;      // The cycle the process was created in
-		public terminationCycle: number = 0;   // The cycle the process was terminated
-		public waitingTime: number = 0;        // The number of cycles the process has waited
+		public turnAroundTime: number = 0;     // Turnaround Time
+		public waitTime: number = 0;           // Wait Time
 			
 		public constructor() {
 			
@@ -169,67 +168,63 @@ module TSOS {
 				return this.baseReg;
  		}
  		/**
-		 * Sets the current limit register with the given value
-		 * @Params value {Number} - The value to be set
+		 * Increments the current turn around time by 1 
 		 * 
 		*/
- 		public setLimitReg(value: number){
-				this.limitReg = value;
+ 		public incrementTurnAroundTime() {
+				this.turnAroundTime = this.turnAroundTime + 1;
  		}
+ 		/**
+		 * Returns the current turn around time
+		 * @Return {Number} - The current turn around time
+		 * 
+		*/
+		public getTurnAroundTime(): number {
+				return this.turnAroundTime;
+ 		}
+		/**
+		* Sets the current limit register with the given value
+		* @Params value {Number} - The value to be set
+		* 
+		*/
+		public setLimitReg(value: number) {
+				this.limitReg = value;
+		}
  		/**
 		 * Returns the current limit register 
 		 * @Return {Number} - The current value in the limit register
 		 * 
 		*/
- 		public getLimitReg(): number {
+		public getLimitReg(): number {
 				return this.limitReg;
- 		}
- 		/**
-		 * Sets the creation cycle of the process with the given value
-		 * @Params value {Number} - The cycle number when the proces was created
-		 * 
-		*/
-		public setCreationCycle(value: number) {
-				this.creationCycle = value;
-		}
- 		/**
-		 * Returns the creation cycle of the process
-		 * @Return {Number} - The cycle number when the process was created
-		 * 
-		*/
-		public getCreationCycle(): number {
-				return this.creationCycle;
 		}
 		/**
-		 * Sets the termination cycle of the process with the given value
-		 * @Params value {Number} - The cycle number the process was terminated
+		 * Increments the current wait time by 1 
 		 * 
 		*/
-		public setTerminationCycle(value: number) {
-			this.terminationCycle = value;
+		public incrementWaitTime() {
+			this.waitTime = this.waitTime + 1;
 		}
 		/**
-		 * Returns the termination cycle of the process
-		 * @Return {Number} - The cylce number the process was terminated 
+		 * Returns the current wait time
+		 * @Return {Number} - The current turn around time
 		 * 
 		*/
-		public getTerminationCycle(): number {
-			return this.terminationCycle;
+		public getWaitTime(): number {
+			return this.waitTime;
 		}
 		/**
-		 * Increments the waiting time counter for this process
-		*/
-		public incrementWaitingTime(): void {
-			this.waitingTime = this.waitingTime + 1;
-		}
-		/**
-		 * Returns the current total waiting time of the process
-		 * @Return {Number} - The current waiting time of the process
-		 * 
-		*/
-		public getWaitingTime(): number {
-			return this.waitingTime;
-		}
+		 * Checks to see if the process is waiting or not
+		 * if the process is waiting increment the counter
+		 */
+		public updateWaitTime() {
 
+			// Check the process state
+			if(this.processState == PROCESS_STATE_WAITING) {
+
+				// Increment
+				this.incrementWaitTime();
+			}
+		}
 	}
 }

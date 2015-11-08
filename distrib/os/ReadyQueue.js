@@ -71,8 +71,19 @@ var TSOS;
             console.log(processArray);
             return processArray;
         };
-        ReadyQueue.prototype.isExistingProcess = function (process) {
-            return false;
+        ReadyQueue.prototype.isExistingProcess = function (processID) {
+            var size = this.q.length;
+            var nextProcess;
+            // Loop over the queue 
+            for (var i = 0; i < size; i++) {
+                nextProcess = _ReadyQueue.getElementAt(i);
+                // Compare the given process ID and the one at the position in the queue
+                if (nextProcess.getProcessID() == processID) {
+                    return nextProcess;
+                }
+            }
+            // If process does not exists return null
+            return null;
         };
         ReadyQueue.prototype.getElementAt = function (index) {
             return this.q[index];

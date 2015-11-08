@@ -479,20 +479,43 @@ module TSOS {
         /**
          * Used to stop and kill a currently active process
          */
-        public kill(args) {
+        public kill(processID: number) {
 
-          // Check the size of the ready queue
-          if(_ReadyQueue.getSize() > 0) {
+            // Check the size of the ready queue 
+            if (_ReadyQueue.getSize() > 0 || _CPUScheduler.getCurrentProcess() != null) {
 
-              // Check to see if the process the user wants to kill is active
-              // if(_ReadyQueue.isExistingProcessId(args) == false){
-              //     // Tell the user the error and do nothing
-              // }
+              // Get the process form the  ready queue / _CPU Scheduler }
+              var process: TSOS.ProcessControlBlock = _ReadyQueue.isExistingProcess(processID);
 
-              // Create an interrupt for the process
-              _KernelInterruptQueue.enqueue(new Interrupt(TERMINATE_PROCESS_IRQ, args));
+              console.log(process + " JOE THIS IS THE PRCESS SHISDFJKLSJDL:KFJSKDL:FJ:SKLDFJ:KLSJF:KLSJDF:LKSJD:FLKJSD:");
+
+              // Check to see if the process exists in ready queue
+              if (process != null) {
+
+                  _StdOut.putText("R.I.P process " + process.getProcessID() );
+
+                  // TERMINATE  
+                  _KernelInterruptQueue.enqueue(new Interrupt(TERMINATE_PROCESS_IRQ, process));
+              }
+              // If the process is not found in the ready queue
+              else {
+
+                  // Check to see if process is the current one being executed
+                  if(processID == _CPUScheduler.getCurrentProcess().getProcessID() ) {
+
+                      _StdOut.putText("Killing the current process");
+
+                      // TERMINATE
+                      _KernelInterruptQueue.enqueue(new Interrupt(TERMINATE_PROCESS_IRQ, _CPUScheduler.getCurrentProcess()));
+                  }
+                  // If not that either then the process is not active
+                  else {
+                      _StdOut.putText("The process you are trying to kill does not exist");
+                  }
+                  
+              }
+
           }
-          // No Proceseses are active
           else {
                // Tell the user the error and do nothing
               _StdOut.putText("Sorry, no processes are currently running... ");

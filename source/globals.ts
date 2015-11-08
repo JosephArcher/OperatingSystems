@@ -36,6 +36,7 @@ const CREATE_PROCESSS_IRQ: number = 9;        // Create a new process
 const START_PROCESS_IRQ: number = 10; 		  // Start a new  process
 const TERMINATE_PROCESS_IRQ: number = 11;     // Terminate a  process
 const CONTEXT_SWITCH_IRQ: number = 12;        // Context Swtich Between Processes
+const END_CPU_IRQ: number = 13;                // Stop the CPU from executing 
 
 // Process States as consts for the Process Control Blocks // Process States \\   
 const PROCESS_STATE_NEW: string         = "NEW";           //   * New
@@ -120,7 +121,7 @@ var _KernelInterruptQueue;
 var _KernelInputQueue: any = null;  
 
 // The Bashful Kernel Buffers
-var _KernelBuffers: any[] = null;   
+var _KernelBuffers: any[] = null; 
 
 // The Silly Sarcastic Mode
 var _SarcasticMode: boolean = false;
@@ -160,7 +161,7 @@ var _ProcessCounterID: number = -1;
 // The CPU Scheduling Queues
 var _TerminatedProcessQueue: TSOS.Queue;  // Completed Process Queue: Used to Store each PCB once it has been completed
 var _ReadyQueue: TSOS.ReadyQueue;             // Queue of all of the currently running processes
-var _ResidentList: TSOS.ReadyQueue;           // Stores a list of all loaded processes
+var _ResidentList: TSOS.ResidentList;           // Stores a list of all loaded processes
 
 //********************************************************\\
 //             Device Driver Variables                    \\
@@ -200,9 +201,9 @@ var _StatusSectionElement: HTMLElement;
 var _DateSectionElement: HTMLElement;
 var _TimeSectionElement: HTMLElement;
 
-// Resident List UI
-var _ResidentListTableElement: HTMLTableElement;
-var _ResidentListTable: TSOS.ResidentListTable;
+// Terminated Process List UI
+var _TerminatedProcessTableElement: HTMLTableElement;
+var _TerminatedProcessTable: TSOS.TerminatedProcessTable;
 
 //Ready Queue UI
 var _ReadyQueueTableElement: HTMLTableElement;

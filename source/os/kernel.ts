@@ -8,7 +8,7 @@
 ///<reference path="MemoryInformationTable.ts" />
 ///<reference path="ProcessControlBlockTable.ts" />
 ///<reference path="systemInformationSection.ts" />
-///<reference path="ResidentListTable.ts" />
+///<reference path="TerminatedProcessTable.ts" />
 ///<reference path="ReadyQueueTable.ts" />
 ///<reference path="cpuScheduler.ts" />
 ///<reference path="timer.ts" />
@@ -60,7 +60,7 @@ module TSOS {
 
             // Initalize the Process Control Block Counter 
             _ProcessCounterID = -1;
-
+ //
             // Load the Keyboard Device Driver
             this.krnTrace("Loading the keyboard device driver.");
             _krnKeyboardDriver = new DeviceDriverKeyboard();    // Construct it.
@@ -83,11 +83,11 @@ module TSOS {
             // Initalize the System InformationInferface with its HTML Elements
             _SystemInformationInterface = new SystemInformationSection(_StatusSectionElement, _DateSectionElement, _TimeSectionElement);
 
-            //Initalize the Resident List
-            _ResidentListTable = new ResidentListTable(_ResidentListTableElement);
-
-            // Initalize the Ready Queue
+            // Initalize the Ready Queue Table
             _ReadyQueueTable = new ReadyQueueTable(_ReadyQueueTableElement);
+
+            //Initalize the Terminated Process List
+            _TerminatedProcessTable = new TerminatedProcessTable(_TerminatedProcessTableElement);
  
             // Initalize the timer
             _Timer = new Timer();
@@ -143,6 +143,9 @@ module TSOS {
 
                         // Cycle the CPU
                         _CPU.cycle();
+
+                        // Update the process 
+                        //this.updateProcessInformation(_CPU)
 
                         // Decrement the timer by one and check to see if it is finished
                         if (_Timer.decreaseTimerByOne() == TIMER_FINISHED) {
@@ -224,6 +227,9 @@ module TSOS {
                 case CONTEXT_SWITCH_IRQ:                // Swtich between processes
                     this.contextSwitch();              
                     break; 
+                case END_CPU_IRQ:                       // Stop CPU Execution
+                    this.stopCpuExecution();
+                    break;
                 default:                                // Handles bad interrupt
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }
@@ -251,7 +257,7 @@ module TSOS {
             }
             else {
                 // If no other process exists then stop CPU
-                this.stopCpuExecution();  // Stop the CPU
+                _KernelInterruptQueue.enqueue(new Interrupt(END_CPU_IRQ, nextProcess));
             }
 
         }
@@ -259,6 +265,8 @@ module TSOS {
          *  Used to handle the break interrupt
          */
         public krnBreakISR(process: TSOS.ProcessControlBlock) {
+
+            console.log("BREAK BREAK BREAK BREAK BREAK BREAK");
 
             // Save the current CPU Register values into the process control block
             _CPUScheduler.runningProcess.setProgramCounter(_CPU.PC);
@@ -280,13 +288,15 @@ module TSOS {
             // Clear the Process from the UI Ready queue
             _ReadyQueueTable.removeProcessById(process);
 
-            // Add the process to the terminated process queue for later use
-            _TerminatedProcessQueue.enqueue(process);
+            // Add the process to the terminated process table
+            _TerminatedProcessTable.addRow(process);
+
+            // Clear the current timer
+            _Timer.clearTimer();
 
             // Check to see if another process wants to execute
             if (_ReadyQueue.getSize() > 0) {   
 
-                console.log("IS THIS THE ISSUE BAYBE " + _ReadyQueue.getSize());
                 // Get the next process
                 var nextProcess: TSOS.ProcessControlBlock = _CPUScheduler.getNextProcess();
 
@@ -296,7 +306,7 @@ module TSOS {
             }
             else {
                 // If no other process exists then stop CPU
-                this.stopCpuExecution();  // Stop the CPU
+                _KernelInterruptQueue.enqueue(new Interrupt(END_CPU_IRQ, nextProcess));
             }
         }
         /**
@@ -387,7 +397,6 @@ module TSOS {
 
             console.log("The process to start it " + theProcess);
 
-
             // Set the current process
             _CPUScheduler.setCurrentProcess(theProcess);
 
@@ -400,6 +409,7 @@ module TSOS {
             // Handle UI from having programs executing
             Utils.startProgramSpinner();
 
+            _Timer.clearTimer();
             // Set a new Timer for the length of the current Quanta
             _Timer.setNewTimer(_CPUScheduler.getQuantum());
 
@@ -416,61 +426,91 @@ module TSOS {
 
             // The built-in TIMER (not clock) Interrupt Service Routine (as opposed to an ISR coming from a device driver). {
             // Check multiprogramming parameters and enforce quanta here. Call the scheduler / context switch here if necessary.
-            console.log("THE TIMER HAS ENDED RING RING RING");
+            if (_CPU.isExecuting == true) {
+                console.log("THE TIMER HAS ENDED RING RING RING");
 
-            // Clear the timer and turn it off
-            _Timer.clearTimer();  
+                // Clear the timer and turn it off
+                _Timer.clearTimer();  
 
 
-            // Save the current CPU Register values into the process control block
-            _CPUScheduler.runningProcess.setProgramCounter(_CPU.PC);
-            _CPUScheduler.runningProcess.setAcc(_CPU.Acc);
-            _CPUScheduler.runningProcess.setXReg(_CPU.Xreg);
-            _CPUScheduler.runningProcess.setYReg(_CPU.Yreg);
-            _CPUScheduler.runningProcess.setZFlag(_CPU.Zflag);
-            _CPUScheduler.runningProcess.setProcessState(PROCESS_STATE_WAITING);
+                // Save the current CPU Register values into the process control block
+                _CPUScheduler.runningProcess.setProgramCounter(_CPU.PC);
+                _CPUScheduler.runningProcess.setAcc(_CPU.Acc);
+                _CPUScheduler.runningProcess.setXReg(_CPU.Xreg);
+                _CPUScheduler.runningProcess.setYReg(_CPU.Yreg);
+                _CPUScheduler.runningProcess.setZFlag(_CPU.Zflag);
+                _CPUScheduler.runningProcess.setProcessState(PROCESS_STATE_WAITING);
             
-            // Add the current process back into the queue
-            _ReadyQueue.enqueue(_CPUScheduler.getCurrentProcess());
+                // Add the current process back into the queue
+                _ReadyQueue.enqueue(_CPUScheduler.getCurrentProcess());
 
-            // Update the UI for the Process
-            _ReadyQueueTable.updateProcessById(_CPUScheduler.getCurrentProcess());
+                // Update the UI for the Process
+                _ReadyQueueTable.updateProcessById(_CPUScheduler.getCurrentProcess());
 
-            // Get the next process
-            var nextProcess: TSOS.ProcessControlBlock = _CPUScheduler.getNextProcess();
+                // Get the next process
+                var nextProcess: TSOS.ProcessControlBlock = _CPUScheduler.getNextProcess();
 
-            // Start next Process
-            _KernelInterruptQueue.enqueue(new Interrupt(START_PROCESS_IRQ, nextProcess));
+                // Start next Process
+                _KernelInterruptQueue.enqueue(new Interrupt(START_PROCESS_IRQ, nextProcess));
+            }
         }
         /**
          * used to terminate a currenlty running process and remove it fromt he ready qyeye
          */
-        public terminateProcess(processID: number) {
+        public terminateProcess(process: TSOS.ProcessControlBlock) {
 
-            // Initalize the variables
-            var theProcessID = processID;
+             // Check to see if the process is currently running
+            if (process.getProcessID() == _CPUScheduler.getCurrentProcess().getProcessID() ) {   // The process to terminate is running
+                   
+                 // Save the current CPU Register values into the process control block
+                 _CPUScheduler.runningProcess.setProgramCounter(_CPU.PC);
+                 _CPUScheduler.runningProcess.setAcc(_CPU.Acc);
+                 _CPUScheduler.runningProcess.setXReg(_CPU.Xreg);
+                 _CPUScheduler.runningProcess.setYReg(_CPU.Yreg);
+                 _CPUScheduler.runningProcess.setZFlag(_CPU.Zflag);
+                 _CPUScheduler.runningProcess.setProcessState(PROCESS_STATE_TERMINATED); // Update the State to terminated
+             }
+             else { // The process to terminate is not running and chilling in the Ready Queue
 
+                 // Search
+                var indexInReadyQueue: number = _ReadyQueue.getElementIndexByProccessId(process);
 
-            // Check to see if any processes are currently active
-            var allPids = _ReadyQueue.getAllPids();
+                // And ...
 
-            if (allPids.length == 0) {
-                _StdOut.putText("Sorry, unable to kill anything because no processes are currently active");
-                return;
-            }
-            // Next check to see if the process that the user is trying to kill is iside of the ready queue
-            for (var i = 0; i < allPids.length; i++) {
+                // Destroy
+                _ReadyQueue = _ReadyQueue.removeElementAtIndex(indexInReadyQueue);
+             }
 
-                // check the args and each character from the PIDS for a match
-                // if (args == allPids.charAt(i)) {
-                //     // If a match is found then need to remove that element from the ready queue and report back to the user then end
-                //     _ReadyQueue = _ReadyQueue.removeElementAtIndex(i);
-                //     _StdOut.putText("Process " + theProcessID + " was successfully killed... R.I.P.");
-                //     return;
-                // }
-            }
-            // If not match is found the the loop ends then the process that the user is trying to kill does not exist
-            _StdOut.putText("Sorry, the process you are trying to kill is not currently active"); 
+            // Remove the process from memory and update the UI Table
+            _MemoryManager.clearMemoryPartition(process);
+
+            // Get the index of the process in the Resident List
+            var indexOfProcess: number = _ResidentList.getElementIndexByProccessId(process); 
+
+            // Remove the process from the residentList
+            _ResidentList = _ResidentList.removeElementAtIndex(indexOfProcess);
+
+            // Clear the Process from the UI Ready queue
+            _ReadyQueueTable.removeProcessById(process);
+
+            _TerminatedProcessTable.addRow(process);
+
+            // If the current process is th
+            // Check to see if another process wants to execute
+           // if (_ReadyQueue.getSize() > 0) {
+
+                // console.log("IS THIS THE ISSUE BAYBE " + _ReadyQueue.getSize());
+                // // Get the next process
+                // var nextProcess: TSOS.ProcessControlBlock = _CPUScheduler.getNextProcess();
+
+                // // Start the next process
+                // _KernelInterruptQueue.enqueue(new Interrupt(START_PROCESS_IRQ, nextProcess));
+
+          //  }
+          //  else {
+                // If no other process exists then stop CPU
+           //     this.stopCpuExecution();  // Stop the CPU
+         //   }
         }
         /*
          * Used to set the _CPU.isExecuting Property to False
