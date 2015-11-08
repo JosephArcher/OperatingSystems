@@ -97,6 +97,42 @@
 
 			return <TSOS.ProcessControlBlock> this.q[index];
 		}
+		public incrementWaitTime() {
+
+			// Get the size of the ready queue
+			var size: number = _ReadyQueue.getSize();
+			var nextProcess: TSOS.ProcessControlBlock;
+
+			// Loop over the ready queue
+			for (var i = 0; i < size; i++) {
+
+				// Get the next process in the queue
+				nextProcess = _ReadyQueue.getElementAt(i);
+
+				// Increment its waiting time by 1
+				nextProcess.incrementWaitTime(); 
+			}
+		}
+		public incrementTurnAroundTime() {
+
+			// Get the size of the ready queue
+			var size: number = _ReadyQueue.getSize();
+			var nextProcess: TSOS.ProcessControlBlock;
+
+			// Loop over the ready queue
+			for (var i = 0; i < size; i++) {
+
+				// Get the next process in the queue
+				nextProcess = _ReadyQueue.getElementAt(i);
+
+				// Increment its waiting time by 1
+				nextProcess.incrementTurnAroundTime();
+			}
+			// Check to see if a process is running
+			if(_CPUScheduler.getCurrentProcess() != null){
+				_CPUScheduler.getCurrentProcess().incrementTurnAroundTime();
+			}
+		}
 		public getAllPids(): string {
 			var PIDString = "";
 			var len = this.q.length;

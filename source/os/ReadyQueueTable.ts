@@ -104,6 +104,8 @@ module TSOS {
 			var cell5 = row.insertCell(5); // Z
 			var cell6 = row.insertCell(6); // PID
 			var cell7 = row.insertCell(7); // Base
+			var cell8 = row.insertCell(8); // Turn Around Time
+			var cell9 = row.insertCell(9); // Wait Time
 	
 			cell0.innerHTML = process.getProcessState();
 			cell1.innerHTML = process.getProgramCounter() + "";
@@ -113,6 +115,8 @@ module TSOS {
 			cell5.innerHTML = process.getZFlag() + "";
 			cell6.innerHTML = process.getProcessID() + "";
 			cell7.innerHTML = process.getBaseReg() + "";
+			cell8.innerHTML = process.getTurnAroundTime() + "";
+			cell9.innerHTML = process.getWaitTime() + "";
 
 		}
 		public removeRow(rowNumber: number): void {
@@ -147,6 +151,8 @@ module TSOS {
 						var cell5 = <HTMLTableCellElement>row.cells.item(5); // Z
 						var cell6 = <HTMLTableCellElement>row.cells.item(6); // PID
 						var cell7 = <HTMLTableCellElement>row.cells.item(7); // Base
+						var cell8 = <HTMLTableCellElement>row.cells.item(8); // PID
+						var cell9 = <HTMLTableCellElement>row.cells.item(9); // Base
 
 						cell0.innerHTML = process.getProcessState();
 						cell1.innerHTML = process.getProgramCounter() + "";
@@ -156,6 +162,9 @@ module TSOS {
 						cell5.innerHTML = process.getZFlag() + "";
 						cell6.innerHTML = process.getProcessID() + "";
 						cell7.innerHTML = process.getBaseReg() + "";
+						cell8.innerHTML = process.getTurnAroundTime() + "";
+						cell9.innerHTML = process.getWaitTime() + "";
+
 
 					}
 				}

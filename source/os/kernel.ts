@@ -145,7 +145,9 @@ module TSOS {
                         _CPU.cycle();
 
                         // Update the process 
-                        //this.updateProcessInformation(_CPU)
+                        _ReadyQueue.incrementWaitTime();
+
+                        _ReadyQueue.incrementTurnAroundTime();
 
                         // Decrement the timer by one and check to see if it is finished
                         if (_Timer.decreaseTimerByOne() == TIMER_FINISHED) {

@@ -464,21 +464,26 @@ module TSOS {
             var activePIDs: string = _ReadyQueue.getAllPids();
             var outputString: string = "The currently active processes are: ";
             var len = activePIDs.length;
+            var runningProcessID: string = "";
 
             if (len == 0) {
                 _StdOut.putText("Sorry, no processes are currently active");
                 return;
             }
 
-            for (var i = 0; i < len; i++){
+            for (var i = 0; i < len; i++) {
                 outputString = outputString + " " + activePIDs.charAt(i);
-            }    
+            }
+            if(_CPUScheduler.getCurrentProcess() != null) {
+               runningProcessID = _CPUScheduler.getCurrentProcess().getProcessID() + "";
+
+            }
             // Write the out a message to the user with the with all the active pid's
-            _StdOut.putText(outputString);
+            _StdOut.putText(outputString + " " + runningProcessID);
         }
         /**
          * Used to stop and kill a currently active process
-         */
+         */    
         public kill(processID: number) {
 
             // Check the size of the ready queue 

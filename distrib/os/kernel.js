@@ -122,7 +122,8 @@ var TSOS;
                     // Cycle the CPU
                     _CPU.cycle();
                     // Update the process 
-                    //this.updateProcessInformation(_CPU)
+                    _ReadyQueue.incrementWaitTime();
+                    _ReadyQueue.incrementTurnAroundTime();
                     // Decrement the timer by one and check to see if it is finished
                     if (_Timer.decreaseTimerByOne() == TIMER_FINISHED) {
                         // Create new interrupt to signal the end of the timer

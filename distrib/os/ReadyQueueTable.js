@@ -77,6 +77,8 @@ var TSOS;
             var cell5 = row.insertCell(5); // Z
             var cell6 = row.insertCell(6); // PID
             var cell7 = row.insertCell(7); // Base
+            var cell8 = row.insertCell(8); // Turn Around Time
+            var cell9 = row.insertCell(9); // Wait Time
             cell0.innerHTML = process.getProcessState();
             cell1.innerHTML = process.getProgramCounter() + "";
             cell2.innerHTML = process.getAcc() + "";
@@ -85,6 +87,8 @@ var TSOS;
             cell5.innerHTML = process.getZFlag() + "";
             cell6.innerHTML = process.getProcessID() + "";
             cell7.innerHTML = process.getBaseReg() + "";
+            cell8.innerHTML = process.getTurnAroundTime() + "";
+            cell9.innerHTML = process.getWaitTime() + "";
         };
         ReadyQueueTable.prototype.removeRow = function (rowNumber) {
             this.table.deleteRow(rowNumber);
@@ -113,6 +117,8 @@ var TSOS;
                         var cell5 = row.cells.item(5); // Z
                         var cell6 = row.cells.item(6); // PID
                         var cell7 = row.cells.item(7); // Base
+                        var cell8 = row.cells.item(8); // PID
+                        var cell9 = row.cells.item(9); // Base
                         cell0.innerHTML = process.getProcessState();
                         cell1.innerHTML = process.getProgramCounter() + "";
                         cell2.innerHTML = process.getAcc() + "";
@@ -121,6 +127,8 @@ var TSOS;
                         cell5.innerHTML = process.getZFlag() + "";
                         cell6.innerHTML = process.getProcessID() + "";
                         cell7.innerHTML = process.getBaseReg() + "";
+                        cell8.innerHTML = process.getTurnAroundTime() + "";
+                        cell9.innerHTML = process.getWaitTime() + "";
                     }
                 }
             }
