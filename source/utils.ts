@@ -55,7 +55,9 @@ module TSOS {
         $("#btnStartOS").removeClass("btn-navPowerOffBorder");
         $("#btnStartOS").addClass("btn-navPowerOnBorder");
 
-       
+         
+          $("#face").addClass("sad");
+          $("#face").removeClass("happy");
           $("#systemInformationPanel").animate({ width: '100%' }, "slow");
           $("#systemInformationPanelCheck").fadeIn(); 
 
@@ -91,26 +93,31 @@ module TSOS {
               $("#btnStartOS").removeClass("btn-navPowerOnBorder");
               $("#btnStartOS").addClass("btn-navPowerOffBorder");
 
-              $("#systemInformationPanel").animate({ width: '45%' }, "slow");
-              $("#systemInformationPanelCheck").fadeOut();
+              // $("#face").addClass("happy");
+              // $("#face").removeClass("sad");
 
-              $("#userProgramInputPanel").animate({ width: '45%' }, "slow");
-              $("#userProgramInputPanelCheck").fadeOut();
+              // $(".panel-collapse").collapse('hide');
 
-              $("#residentListPanel").animate({ width: '45%' }, "slow");
-              $("#residentListPanelCheck").fadeOut();
+              // $("#systemInformationPanel").animate({ width: '45%' }, "slow");
+              // $("#systemInformationPanelCheck").fadeOut();
 
-              $("#readyQueuePanel").animate({ width: '45%' }, "slow");
-              $("#readyQueuePanelCheck").fadeOut();
+              // $("#userProgramInputPanel").animate({ width: '45%' }, "slow");
+              // $("#userProgramInputPanelCheck").fadeOut();
 
-              $("#cpuStatPanel").animate({ width: '45%' }, "slow");
-              $("#cpuStatPanelCheck").fadeOut();
+              // $("#residentListPanel").animate({ width: '45%' }, "slow");
+              // $("#residentListPanelCheck").fadeOut();
 
-              $("#processControlBlockPanel").animate({ width: '45%' }, "slow");
-              $("#processControlBlockPanelCheck").fadeOut();
+              // $("#readyQueuePanel").animate({ width: '45%' }, "slow");
+              // $("#readyQueuePanelCheck").fadeOut();
 
-              $("#mainMemoryPanel").animate({ width: '55%' }, "slow");
-              $("#mainMemoryPanelCheck").fadeOut(); 
+              // $("#cpuStatPanel").animate({ width: '45%' }, "slow");
+              // $("#cpuStatPanelCheck").fadeOut();
+
+              // $("#processControlBlockPanel").animate({ width: '45%' }, "slow");
+              // $("#processControlBlockPanelCheck").fadeOut();
+
+              // $("#mainMemoryPanel").animate({ width: '55%' }, "slow");
+              // $("#mainMemoryPanelCheck").fadeOut(); 
 
 
             });
@@ -118,7 +125,10 @@ module TSOS {
             this.clearUserInput();
             this.clearCpuUI();
             _MemoryInformationTable.fillRows();
+            _TerminatedProcessTable.clearTable();
+            _ReadyQueueTable.clearTable();
             _Console.clearScreen();
+
             _SystemInformationInterface.setStatusMessage("");
         }
         /**
@@ -151,7 +161,7 @@ module TSOS {
           $(function() {
             $("#btnStepForward").addClass("see");
             $("#btnStepForward").removeClass("inv");
-
+           
 
             $("#btnStepOS").removeClass("btn-unselectedMode");
             $("#btnStepOS").addClass("btn-selectedMode");
@@ -159,6 +169,24 @@ module TSOS {
             $("#btnRunOS").removeClass("btn-selectedMode");
             $("#btnRunOS").addClass("btn-unselectedMode");
           });
+
+        }
+       /**
+         * Used to handle the UI changes when the users enters step mode
+       */
+        public static happyFace() {
+
+      $(function() {
+        $("#btnStepForward").addClass("see");
+        $("#btnStepForward").removeClass("inv");
+
+
+        $("#btnStepOS").removeClass("btn-unselectedMode");
+        $("#btnStepOS").addClass("btn-selectedMode");
+
+        $("#btnRunOS").removeClass("btn-selectedMode");
+        $("#btnRunOS").addClass("btn-unselectedMode");
+      });
 
         }
         /**

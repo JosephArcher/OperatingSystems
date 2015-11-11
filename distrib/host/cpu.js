@@ -200,7 +200,7 @@ var TSOS;
          *  Break (Which really is a system call)
         */
         Cpu.prototype.breakOperation = function () {
-            // console.log("The break operation "); 
+            console.log("The break operation ");
             _Kernel.createAndQueueInterrupt(BREAK_IRQ, _CPUScheduler.getCurrentProcess());
         };
         //  /**
@@ -278,6 +278,7 @@ var TSOS;
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_INTEGER_IRQ, _CPU.Yreg));
             }
             else if (_CPU.Xreg == 2) {
+                console.log('system call string');
                 var decimalValue = _CPU.Yreg + "";
                 var hexValue = parseInt(decimalValue, 16);
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_STRING_IRQ, _CPU.Yreg));

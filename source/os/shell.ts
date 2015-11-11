@@ -499,6 +499,9 @@ module TSOS {
 
                   _StdOut.putText("R.I.P process " + process.getProcessID() );
 
+
+
+
                   // TERMINATE  
                   _KernelInterruptQueue.enqueue(new Interrupt(TERMINATE_PROCESS_IRQ, process));
               }
@@ -509,7 +512,7 @@ module TSOS {
                   if(processID == _CPUScheduler.getCurrentProcess().getProcessID() ) {
 
                       _StdOut.putText("Killing the current process");
-
+                      _ReadyQueueTable.removeProcessById(_CPUScheduler.getCurrentProcess());
                       // TERMINATE
                       _KernelInterruptQueue.enqueue(new Interrupt(TERMINATE_PROCESS_IRQ, _CPUScheduler.getCurrentProcess()));
                   }

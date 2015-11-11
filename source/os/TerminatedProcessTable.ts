@@ -67,6 +67,11 @@ module TSOS {
 			console.log(output + " Joe this is the table output");
 
 			return output;
+		} 
+		public clearTable(): void {
+			for (var i = 1; i < this.numberOfRows(); i++) {
+				this.removeRow(i);
+			}
 		}
 		// public updateTableContents(): void {
 

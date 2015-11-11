@@ -42,6 +42,7 @@ var TSOS;
             document.addEventListener("keydown", Devices.hostOnKeypress, false);
         };
         Devices.hostDisableKeyboardInterrupt = function () {
+            console.log("DISABLED THIS ");
             document.removeEventListener("keydown", Devices.hostOnKeypress, false);
         };
         Devices.hostOnKeypress = function (event) {

@@ -303,7 +303,7 @@ module TSOS {
          *  Break (Which really is a system call)
         */
         public breakOperation(): void {
-            // console.log("The break operation "); 
+            console.log("The break operation "); 
             _Kernel.createAndQueueInterrupt(BREAK_IRQ, _CPUScheduler.getCurrentProcess());
         }
        //  /**
@@ -408,6 +408,7 @@ module TSOS {
           }
           else if (_CPU.Xreg == 2) {// #$02 in X reg = print the 00- terminated string stored at the address in the Y register.
 
+            console.log('system call string');
             var decimalValue = _CPU.Yreg + "";
             var hexValue = parseInt(decimalValue, 16);
 

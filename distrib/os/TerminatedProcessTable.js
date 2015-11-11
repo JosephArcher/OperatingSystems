@@ -47,6 +47,11 @@ var TSOS;
             console.log(output + " Joe this is the table output");
             return output;
         };
+        TerminatedProcessTable.prototype.clearTable = function () {
+            for (var i = 1; i < this.numberOfRows(); i++) {
+                this.removeRow(i);
+            }
+        };
         // public updateTableContents(): void {
         // 	this.setProcessStateValue(PROCESS_STATE_TERMINATED);
         // 	this.setProgramCounterValue(_CPU.PC + "");

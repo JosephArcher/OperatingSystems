@@ -384,6 +384,7 @@ var TSOS;
                     // Check to see if process is the current one being executed
                     if (processID == _CPUScheduler.getCurrentProcess().getProcessID()) {
                         _StdOut.putText("Killing the current process");
+                        _ReadyQueueTable.removeProcessById(_CPUScheduler.getCurrentProcess());
                         // TERMINATE
                         _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_PROCESS_IRQ, _CPUScheduler.getCurrentProcess()));
                     }

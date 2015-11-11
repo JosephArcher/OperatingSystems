@@ -93,6 +93,11 @@ var TSOS;
         ReadyQueueTable.prototype.removeRow = function (rowNumber) {
             this.table.deleteRow(rowNumber);
         };
+        ReadyQueueTable.prototype.clearTable = function () {
+            for (var i = 1; i < this.numberOfRows(); i++) {
+                this.removeRow(i);
+            }
+        };
         ReadyQueueTable.prototype.updateProcessById = function (process) {
             // Initalize Variables
             var nextProcessRowID;

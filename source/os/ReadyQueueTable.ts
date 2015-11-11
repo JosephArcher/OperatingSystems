@@ -122,6 +122,11 @@ module TSOS {
 		public removeRow(rowNumber: number): void {
 			this.table.deleteRow(rowNumber);
 		}
+		public clearTable(): void {
+			for (var i = 1; i < this.numberOfRows(); i++){
+				this.removeRow(i);
+			}
+		}
 		public updateProcessById(process: TSOS.ProcessControlBlock) {
 
 			// Initalize Variables

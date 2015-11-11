@@ -57,8 +57,9 @@ module TSOS {
 
 			// First check the next size of the ready queue
 			if (_ReadyQueue.getSize() > 0) {
-			
+				
 				nextProcess = _ReadyQueue.dequeue(); // Get the next process from  the ready queue
+				console.log("NEXTPROCESS: " + nextProcess.getProcessID());
 			}
 			this.setCurrentProcess(nextProcess);
 			return nextProcess;

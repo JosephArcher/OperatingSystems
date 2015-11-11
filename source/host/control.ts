@@ -143,15 +143,19 @@ module TSOS {
             // System is already on and need to turn it off 
             else {
                 _SystemIsOn = false; // Turn the system off
-                Utils.togglePowerOff(); // Handle what happens to the UI when the system turns off
                 _SystemInformationInterface.systemOffMode();
-                _ProcessControlBlockTable.clearTable();
+                _MemoryInformationTable.fillRows();
+                _TerminatedProcessTable.clearTable();
+                _ReadyQueueTable.clearTable();
+                Utils.togglePowerOff(); // Handle what happens to the UI when the system turns off
+
                 // Call the halt button becuase that is really what this is supposed to be
                 this.hostBtnHaltOS_click(null);
             }          
         }
 
         public static hostBtnHaltOS_click(btn): void {
+            console.log("HALT BUTTON SKLDFJKLSDJF");
             Control.hostLog("Emergency halt", "host");
             Control.hostLog("Attempting Kernel shutdown.", "host");
             // Call the OS shutdown routine.

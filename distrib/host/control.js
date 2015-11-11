@@ -113,14 +113,17 @@ var TSOS;
             }
             else {
                 _SystemIsOn = false; // Turn the system off
-                TSOS.Utils.togglePowerOff(); // Handle what happens to the UI when the system turns off
                 _SystemInformationInterface.systemOffMode();
-                _ProcessControlBlockTable.clearTable();
+                _MemoryInformationTable.fillRows();
+                _TerminatedProcessTable.clearTable();
+                _ReadyQueueTable.clearTable();
+                TSOS.Utils.togglePowerOff(); // Handle what happens to the UI when the system turns off
                 // Call the halt button becuase that is really what this is supposed to be
                 this.hostBtnHaltOS_click(null);
             }
         };
         Control.hostBtnHaltOS_click = function (btn) {
+            console.log("HALT BUTTON SKLDFJKLSDJF");
             Control.hostLog("Emergency halt", "host");
             Control.hostLog("Attempting Kernel shutdown.", "host");
             // Call the OS shutdown routine.
