@@ -22,7 +22,12 @@ module TSOS {
 		}
 		public fillRows(): void{
 		
-			for (var i = 0; i < 32; i++){
+			for (var i = 0; i < 96; i++){
+				this.addRow(i);
+			}
+		}
+		public clearTable(): void{
+			for (var i = 0; i < 96; i++){
 				this.addRow(i);
 			}
 		}

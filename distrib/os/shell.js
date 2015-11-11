@@ -4,6 +4,7 @@
 ///<reference path="userCommand.ts" />
 ///<reference path="interrupt.ts" />
 ///<reference path="processControlBlock.ts" />
+///<reference path="memoryManager.ts" />
 /* ------------
    Shell.ts
 
@@ -26,10 +27,10 @@ var TSOS;
         Shell.prototype.init = function () {
             var sc;
             // Load the command list.
-            // ver
+            // Ver
             sc = new TSOS.ShellCommand(this.shellVer, "ver", "- Displays the current version data.");
             this.commandList[this.commandList.length] = sc;
-            //date
+            //Date
             sc = new TSOS.ShellCommand(this.shellDate, "date", "- Displays the current time and date");
             this.commandList[this.commandList.length] = sc;
             //WhereAmI
@@ -50,30 +51,42 @@ var TSOS;
             //Run
             sc = new TSOS.ShellCommand(this.shellRun, "run", "- Runs a program already in memory");
             this.commandList[this.commandList.length] = sc;
-            // help
+            //ClearMem
+            sc = new TSOS.ShellCommand(this.clearMem, "clearmem", "-Clears all memory partitions");
+            this.commandList[this.commandList.length] = sc;
+            //RunAll
+            sc = new TSOS.ShellCommand(this.runAll, "runall", "Executes all programs");
+            this.commandList[this.commandList.length] = sc;
+            // Quantum <int>
+            sc = new TSOS.ShellCommand(this.quantum, "quantum", "<int> - Sets the Round Robin Quantum (Measured in clock ticks)");
+            this.commandList[this.commandList.length] = sc;
+            // PS 
+            sc = new TSOS.ShellCommand(this.ps, "ps", "-Displays the PIDs of all active processes");
+            this.commandList[this.commandList.length] = sc;
+            // Kill
+            sc = new TSOS.ShellCommand(this.kill, "kill", "<PID> - Kills the active process");
+            this.commandList[this.commandList.length] = sc;
+            // Help
             sc = new TSOS.ShellCommand(this.shellHelp, "help", "- This is the help command. Seek help.");
             this.commandList[this.commandList.length] = sc;
-            // shutdown
+            // Shutdown
             sc = new TSOS.ShellCommand(this.shellShutdown, "shutdown", "- Shuts down the virtual OS but leaves the underlying host / hardware simulation running.");
             this.commandList[this.commandList.length] = sc;
-            // cls
+            // Cls
             sc = new TSOS.ShellCommand(this.shellCls, "cls", "- Clears the screen and resets the cursor position.");
             this.commandList[this.commandList.length] = sc;
-            // man <topic>
+            // Man <topic>
             sc = new TSOS.ShellCommand(this.shellMan, "man", "<topic> - Displays the MANual page for <topic>.");
             this.commandList[this.commandList.length] = sc;
-            // trace <on | off>
+            // Trace <on | off>
             sc = new TSOS.ShellCommand(this.shellTrace, "trace", "<on | off> - Turns the OS trace on or off.");
             this.commandList[this.commandList.length] = sc;
             // rot13 <string>
             sc = new TSOS.ShellCommand(this.shellRot13, "rot13", "<string> - Does rot13 obfuscation on <string>.");
             this.commandList[this.commandList.length] = sc;
-            // prompt <string>
+            // Prompt <string>
             sc = new TSOS.ShellCommand(this.shellPrompt, "prompt", "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
-            // ps  - list the running processes and their IDs
-            // kill <id> - kills the specified process id.
-            //
             // Display the initial prompt.
             this.putPrompt();
         };
@@ -132,11 +145,11 @@ var TSOS;
                 _StdOut.advanceLine();
             }
             // ... and finally write the prompt again.
-            if (fn == this.shellRun && _CurrentProcess != null) {
-                if (_CurrentProcess.getProcessID() == args) {
-                    return;
-                }
-            }
+            // if(fn == this.shellRun && _CurrentProcess != null) {
+            //    if(_CurrentProcess.getProcessID() == args){                 
+            //         return;
+            //     }                      
+            //  }
             this.putPrompt();
         };
         Shell.prototype.parseInput = function (buffer) {
@@ -231,43 +244,156 @@ var TSOS;
          * used to load the user program in the text area into main memory
         */
         Shell.prototype.shellLoad = function (args) {
-            // load the program into memory 
-            _Kernel.loadUserProgram();
+            // Before doing any work check to see if any free space is available in memory
+            if (_MemoryManager.availableMemoryPartitions.getSize() < 1) {
+                // If no space is available then tell user
+                _StdOut.putText("Unable to load program, no free memory partition ");
+                // then stop and do nothing else
+                return;
+            }
+            // Initalize Globals
+            var counter = 0; // Set the counter to zero to load the user program into memory 0000
+            var placeholder = ""; // Create a placeholder string to help with placing of hex digits used later in for loop
+            // Pull the input value from the HTML Element
+            var userInputHTML = document.getElementById("taProgramInput");
+            // Save the input as a     
+            var userInput = userInputHTML.value;
+            // *** Validate the User input *** \\
+            // If the user has no input then cant validate it
+            if (userInput.length < 1) {
+                _StdOut.putText("No user code was found");
+            }
+            // Create a regular expression for only hex digits and spaces
+            var regex = /[0-9A-Fa-f\s]/;
+            // Loop over the current input
+            for (var i = 0; i < userInput.length; i++) {
+                // If the character fails to pass the test than input is invalid
+                if (regex.test(userInput.charAt(i)) === false) {
+                    _StdOut.putText("Error, the code is invalid because it contains something other than a space or hex digit");
+                    return;
+                }
+            }
+            // *** If the flow makes it here then the userInput is valid *** \\  
+            // Load the program into memory and clean up the whitespace
+            var processID = _MemoryManager.loadProgramIntoMemory(userInput.replace(/ /g, '')); // Load the program into memory and save its process ID to be printed out to user
+            _StdOut.putText("Program loaded and assigned a Process ID of " + processID + " Size " + _ResidentList.getSize()); // Tell the user the process ID 
         };
         /**
         * Used to run a user program that is currently in main memory
         */
         Shell.prototype.shellRun = function (args) {
-            var userInput = args;
-            var process = true;
-            // Check to see if anything is in the ready queue
-            // if (_CurrentProcess != null) {
-            //   
-            //  }else{
-            //     _StdOut.putText("No user program is loaded, please load a program using the load command");
-            //   
-            //   }
-            // Check the user Input for a PID and then see if that current one exists in the queue          
-            // process = Utils.isExistingProcess(args);
-            if (_CurrentProcess == null) {
-                process = false;
-                _StdOut.putText("Sorry, the process ID that you entered does not exist");
-                return;
-            }
-            if (_CurrentProcess.getProcessID() != userInput) {
-                _StdOut.putText("Sorry, the process ID that you entered does not match any currently loaded processes");
-                process = false;
-                return;
-            }
-            if (process == true) {
-                // var currentProcess = <TSOS.ProcessControlBlock> _ReadyQueue.first();
-                _CurrentProcess.setProcessState(PROCESS_STATE_RUNNING);
-                _CPU.beginExecuting(_CurrentProcess);
-                _CPU.isExecuting = true;
-                TSOS.Utils.startProgramSpinner();
+            // Check to see if the process the user wants to run is currently in memory
+            var nextProcessControlBlock = _MemoryManager.findProcessInMemory(args);
+            // If the process exists 
+            if (nextProcessControlBlock != null) {
+                // Tell the user
+                _StdOut.putText("The Process exists");
+                // Instead of starting process just add to the ready queue then call something
+                _ReadyQueue.enqueue(nextProcessControlBlock);
+                // Update the UI with the new process
+                _ReadyQueueTable.addRow(nextProcessControlBlock);
+                // Check to see if the CPU is currently executing
+                if (_CPU.isExecuting != true) {
+                    // Start the next process
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(START_PROCESS_IRQ, _CPUScheduler.getNextProcess()));
+                }
             }
             else {
-                _StdOut.putText("Sorry, the process ID that you entered does not exist");
+                // Tell the user and do nothing
+                _StdOut.putText("The Process does not exist");
+            }
+        };
+        /**
+         * Used to run all of the currently loaded programs
+         */
+        Shell.prototype.runAll = function (args) {
+            // Check to see if any programs are currently loaded in memory
+            // If at least one process exists
+            if (_ResidentList.getSize() > 0) {
+                // Tell the user
+                _StdOut.putText("Running All Processes size = " + _ResidentList.getSize());
+                // Loop over the resident list and add each process in order to the ready queue
+                for (var i = 0; i < _ResidentList.getSize(); i++) {
+                    // Instead of starting process just add to the ready queue then call something
+                    _ReadyQueue.enqueue(_ResidentList.getElementAt(i));
+                    // Update the UI with the new process
+                    _ReadyQueueTable.addRow(_ResidentList.getElementAt(i));
+                }
+                // Start the next process
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(START_PROCESS_IRQ, _CPUScheduler.getNextProcess()));
+            }
+            else {
+                // Tell the user and do nothing
+                _StdOut.putText("Error: Unable to run any programs because non are loaded into main memory");
+            }
+        };
+        /**
+         * Used to clear all memory partitions in the O/S
+         */
+        Shell.prototype.clearMem = function (args) {
+            // Clear all memory partitions
+            _MemoryManager.clearAllMemoryPartitions();
+        };
+        /**
+         * Used to set the current quantum for round robin scheduling
+         */
+        Shell.prototype.quantum = function (newQuantum) {
+            // Set the new quantm value
+            _CPUScheduler.setQuantum(newQuantum);
+        };
+        /**
+         *  Used to Display all of the active PID's
+         */
+        Shell.prototype.ps = function (args) {
+            // Build a string of all the active PID's
+            var activePIDs = _ReadyQueue.getAllPids();
+            var outputString = "The currently active processes are: ";
+            var len = activePIDs.length;
+            var runningProcessID = "";
+            if (len == 0) {
+                _StdOut.putText("Sorry, no processes are currently active");
+                return;
+            }
+            for (var i = 0; i < len; i++) {
+                outputString = outputString + " " + activePIDs.charAt(i);
+            }
+            if (_CPUScheduler.getCurrentProcess() != null) {
+                runningProcessID = _CPUScheduler.getCurrentProcess().getProcessID() + "";
+            }
+            // Write the out a message to the user with the with all the active pid's
+            _StdOut.putText(outputString + " " + runningProcessID);
+        };
+        /**
+         * Used to stop and kill a currently active process
+         */
+        Shell.prototype.kill = function (processID) {
+            // Check the size of the ready queue 
+            if (_ReadyQueue.getSize() > 0 || _CPUScheduler.getCurrentProcess() != null) {
+                // Get the process form the  ready queue / _CPU Scheduler }
+                var process = _ReadyQueue.isExistingProcess(processID);
+                console.log(process + " JOE THIS IS THE PRCESS SHISDFJKLSJDL:KFJSKDL:FJ:SKLDFJ:KLSJF:KLSJDF:LKSJD:FLKJSD:");
+                // Check to see if the process exists in ready queue
+                if (process != null) {
+                    _StdOut.putText("R.I.P process " + process.getProcessID());
+                    // TERMINATE  
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_PROCESS_IRQ, process));
+                }
+                else {
+                    // Check to see if process is the current one being executed
+                    if (processID == _CPUScheduler.getCurrentProcess().getProcessID()) {
+                        _StdOut.putText("Killing the current process");
+                        _ReadyQueueTable.removeProcessById(_CPUScheduler.getCurrentProcess());
+                        // TERMINATE
+                        _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_PROCESS_IRQ, _CPUScheduler.getCurrentProcess()));
+                    }
+                    else {
+                        _StdOut.putText("The process you are trying to kill does not exist");
+                    }
+                }
+            }
+            else {
+                // Tell the user the error and do nothing
+                _StdOut.putText("Sorry, no processes are currently running... ");
             }
         };
         Shell.prototype.shellHelp = function (args) {

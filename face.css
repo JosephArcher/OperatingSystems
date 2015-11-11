@@ -1,0 +1,83 @@
+.face, .eye, .yes:hover .mouth, .happy .mouth, .no:hover .mouth, .sad .mouth {
+  border-radius: 50%;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+
+
+.face {
+  position: absolute;
+  margin: 45px 0 0 70px;
+  width: 75px;
+  height: 75px;
+  background: #ffff00;
+}
+
+.eye {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -25px 0 0 -25px;
+  margin-top: -15px;
+  width: 10px;
+  height: 10px;
+  background: #000000;
+  /*  
+    &:after{
+      $size_pupils: $size_eyes/4;
+      @extend %circle;
+        
+      @include centered($size_pupils, $size_pupils);
+        
+      content: '';
+        
+      width: $size_pupils;
+      height: $size_pupils;
+      background: invert($color_eyes);
+    }
+  */
+}
+.eye.left {
+  left: 45px;
+}
+.eye.right {
+  left: 70px;
+}
+
+.mouth {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: 5px 0 0 -15px;
+  margin-top: 5;
+  width: 25px;
+  height: 15px;
+  -moz-transform-origin: 50% 100%;
+  -ms-transform-origin: 50% 100%;
+  -webkit-transform-origin: 50% 100%;
+  transform-origin: 50% 100%;
+  -moz-transition: -moz-transform 0.5s, border-radius 0.5s;
+  -o-transition: -o-transform 0.5s, border-radius 0.5s;
+  -webkit-transition: -webkit-transform 0.5s, border-radius 0.5s;
+  transition: transform 0.5s, border-radius 0.5s;
+  border-bottom: 3px solid #000000;
+}
+
+.sad .mouth {
+  -moz-transform: rotateX(180deg);
+  -ms-transform: rotateX(180deg);
+  -webkit-transform: rotateX(180deg);
+  transform: rotateX(180deg);
+}
+
+.happy .mouth {
+  -moz-transform: rotateX(360deg);
+  -ms-transform: rotateX(360deg);
+  -webkit-transform: rotateX(360deg);
+  transform: rotateX(360deg);
+
+}

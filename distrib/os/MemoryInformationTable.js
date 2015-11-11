@@ -9,7 +9,12 @@ var TSOS;
             this.fillRows();
         }
         MemoryInformationTable.prototype.fillRows = function () {
-            for (var i = 0; i < 32; i++) {
+            for (var i = 0; i < 96; i++) {
+                this.addRow(i);
+            }
+        };
+        MemoryInformationTable.prototype.clearTable = function () {
+            for (var i = 0; i < 96; i++) {
                 this.addRow(i);
             }
         };

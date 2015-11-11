@@ -7,14 +7,15 @@ var TSOS;
 (function (TSOS) {
     var MemoryBlock = (function () {
         function MemoryBlock() {
-            // The block of memory to be stored as a array
-            this.memoryBlock = [];
+            this.memoryBlock = []; // The partition of memory to be stored as a array of bytes
         }
+        /**
+         * Used to create 768 bytes in memory
+         */
         MemoryBlock.prototype.init = function () {
-            // Create the 265 byte memory block	
-            for (var i = 0; i < 255; i++) {
-                // Create each byte
-                this.memoryBlock[i] = new TSOS.Byte(i, "00");
+            // Creates 768 bytes in memory from the starting address
+            for (var i = 0; i < 768; i++) {
+                this.memoryBlock[i] = new TSOS.Byte(i, "00"); // Create each byte
             }
         };
         return MemoryBlock;

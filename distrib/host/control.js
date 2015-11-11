@@ -60,6 +60,10 @@ var TSOS;
             _DateSectionElement = document.getElementById("dateArea");
             // Time section
             _TimeSectionElement = document.getElementById("timeArea");
+            // Resient List
+            _TerminatedProcessTableElement = document.getElementById("terminatedProcessTableElement");
+            // Ready Queue
+            _ReadyQueueTableElement = document.getElementById("readyQueueTableElement");
             // Check for our testing and enrichment core, which
             // may be referenced here (from index.html) as function Glados().
             if (typeof Glados === "function") {
@@ -98,8 +102,8 @@ var TSOS;
                 _CPU = new TSOS.Cpu(); // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
                 _CPU.init(); //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
                 // Create and initalize the Memory for the CPU
-                _MemoryBlock0 = new TSOS.MemoryBlock();
-                _MemoryBlock0.init();
+                _MemoryBlock = new TSOS.MemoryBlock();
+                _MemoryBlock.init();
                 // ... then set the host clock pulse ...
                 _hardwareClockID = setInterval(TSOS.Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
                 // .. and call the OS Kernel Bootstrap routine.
@@ -109,14 +113,17 @@ var TSOS;
             }
             else {
                 _SystemIsOn = false; // Turn the system off
-                TSOS.Utils.togglePowerOff(); // Handle what happens to the UI when the system turns off
                 _SystemInformationInterface.systemOffMode();
-                _ProcessControlBlockTable.clearTable();
+                _MemoryInformationTable.fillRows();
+                _TerminatedProcessTable.clearTable();
+                _ReadyQueueTable.clearTable();
+                TSOS.Utils.togglePowerOff(); // Handle what happens to the UI when the system turns off
                 // Call the halt button becuase that is really what this is supposed to be
                 this.hostBtnHaltOS_click(null);
             }
         };
         Control.hostBtnHaltOS_click = function (btn) {
+            console.log("HALT BUTTON");
             Control.hostLog("Emergency halt", "host");
             Control.hostLog("Attempting Kernel shutdown.", "host");
             // Call the OS shutdown routine.

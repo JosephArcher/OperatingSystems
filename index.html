@@ -7,13 +7,14 @@
    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> <!-- Added Bootstrap -->
    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"> <!-- Added Font Awesome -->
    <link rel="stylesheet" href="buttons.css" type="text/css" /> <!-- Added Bootstrap Button Extras --> 
-   <link rel="stylesheet" href="title.css" type="text/css" /> <!-- Added Bootstrap Button Extras --> 
+   <link rel="stylesheet" href="title.css" type="text/css" /> <!-- Added Bootstrap Button Extras -->
+   <link rel="stylesheet" href="face.css" type="text/css" /> <!-- Added Bootstrap Button Extras --> 
    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-  <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
-   <title>
-      TSOS -  a browser-based virtual Operating System in TypeScript
-   </title>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+   <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+   <title>Joe/S </title>
 
    <!-- Globals CONSTANTS and _Variables. Must included be first. -->
    <script type="text/javascript" src="distrib/globals.js"></script>
@@ -38,18 +39,23 @@
    <script type="text/javascript" src="distrib/os/userCommand.js"></script>
    <script type="text/javascript" src="distrib/os/kernel.js"></script>
    <script type="text/javascript" src="distrib/os/memoryManager.js"></script>
+   <script type="text/javascript" src="distrib/os/cpuScheduler.js"></script>
    <script type="text/javascript" src="distrib/os/processControlBlock.js"></script>
    <script type="text/javascript" src="distrib/os/CpuStatisticsTable.js"></script>
    <script type="text/javascript" src="distrib/os/MemoryInformationTable.js"></script>
-   <script type="text/javascript" src="distrib/os/ProcessControlBlockTable.js"></script>
+   <script type="text/javascript" src="distrib/os/ResidentListTable.js"></script>
+   <script type="text/javascript" src="distrib/os/ReadyQueueTable.js"></script>
+   <script type="text/javascript" src="distrib/os/TerminatedProcessTable.js"></script>
    <script type="text/javascript"  src="distrib/os/systemInformationSection.js"></script>
    <script type="text/javascript" src="distrib/os/collections.js"></script>
-
+   <script type="text/javascript" src="distrib/os/timer.js"></script>
+   <script type="text/javascript" src="distrib/os/ReadyQueue.js"></script>
+   <script type="text/javascript" src="distrib/os/ResidentList.js"></script>
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
   
    <!-- Uncomment this line below to enable GLaDOS testing -->
-  <script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script> 
+ <script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script>
 </head>
 
 <body onload="onDocumentLoad()">
@@ -57,7 +63,9 @@
 <nav class="navbar navbar-default navBarTextSize navbar-inverse">
 
 <div class="navbar-header ">
- <p class="navbar-text  name "> J<i id = "programSpinner" class="fa fa-spinner " style="font-size:70px; color: #FF0000;"> </i>e/s</p>
+ <p class="navbar-text  name "> J<i id = "programSpinner" class="fa fa-spinner " style="font-size:70px; color: #FF0000;"> </i>e/s 
+</p>
+
 </div>
 
     <div  class="navbar-left"
@@ -144,107 +152,54 @@
               <p class = "navBarButtonText">Run</p> </button>    
                    
          </div>   
-        <p style = "color: #C0C0C0; text-align: center; font-size: 16pt; margin-top: 5px; margin-left: 50px;"> Execution Mode </p> 
+       <!-- <p style = "color: #C0C0C0; text-align: center; font-size: 16pt; margin-top: 5px; margin-left: 50px;"> Execution Mode </p> -->
     </form>
   </div><!-- /.container-fluid -->
 </nav>
 <div id="divMain" style="width:100%;"> 
 
-<div id = "leftNav" style=" float: left; margin-left: 25px; width: 700px; ">
+<div id = "leftNav" style=" float: left; margin-left: 25px; width: 600px; ">
 
-  <div id="divConsole" class="form-group" style=" width: 800px; margin-left: 25px;">
+  <div id="divConsole" class="form-group" style=" width: 600px; margin-left: 25px;">
 
+      <div class="panel panel-primary" id  = "systemInformationPanel" style="width: 45%; ">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" href="#systemInformationCollapse"> <h4> System Information <i id= "systemInformationPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i> </h4> </a>
+      </h4>
+    </div>
 
-  <div  id = "systemInformationSection" 
-        class = "systemInformation panel"
-        style="width:500px">      
-          <h3 id = "statusArea"> Status: </h3> 
-          <h3 id = "timeArea" >Time:  </h3>
-          <h3 id = "dateArea" >Date:  </h3>
-   </div>
-
-
+    <div id="systemInformationCollapse" class="panel-collapse collapse">
+    <div class="panel-body">
+          <p id = "statusArea"> Status: </p> 
+          <p id = "timeArea" >Time:  </p>
+          <p  id = "dateArea" >Date:  </p>   
+    </div>
+    </div>
+  </div>
       <canvas id="display"
-              width="500px"
+              width="600px"
               height="500px"
               tabindex="3">
       </canvas>
 
-     <div id="divLog" class="form-group " style = "float:left; width: 700px;">
-       <div style = "width: 500px;"> <h2> Host Log </h2> </div>
-       <textarea class="form-control hostLog" rows="13" id="taHostLog" name="taHostLog" disabled="true"></textarea>
+     <div id="divLog" class="form-group " style = " width: 600px;">
+       <div style = "width: 600px;"> <h2 style="font-size: 15pt;"> Host Log </h2> </div>
+       <textarea class="form-control hostLog" rows="8" id="taHostLog" name="taHostLog" disabled="true"></textarea>
     </div>
 
-</div>
-
-  
-  
+</div> 
    </div>
 
-        <div id="rightNav" style = "float: left; margin-left: 75px; width: 50%;">
-
-     <div  id="divUserProgramInput" class="form-group" style = "float: left: width: 100%;">
-     <h2> User Program Input </h2>
-      <textarea class="form-control hostLog" rows="5" id="taProgramInput" name="taProgramInput" ></textarea>
+        <div id="rightNav" style = "float: left; margin-left: 75px; width: 55%;">
+          <div class="panel panel-primary" id = "mainMemoryPanel" style="width: 55%; float:left; max-height: 300px; overflow: auto;">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" href="#memoryInfoTableCollapse"><h4> Main Memory <i id= "mainMemoryPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i> </h4> </a>
+      </h4>
     </div>
-         <div class="form-group" id="cpuStat" style = "float: left; width: 100%;">
-          
-             <h2> CPU </h2> 
-           
-            <table class="table" id="cpuStatTable" >
-              <thead>
-                <tr>
-                  <th>Program Counter</th>
-                  <th>Instruction Registar</th>
-                  <th>Accumlator</th>
-                  <th>X Registar</th>
-                  <th>Y Registar</th>
-                  <th>Z Flag</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-            <div class="form-group" id="processControlBlock" style = "float: left; width: 100%;">
-            <h2>Process Control Block</h2>
-            <table class="table" id="processControlBlockTable" >
-              <thead>
-                <tr>
-                  <th>Process State</th>
-                  <th>Program Counter</th>
-                  <th>Accumulator</th>
-                  <th>X Register</th>
-                  <th>Y Register</th>
-                  <th>Z Flag</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div id="wrapper" style = " height: 25%; width: 100%; overflow:hidden;" > 
-            <div class="form-group" id="memoryInfo">
-              <h2>Main Memory</h2>
-             <table class="table" id="memoryInfoTable" >
+    <div id="memoryInfoTableCollapse" class="panel-collapse collapse">
+       <table class="table tableText" id="memoryInfoTable" >
               <thead>
                   <th>0</th>
                   <th>1</th>
@@ -260,17 +215,124 @@
                 
               </tbody>
             </table>
-          </div>
-          </div>
-      </div>
+    </div>
+  </div>
+
+
+
+<div id = "testLeft" style = "float:left; width: 50%;">
+ <div class="panel panel-primary" id = "residentListPanel" style="width: 45%; ">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" href="#collapse1"> <h4> Terminated Process List <i id= "residentListPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i> </h4> </a>
+      </h4>
+    </div>
+    <div id="collapse1" class="panel-collapse collapse">
+     <table class="table tableText" id="terminatedProcessTableElement" >
+              <thead>
+                <tr class="tableText">
+                  <th>State</th>
+                  <th>PC</th>
+                  <th>Acc</th>
+                  <th>X</th>
+                  <th>Y</th>
+                  <th>Z</th>
+                  <th>PID </th>
+                  <th>Base</th>
+                  <th>Turn</th>
+                  <th>Wait</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                </tr>
+              </tbody>
+            </table>
+    </div>
+  </div>
+
+  <div class="panel panel-primary" id = "cpuStatPanel" style="width: 45%; ">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" href="#cpuStatTableCollapse"><h4> CPU  <i id= "cpuStatPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i></h4> </a>
+      </h4>
+    </div>
+    <div id="cpuStatTableCollapse" class="panel-collapse collapse">
+       <table class="table tableText" id="cpuStatTable" >
+              <thead class="tableText">
+                <tr>
+                  <th>PC</th>
+                  <th>IR</th>
+                  <th>Acc</th>
+                  <th>X</th>
+                  <th>Y</th>
+                  <th>Z</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>00</td>
+                  <td>00</td>
+                  <td>00</td>
+                  <td>00</td>
+                  <td>00</td>
+                  <td>00</td>
+                </tr>
+              </tbody>
+            </table>
+    </div>
+  </div>
+ 
+ 
+
+  </div>
+  <div id ="testRight" style="float: right; width: 45%;">
+
+ <div class="panel panel-primary" id = "readyQueuePanel" style="width: 45%; ">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" href="#collapse2"><h4> Ready Queue  <i id= "readyQueuePanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i></h4> </a>
+      </h4>
+    </div>
+    <div id="collapse2" class="panel-collapse collapse">
+     <table class="table tableText" id="readyQueueTableElement" >
+              <thead>
+                <tr>
+                  <th>State</th>
+                  <th>PC</th>
+                  <th>Acc</th>
+                  <th>X</th>
+                  <th>Y</th>
+                  <th>Z</th>
+                  <th>PID </th>
+                  <th>Base</th>
+                  <th>Turn</th>
+                  <th>Wait</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+    </div>
+  </div>
+
+    <div class="panel panel-primary" id = "userProgramInputPanel" style="width: 45%; ">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" href="#programInputCollapse"> <h4> User Program Input <i id= "userProgramInputPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i> </h4> </a>
+      </h4>
+    </div>
+    <div id="programInputCollapse" class="panel-collapse collapse">
+
+      <div  id="divUserProgramInput">
+      <textarea class="form-control hostLog" rows="5" id="taProgramInput" name="taProgramInput" ></textarea>
+    </div>
+ 
+    </div>
+    </div>
+  </div>     
 </div>
-<p class="footerText" style="clear:both;">
-   <br>
-   Copyright &copy; 2008 - 2015 No Rights Reserved.
-   <br>
-   Reproduction is inhibited without the express written consent of
-   Ted Codd, Stevie Ray Vaughan, and Ian Fleming.
-</p>
+
 
 </body>
 </html>

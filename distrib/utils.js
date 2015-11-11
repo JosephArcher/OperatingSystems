@@ -45,9 +45,25 @@ var TSOS;
          */
         Utils.togglePowerOn = function () {
             _ProgramSpinner.style.color = "#00B200";
-            $(function () {
+            $(document).ready(function () {
                 $("#btnStartOS").removeClass("btn-navPowerOffBorder");
                 $("#btnStartOS").addClass("btn-navPowerOnBorder");
+                $("#face").addClass("sad");
+                $("#face").removeClass("happy");
+                $("#systemInformationPanel").animate({ width: '100%' }, "slow");
+                $("#systemInformationPanelCheck").fadeIn();
+                $("#userProgramInputPanel").animate({ width: '100%' }, "slow");
+                $("#userProgramInputPanelCheck").fadeIn();
+                $("#residentListPanel").animate({ width: '100%' }, "slow");
+                $("#residentListPanelCheck").fadeIn();
+                $("#readyQueuePanel").animate({ width: '100%' }, "slow");
+                $("#readyQueuePanelCheck").fadeIn();
+                $("#cpuStatPanel").animate({ width: '100%' }, "slow");
+                $("#cpuStatPanelCheck").fadeIn();
+                $("#processControlBlockPanel").animate({ width: '100%' }, "slow");
+                $("#processControlBlockPanelCheck").fadeIn();
+                $("#mainMemoryPanel").animate({ width: '100%' }, "slow");
+                $("#mainMemoryPanelCheck").fadeIn();
             });
         };
         /**
@@ -59,10 +75,29 @@ var TSOS;
             $(function () {
                 $("#btnStartOS").removeClass("btn-navPowerOnBorder");
                 $("#btnStartOS").addClass("btn-navPowerOffBorder");
+                // $("#face").addClass("happy");
+                // $("#face").removeClass("sad");
+                // $(".panel-collapse").collapse('hide');
+                // $("#systemInformationPanel").animate({ width: '45%' }, "slow");
+                // $("#systemInformationPanelCheck").fadeOut();
+                // $("#userProgramInputPanel").animate({ width: '45%' }, "slow");
+                // $("#userProgramInputPanelCheck").fadeOut();
+                // $("#residentListPanel").animate({ width: '45%' }, "slow");
+                // $("#residentListPanelCheck").fadeOut();
+                // $("#readyQueuePanel").animate({ width: '45%' }, "slow");
+                // $("#readyQueuePanelCheck").fadeOut();
+                // $("#cpuStatPanel").animate({ width: '45%' }, "slow");
+                // $("#cpuStatPanelCheck").fadeOut();
+                // $("#processControlBlockPanel").animate({ width: '45%' }, "slow");
+                // $("#processControlBlockPanelCheck").fadeOut();
+                // $("#mainMemoryPanel").animate({ width: '55%' }, "slow");
+                // $("#mainMemoryPanelCheck").fadeOut(); 
             });
             this.clearUserInput();
             this.clearCpuUI();
             _MemoryInformationTable.fillRows();
+            _TerminatedProcessTable.clearTable();
+            _ReadyQueueTable.clearTable();
             _Console.clearScreen();
             _SystemInformationInterface.setStatusMessage("");
         };
@@ -86,6 +121,19 @@ var TSOS;
          * Used to handle the UI changes when the users enters step mode
          */
         Utils.toggleStepModeOn = function () {
+            $(function () {
+                $("#btnStepForward").addClass("see");
+                $("#btnStepForward").removeClass("inv");
+                $("#btnStepOS").removeClass("btn-unselectedMode");
+                $("#btnStepOS").addClass("btn-selectedMode");
+                $("#btnRunOS").removeClass("btn-selectedMode");
+                $("#btnRunOS").addClass("btn-unselectedMode");
+            });
+        };
+        /**
+          * Used to handle the UI changes when the users enters step mode
+        */
+        Utils.happyFace = function () {
             $(function () {
                 $("#btnStepForward").addClass("see");
                 $("#btnStepForward").removeClass("inv");
@@ -136,8 +184,8 @@ var TSOS;
         */
         Utils.isExistingProcess = function (processID) {
             var nextProcess;
-            for (var i = 0; i < _ReadyQueue.size(); i++) {
-                nextProcess = _ReadyQueue.elementAtIndex(i);
+            for (var i = 0; i < _ReadyQueue.getSize(); i++) {
+                // nextProcess = <TSOS.ProcessControlBlock>_ReadyQueue.elementAtIndex(i);
                 if (nextProcess.getProcessID() == processID) {
                     console.log(nextProcess.getProcessID() + " 1");
                     console.log(processID + " 2");
@@ -301,9 +349,9 @@ var TSOS;
             return answer;
         };
         Utils.hexToAscii = function (hexString) {
-            console.log("Hex Value is " + hexString);
+            //  console.log("Hex Value is " + hexString);
             var test = String.fromCharCode(parseInt(hexString, 16));
-            console.log("Ascii Value is " + test);
+            //  console.log("Ascii Value is " + test);
             return test;
         };
         /*
