@@ -331,7 +331,6 @@ var TSOS;
          * Used to clear all memory partitions in the O/S
          */
         Shell.prototype.clearMem = function (args) {
-            console.log("Clearing all memory partitions");
             // Clear all memory partitions
             _MemoryManager.clearAllMemoryPartitions();
         };
@@ -339,7 +338,6 @@ var TSOS;
          * Used to set the current quantum for round robin scheduling
          */
         Shell.prototype.quantum = function (newQuantum) {
-            console.log("Setting the Round Robin Quantum to... " + newQuantum);
             // Set the new quantm value
             _CPUScheduler.setQuantum(newQuantum);
         };

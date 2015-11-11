@@ -123,7 +123,7 @@ var TSOS;
             }
         };
         Control.hostBtnHaltOS_click = function (btn) {
-            console.log("HALT BUTTON SKLDFJKLSDJF");
+            console.log("HALT BUTTON");
             Control.hostLog("Emergency halt", "host");
             Control.hostLog("Attempting Kernel shutdown.", "host");
             // Call the OS shutdown routine.

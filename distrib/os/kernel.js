@@ -53,7 +53,6 @@ var TSOS;
             _StdOut = _Console;
             // Initalize the Process Control Block Counter 
             _ProcessCounterID = -1;
-            //
             // Load the Keyboard Device Driver
             this.krnTrace("Loading the keyboard device driver.");
             _krnKeyboardDriver = new TSOS.DeviceDriverKeyboard(); // Construct it.
@@ -66,8 +65,6 @@ var TSOS;
             _CpuStatisticsTable = new TSOS.CpuStatisticsTable(_CpuStatisticsTableElement);
             // Initalize the Memory Information Table with its Table Element
             _MemoryInformationTable = new TSOS.MemoryInformationTable(_MemoryInformationTableElement);
-            // Initalize the Process Control Table with its Table Element
-            // _ProcessControlBlockTable = new ProcessControlBlockTable(_ProcessControlBlockTableElement);
             // Initalize the System InformationInferface with its HTML Elements
             _SystemInformationInterface = new TSOS.SystemInformationSection(_StatusSectionElement, _DateSectionElement, _TimeSectionElement);
             // Initalize the Ready Queue Table
@@ -124,11 +121,11 @@ var TSOS;
                 if ((_SingleStepMode == true && _AllowNextCycle == true) || (_SingleStepMode == false)) {
                     // Cycle the CPU
                     _CPU.cycle();
+                    // Update the UI 
                     _ReadyQueue.incrementWaitTime();
                     _ReadyQueue.incrementTurnAroundTime();
                     // Decrement the timer by one and check to see if it is finished
                     if (_Timer.decreaseTimerByOne() == TIMER_FINISHED) {
-                        console.log("TIMER FINISHED SO CONTEXT SWIUTCH");
                         _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TIMER_IRQ, _CPUScheduler.getCurrentProcess()));
                     }
                     else {
@@ -235,7 +232,6 @@ var TSOS;
          */
         Kernel.prototype.krnBreakISR = function (process) {
             // Do not add the current process back to the ready queue and set the current process to null in order to signal the timer
-            console.log("BREAK WAS CALLED");
             // Save the current CPU Register values into the process control block
             _CPUScheduler.runningProcess.setProgramCounter(_CPU.PC);
             _CPUScheduler.runningProcess.setAcc(_CPU.Acc);
@@ -267,36 +263,6 @@ var TSOS;
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(END_CPU_IRQ, null));
             }
         };
-        /**
-         * Used to switch between processes
-         * @Params nextProcessToRun {ProcessControlBlock} - The Next Process to be run by the cpu
-         */
-        //   public contextSwitch() {
-        //     console.log("Performing a context swtich with processes");
-        //     var nextProcess: TSOS.ProcessControlBlock;
-        //     var theCurrentProcess = _CPUScheduler.runningProcess;
-        //     if (theCurrentProcess != null) {
-        //         console.log("Current PRocess not null");
-        //         // Save the current CPU Register values into the process control block
-        //         _CPUScheduler.runningProcess.setProgramCounter(_CPU.PC);
-        //         _CPUScheduler.runningProcess.setAcc(_CPU.Acc);
-        //         _CPUScheduler.runningProcess.setXReg(_CPU.Xreg);
-        //         _CPUScheduler.runningProcess.setYReg(_CPU.Yreg);
-        //         _CPUScheduler.runningProcess.setZFlag(_CPU.Zflag);
-        //         // Add the current processs to the ready queue
-        //         _ReadyQueue.enqueue(_CPUScheduler.getCurrentProcess());
-        //         // Get the next process to be run on the CPU
-        //         nextProcess = _CPUScheduler.getNextProcess(); // Calls the CPU Scheduler and returns the next process to run 
-        //         // Start the next process
-        //         _KernelInterruptQueue.enqueue(new Interrupt(START_PROCESS_IRQ, nextProcess));
-        //     }
-        //     else{
-        //         console.log("The Current PRocess is null so get the first process from the queue");
-        //         nextProcess = _ReadyQueue.getElementAt(0);
-        //         // Start the next process
-        //         _KernelInterruptQueue.enqueue(new Interrupt(START_PROCESS_IRQ, nextProcess));
-        //     }
-        // }
         /**
          * Used to set the current CPU information with the next process in order to run it correctly
          * @Params process {ProcessControlBlock} - The process that is being used to set the CPU

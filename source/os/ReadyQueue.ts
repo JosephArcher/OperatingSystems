@@ -39,8 +39,6 @@
 						tempQueue.enqueue(nextElement);
 					}
 				}
-				// After tempQueue has been build with everything except the element to be removed
-				console.log("JOE THE TEMP QUEUE SIZE IS " + tempQueue.getSize());
 				return tempQueue;
 			}
 		}

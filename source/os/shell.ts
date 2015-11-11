@@ -443,7 +443,7 @@ module TSOS {
          * Used to clear all memory partitions in the O/S
          */
         public clearMem(args) { 
-            console.log("Clearing all memory partitions");
+           
             // Clear all memory partitions
             _MemoryManager.clearAllMemoryPartitions();
         }
@@ -451,7 +451,7 @@ module TSOS {
          * Used to set the current quantum for round robin scheduling
          */   
         public quantum(newQuantum: number){
-            console.log("Setting the Round Robin Quantum to... " + newQuantum);
+           
             // Set the new quantm value
             _CPUScheduler.setQuantum(newQuantum);
         }
