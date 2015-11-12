@@ -78,6 +78,15 @@ var TSOS;
             // Format
             sc = new TSOS.ShellCommand(this.format, "format", "Initalize all blocks in all sectors in all tracks and display a message denoting success or failure");
             this.commandList[this.commandList.length] = sc;
+            // List
+            sc = new TSOS.ShellCommand(this.list, "ls", "List the files currently stored on the disk");
+            this.commandList[this.commandList.length] = sc;
+            // Set Schedule
+            sc = new TSOS.ShellCommand(this.setSchedule, "setschedule", "Set the CPU scheduling algorithm {rr , fcfs, priority }");
+            this.commandList[this.commandList.length] = sc;
+            // Get Schedule
+            sc = new TSOS.ShellCommand(this.getSchedule, "getschedule", "Get the current CPU scheduling algorithm {rr , fcfs, priority }");
+            this.commandList[this.commandList.length] = sc;
             // Help
             sc = new TSOS.ShellCommand(this.shellHelp, "help", "- This is the help command. Seek help.");
             this.commandList[this.commandList.length] = sc;
@@ -419,6 +428,15 @@ var TSOS;
         };
         Shell.prototype.format = function () {
             console.log("format shell command was called");
+        };
+        Shell.prototype.list = function () {
+            console.log("list shell command was called");
+        };
+        Shell.prototype.setSchedule = function () {
+            console.log("set shell command was called");
+        };
+        Shell.prototype.getSchedule = function () {
+            console.log("get shell command was called");
         };
         Shell.prototype.shellHelp = function (args) {
             _StdOut.putText("Commands:");
