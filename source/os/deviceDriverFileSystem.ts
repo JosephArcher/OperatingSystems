@@ -45,7 +45,6 @@ module TSOS {
             var newFileLocation = "C:\\" + newFileName;
             var newFileSize = "0 Bytes";
 
-
            // Check to see if the file name already exists 
 
             if (fileNameFound == false) {  // If the file name is not found
@@ -61,21 +60,78 @@ module TSOS {
         }
         /**
          * Used to read a file with the given file name
+         * @Params filename <String> - the name of the file tp read frp,
+         * @Returns         <True>  - If the file was successfully read
+                            <False> - If the file is not read
          */
         public readFile(filename: string) {
 
-        }
-        /**
-         * Used to write the given file data to the given file name
-         */
-        public writeFile(fileData: string , filename: string){
+            // Initalize Variables
+            var fileNameFound: boolean = this.filenameExists(filename);
+
+            // First check to see if the file exists
+          
+            if (fileNameFound == true) { // If the files exists
+
+                // Get the data from the file and return it to the user
+                return true;
+
+            }
+            else { // If the file is not found
+                // Return false
+                return false;
+            }
 
         }
         /**
-         * Used to delete a new file with the given file name
+         * Used to write <filedata> to a file with the given <Filename>
+         * @Params filename <String> - The name of the file to write to 
+         *         filedata <String> - The data to write to the file
+         * @Returns         <True>   - If the file was successfully writen to
+                            <False>  - If the file is not writen to
+         */
+        public writeFile(filedata: string , filename: string){
+
+            // Initalize Variables
+            var fileNameFound: boolean = this.filenameExists(filename);
+
+            // First check to see if the file exists
+          
+            if (fileNameFound == true) { // If the files exists
+
+                // Get the data from the file and return it to the user
+                return true;
+
+            }
+            else { // If the file is not found
+                // Return false
+                return false;
+            }
+
+        }
+        /**
+         * Used to delete a file with the given <Filename>
+         * @Params filename <String> - the name of the file to delete
+         * @Returns         <True>  - If the file was successfully deleted
+                            <False> - If the file is not deleted
          */
         public deleteFile(filename: string) {
 
+            // Initalize Variables
+            var fileNameFound: boolean = this.filenameExists(filename);
+
+            // First check to see if the file exists
+          
+            if (fileNameFound == true) { // If the files exists
+
+                // Get the data from the file and return it to the user
+                return true;
+
+            }
+            else { // If the file is not found
+                // Return false
+                return false;
+            }
         }
         /**
          * Used to check if a file name exists in the file system

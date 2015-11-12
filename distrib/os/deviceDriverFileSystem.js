@@ -56,18 +56,61 @@ var TSOS;
         };
         /**
          * Used to read a file with the given file name
+         * @Params filename <String> - the name of the file tp read frp,
+         * @Returns         <True>  - If the file was successfully read
+                            <False> - If the file is not read
          */
         DeviceDriverFileSystem.prototype.readFile = function (filename) {
+            // Initalize Variables
+            var fileNameFound = this.filenameExists(filename);
+            // First check to see if the file exists
+            if (fileNameFound == true) {
+                // Get the data from the file and return it to the user
+                return true;
+            }
+            else {
+                // Return false
+                return false;
+            }
         };
         /**
-         * Used to write the given file data to the given file name
+         * Used to write <filedata> to a file with the given <Filename>
+         * @Params filename <String> - The name of the file to write to
+         *         filedata <String> - The data to write to the file
+         * @Returns         <True>   - If the file was successfully writen to
+                            <False>  - If the file is not writen to
          */
-        DeviceDriverFileSystem.prototype.writeFile = function (fileData, filename) {
+        DeviceDriverFileSystem.prototype.writeFile = function (filedata, filename) {
+            // Initalize Variables
+            var fileNameFound = this.filenameExists(filename);
+            // First check to see if the file exists
+            if (fileNameFound == true) {
+                // Get the data from the file and return it to the user
+                return true;
+            }
+            else {
+                // Return false
+                return false;
+            }
         };
         /**
-         * Used to delete a new file with the given file name
+         * Used to delete a file with the given <Filename>
+         * @Params filename <String> - the name of the file to delete
+         * @Returns         <True>  - If the file was successfully deleted
+                            <False> - If the file is not deleted
          */
         DeviceDriverFileSystem.prototype.deleteFile = function (filename) {
+            // Initalize Variables
+            var fileNameFound = this.filenameExists(filename);
+            // First check to see if the file exists
+            if (fileNameFound == true) {
+                // Get the data from the file and return it to the user
+                return true;
+            }
+            else {
+                // Return false
+                return false;
+            }
         };
         /**
          * Used to check if a file name exists in the file system
