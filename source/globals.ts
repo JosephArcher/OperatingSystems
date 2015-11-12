@@ -62,7 +62,10 @@ const MEMORY_PARTITION_1_BASE_ADDRESS: number = 256;   // Partition 2
 const MEMORY_PARTITION_2_BASE_ADDRESS: number = 512;   // Partition 3 
 
 // CPU Scheduling Algorithms
-const ROUND_ROBIN: string = "Round Robin";  // Round Robin
+const ROUND_ROBIN:string = "Round Robin";                         // Round Robin
+const FIRST_COME_FIRST_SERVE:string = "First Come First Serve";   // First Come First Serve
+const NON_PREEMPTIVE_PRIORITY:string = "Non Preemptive Priority"; // Non Preemptive Priority
+
 
 //********************************************************\\
 //                 Global Variables                       \\

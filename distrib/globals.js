@@ -53,6 +53,8 @@ var MEMORY_PARTITION_1_BASE_ADDRESS = 256; // Partition 2
 var MEMORY_PARTITION_2_BASE_ADDRESS = 512; // Partition 3 
 // CPU Scheduling Algorithms
 var ROUND_ROBIN = "Round Robin"; // Round Robin
+var FIRST_COME_FIRST_SERVE = "First Come First Serve"; // First Come First Serve
+var NON_PREEMPTIVE_PRIORITY = "Non Preemptive Priority"; // Non Preemptive Priority
 //********************************************************\\
 //                 Global Variables                       \\
 //********************************************************\\

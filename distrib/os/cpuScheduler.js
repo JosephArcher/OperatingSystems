@@ -57,6 +57,18 @@ var TSOS;
             this.setCurrentProcess(nextProcess);
             return nextProcess;
         };
+        CpuScheduler.prototype.getNextProcessRR = function () {
+            var nextProcess = null;
+            return nextProcess;
+        };
+        CpuScheduler.prototype.getNextProcessFCFS = function () {
+            var nextProcess = null;
+            return nextProcess;
+        };
+        CpuScheduler.prototype.getNextProcessPriority = function () {
+            var nextProcess = null;
+            return nextProcess;
+        };
         return CpuScheduler;
     })();
     TSOS.CpuScheduler = CpuScheduler;

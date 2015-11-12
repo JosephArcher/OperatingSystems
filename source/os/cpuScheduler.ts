@@ -61,6 +61,21 @@ module TSOS {
 			}
 			this.setCurrentProcess(nextProcess);
 			return nextProcess;
+		}
+		public getNextProcessRR(): TSOS.ProcessControlBlock {
+
+			var nextProcess: TSOS.ProcessControlBlock = null;
+			return nextProcess;
+		}
+		public getNextProcessFCFS(): TSOS.ProcessControlBlock {
+
+			var nextProcess: TSOS.ProcessControlBlock = null;
+			return nextProcess;
 		}	
+		public getNextProcessPriority(): TSOS.ProcessControlBlock {
+
+			var nextProcess: TSOS.ProcessControlBlock = null;
+			return nextProcess;
+		}
 	}
 }
