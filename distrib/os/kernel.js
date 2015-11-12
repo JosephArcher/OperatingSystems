@@ -12,6 +12,7 @@
 ///<reference path="ReadyQueueTable.ts" />
 ///<reference path="cpuScheduler.ts" />
 ///<reference path="timer.ts" />
+///<reference path="File.ts" />
 /* ------------
      Kernel.ts
 
@@ -82,6 +83,8 @@ var TSOS;
             _CPUScheduler = new TSOS.CpuScheduler();
             // Launch the shell.
             this.krnTrace("Creating and Launching the shell.");
+            var test = new TSOS.File("Joe", "C:/Joe", "234 Bytes");
+            console.log(test);
             //Initalize the shell
             _OsShell = new TSOS.Shell();
             _OsShell.init();

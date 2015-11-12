@@ -2,6 +2,7 @@
 ///<reference path="../utils.ts" />
 ///<reference path="deviceDriver.ts" />
 ///<reference path="canvastext.ts" />
+///<reference path="File.ts" />
 
 /* ----------------------------------
    DeviceDriverFileSystem.ts
@@ -30,8 +31,32 @@ module TSOS {
         }
         /**
          * Used to create a new file with the given file name
+         * @Params filename <String> - the name for the new file
+         * @Returns        <True>  - If the file is successfully created
+                           <False> - If the file is not created
          */
-        public createFile(filename: string) {
+        public createFile(filename: string): boolean {
+
+            // First check to see if the file name already exists in the file system
+            var fileNameFound: boolean = this.filenameExists(filename);
+
+            // Create the properties for the new file
+            var newFileName     = filename.trim();
+            var newFileLocation = "C:\\" + newFileName;
+            var newFileSize = "0 Bytes";
+
+
+           // Check to see if the file name already exists 
+
+            if (fileNameFound == false) {  // If the file name is not found
+
+                // Create a new file 
+                var newFile = new File(newFileName, newFileLocation, newFileSize);
+                return true;
+            }
+            else {  // If the file name is found 
+                return false;
+            }
 
         }
         /**

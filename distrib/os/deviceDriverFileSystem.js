@@ -2,6 +2,7 @@
 ///<reference path="../utils.ts" />
 ///<reference path="deviceDriver.ts" />
 ///<reference path="canvastext.ts" />
+///<reference path="File.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -32,8 +33,26 @@ var TSOS;
         };
         /**
          * Used to create a new file with the given file name
+         * @Params filename <String> - the name for the new file
+         * @Returns        <True>  - If the file is successfully created
+                           <False> - If the file is not created
          */
         DeviceDriverFileSystem.prototype.createFile = function (filename) {
+            // First check to see if the file name already exists in the file system
+            var fileNameFound = this.filenameExists(filename);
+            // Create the properties for the new file
+            var newFileName = filename.trim();
+            var newFileLocation = "C:\\" + newFileName;
+            var newFileSize = "0 Bytes";
+            // Check to see if the file name already exists 
+            if (fileNameFound == false) {
+                // Create a new file 
+                var newFile = new TSOS.File(newFileName, newFileLocation, newFileSize);
+                return true;
+            }
+            else {
+                return false;
+            }
         };
         /**
          * Used to read a file with the given file name
