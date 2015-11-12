@@ -10,8 +10,9 @@ module TSOS {
         public status = 'unloaded';
         public preemptable = false;
 
-        constructor(public driverEntry = null,
-                    public isr = null) {
+        constructor(public driverEntry = null,  public isr = null) {
         }
+
+        
     }
 }
