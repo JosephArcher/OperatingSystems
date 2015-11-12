@@ -58,6 +58,11 @@ var TSOS;
             _krnKeyboardDriver = new TSOS.DeviceDriverKeyboard(); // Construct it.
             _krnKeyboardDriver.driverEntry(); // Call the driverEntry() initialization routine.
             this.krnTrace(_krnKeyboardDriver.status);
+            // Load the File System Device Driver
+            this.krnTrace("Loading the File System.");
+            _krnFileSystemDriver = new TSOS.DeviceDriverFileSystem();
+            _krnFileSystemDriver.driverEntry();
+            this.krnTrace(_krnFileSystemDriver.status);
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
             this.krnTrace("Enabling the interrupts.");
             this.krnEnableInterrupts();
@@ -167,6 +172,9 @@ var TSOS;
                 case KEYBOARD_IRQ:
                     _krnKeyboardDriver.isr(params); // Kernel mode device driver
                     _StdIn.handleInput();
+                    break;
+                case FILE_SYSTEM_IRQ:
+                    _krnFileSystemDriver.isr(params);
                     break;
                 case PRINT_INTEGER_IRQ:
                     this.writeIntegerConsole(params);

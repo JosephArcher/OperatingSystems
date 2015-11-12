@@ -23,20 +23,21 @@ const APP_VERSION: string = "0.03";   //
 const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 1000 = 1 second.
 
 // Interrupts
-const TIMER_IRQ: number = 0;                  // Timer         
-const KEYBOARD_IRQ: number = 1;               // Keyboard 
-const BSOD_IRQ: number = 2;                   // Blue Screen of Death
-const PRINT_INTEGER_IRQ: number = 3;          // Print Integer
-const PRINT_STRING_IRQ: number = 4;           // Print String
-const BREAK_IRQ: number = 5;                  // Break
-const INVALID_OPCODE_IRQ: number = 6;         // Invalid Op Code
-const INVALID_OPCODE_USE_IRQ: number = 7;     // Invalid Op Code Usage
-const MEMORY_OUT_OF_BOUNDS_IRQ: number = 8;   // Memory Out of Bounds
-const CREATE_PROCESSS_IRQ: number = 9;        // Create a new process
-const START_PROCESS_IRQ: number = 10; 		  // Start a new  process
-const TERMINATE_PROCESS_IRQ: number = 11;     // Terminate a  process
-const CONTEXT_SWITCH_IRQ: number = 12;        // Context Swtich Between Processes
-const END_CPU_IRQ: number = 13;                // Stop the CPU from executing 
+const TIMER_IRQ:number = 0;                  // Timer         
+const KEYBOARD_IRQ:number = 1;               // Keyboard 
+const FILE_SYSTEM_IRQ: number = 2;            // File System
+const BSOD_IRQ:number = 3;                    // Blue Screen of Death
+const PRINT_INTEGER_IRQ:number = 4;          // Print Integer
+const PRINT_STRING_IRQ: number = 5;           // Print String
+const BREAK_IRQ: number = 6;                 // Break
+const INVALID_OPCODE_IRQ:number = 7;         // Invalid Op Code
+const INVALID_OPCODE_USE_IRQ:number = 8;     // Invalid Op Code Usage
+const MEMORY_OUT_OF_BOUNDS_IRQ:number = 9;   // Memory Out of Bounds
+const CREATE_PROCESSS_IRQ:number = 10;        // Create a new process
+const START_PROCESS_IRQ:number = 11; 		 // Start a new  process
+const TERMINATE_PROCESS_IRQ:number = 12;     // Terminate a  process
+const CONTEXT_SWITCH_IRQ:number = 13;        // Context Swtich Between Processes
+const END_CPU_IRQ:number = 14;               // Stop the CPU from executing 
 
 // Process States as consts for the Process Control Blocks // Process States \\   
 const PROCESS_STATE_NEW: string         = "NEW";           //   * New
@@ -173,6 +174,7 @@ var _ResidentList: TSOS.ResidentList;           // Stores a list of all loaded p
 // Global Device Driver Objects - page 12
 var _krnKeyboardDriver; //  = null;
 
+var _krnFileSystemDriver; // = null
 //********************************************************\\
 //                  UI Variables                          \\
 //********************************************************\\

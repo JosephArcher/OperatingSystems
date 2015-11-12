@@ -20,18 +20,19 @@ var CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 second
 // Interrupts
 var TIMER_IRQ = 0; // Timer         
 var KEYBOARD_IRQ = 1; // Keyboard 
-var BSOD_IRQ = 2; // Blue Screen of Death
-var PRINT_INTEGER_IRQ = 3; // Print Integer
-var PRINT_STRING_IRQ = 4; // Print String
-var BREAK_IRQ = 5; // Break
-var INVALID_OPCODE_IRQ = 6; // Invalid Op Code
-var INVALID_OPCODE_USE_IRQ = 7; // Invalid Op Code Usage
-var MEMORY_OUT_OF_BOUNDS_IRQ = 8; // Memory Out of Bounds
-var CREATE_PROCESSS_IRQ = 9; // Create a new process
-var START_PROCESS_IRQ = 10; // Start a new  process
-var TERMINATE_PROCESS_IRQ = 11; // Terminate a  process
-var CONTEXT_SWITCH_IRQ = 12; // Context Swtich Between Processes
-var END_CPU_IRQ = 13; // Stop the CPU from executing 
+var FILE_SYSTEM_IRQ = 2; // File System
+var BSOD_IRQ = 3; // Blue Screen of Death
+var PRINT_INTEGER_IRQ = 4; // Print Integer
+var PRINT_STRING_IRQ = 5; // Print String
+var BREAK_IRQ = 6; // Break
+var INVALID_OPCODE_IRQ = 7; // Invalid Op Code
+var INVALID_OPCODE_USE_IRQ = 8; // Invalid Op Code Usage
+var MEMORY_OUT_OF_BOUNDS_IRQ = 9; // Memory Out of Bounds
+var CREATE_PROCESSS_IRQ = 10; // Create a new process
+var START_PROCESS_IRQ = 11; // Start a new  process
+var TERMINATE_PROCESS_IRQ = 12; // Terminate a  process
+var CONTEXT_SWITCH_IRQ = 13; // Context Swtich Between Processes
+var END_CPU_IRQ = 14; // Stop the CPU from executing 
 // Process States as consts for the Process Control Blocks // Process States \\   
 var PROCESS_STATE_NEW = "NEW"; //   * New
 var PROCESS_STATE_RUNNING = "RUNNING"; //   * Running
@@ -131,6 +132,7 @@ var _ResidentList; // Stores a list of all loaded processes
 //********************************************************\\
 // Global Device Driver Objects - page 12
 var _krnKeyboardDriver; //  = null;
+var _krnFileSystemDriver; // = null
 //********************************************************\\
 //                  UI Variables                          \\
 //********************************************************\\
