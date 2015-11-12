@@ -125,6 +125,12 @@ module TSOS {
                 "Read and display the contents of <Filename> or display an error if somthing went wrong");
             this.commandList[this.commandList.length] = sc;
 
+            // Write <Filename>
+            sc = new ShellCommand(this.write,
+                "write",
+                "Write the data inside the quotes to <Filename> and display a message denoting success or failure");
+            this.commandList[this.commandList.length] = sc;
+
             // Delete <Filename>
             sc = new ShellCommand(this.delete,
                 "delete",
@@ -572,29 +578,72 @@ module TSOS {
             }
         }
 
+
+        /////////////////////////////////////////////////////////////////////////////////
+        //                                                                             //
+        //                     File System Shell Commands                              //
+        //                                                                             //
+        /////////////////////////////////////////////////////////////////////////////////
+
+       /**
+        * Used to create a new file in the file system
+        */ 
         public create(args) {
-            console.log("Create shell command was called");
+            _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, CREATE_FILE));
         }
-
+       /**
+        * Used to read a file in the file system
+        */ 
         public read(args) {
-            console.log("read shell command was called");
+            _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, READ_FILE));
         }
-
+       /**
+        * Used to write to a file in the file system
+        */ 
+        public write(args){
+            _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, WRITE_FILE));
+        }
+       /**
+        * Used to delete a file in the file system
+        */ 
         public delete(args) {
-            console.log("delete shell command was called");
+            _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, DELETE_FILE));
+        }     
+       /**
+        * Used to list all the files in the file system
+        */ 
+        public list() {
+            _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, LIST_FILES));
+        }
+        /**
+         * Used to fomrat the drive
+         */
+        public format() {
+            _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, FORMAT_DRIVE));
+        
         }
 
-        public format() {
-            console.log("format shell command was called");
+        /**
+         * Sets the current scheduling algorithm for the CPU Scheduler
+         */ 
+        public setSchedule(schedulingAlgorithm: string) {
+
+            // Check to see if the scheduling algorithm is valid
+            if (schedulingAlgorithm == ROUND_ROBIN || schedulingAlgorithm == FIRST_COME_FIRST_SERVE || schedulingAlgorithm == NON_PREEMPTIVE_PRIORITY) {
+                _CPUScheduler.setSchedulingAlgorithm(schedulingAlgorithm);
+            }
+            // If not dont set it and tell the user
+            else{
+                _StdOut.putText("Error { " + schedulingAlgorithm + " } is not valid... Please enter either rr, fcfs, or priority <INT>");
+            }         
         }
-        public list() {
-            console.log("list shell command was called");
-        }
-        public setSchedule(){
-            console.log("set shell command was called");
-        }
+        /**
+         * Gets the current scheduling algorithm from the CPU Scheduler
+         */
         public getSchedule() {
-            console.log("get shell command was called");
+
+            // Get the current scheduling algorithm and report it to the user
+            _StdOut.putText("The current scheduling algorithm is [ " + _CPUScheduler.getSchedulingAlgorithm + " ]");
         }
         public shellHelp(args) {
             _StdOut.putText("Commands:");

@@ -44,6 +44,18 @@ var TSOS;
             this.runningProcess = nextProcess;
         };
         /**
+         * Sets the current scheduling algorithm
+         */
+        CpuScheduler.prototype.setSchedulingAlgorithm = function (newSchedulingAlgorithm) {
+            this.SchedulingAlgorithm = newSchedulingAlgorithm;
+        };
+        /**
+         * Gets the current scheduling algorithm
+         */
+        CpuScheduler.prototype.getSchedulingAlgorithm = function () {
+            return this.SchedulingAlgorithm;
+        };
+        /**
          * Used to make a scheduling decision based on the current algorithm being used by the O/S
          * @Returns  {ProcessControlBlock} - The next process to be exeuted
          * 									- If no processes exists then return null

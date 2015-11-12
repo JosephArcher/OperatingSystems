@@ -53,9 +53,16 @@ var MEMORY_PARTITION_0_BASE_ADDRESS = 0; // Partition 1
 var MEMORY_PARTITION_1_BASE_ADDRESS = 256; // Partition 2
 var MEMORY_PARTITION_2_BASE_ADDRESS = 512; // Partition 3 
 // CPU Scheduling Algorithms
-var ROUND_ROBIN = "Round Robin"; // Round Robin
-var FIRST_COME_FIRST_SERVE = "First Come First Serve"; // First Come First Serve
-var NON_PREEMPTIVE_PRIORITY = "Non Preemptive Priority"; // Non Preemptive Priority
+var ROUND_ROBIN = "rr"; // Round Robin
+var FIRST_COME_FIRST_SERVE = "fcfs"; // First Come First Serve
+var NON_PREEMPTIVE_PRIORITY = "priority"; // Non Preemptive Priority
+// File System Operations
+var CREATE_FILE = "OPEN"; // Open File
+var DELETE_FILE = "DELETE"; // Delete File
+var READ_FILE = "READ"; // Read File
+var WRITE_FILE = "WRITE"; // Write File
+var LIST_FILES = "LIST"; // List Files
+var FORMAT_DRIVE = "FORMAT"; // Format Drive
 //********************************************************\\
 //                 Global Variables                       \\
 //********************************************************\\

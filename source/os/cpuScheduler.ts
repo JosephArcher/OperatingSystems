@@ -45,7 +45,19 @@ module TSOS {
 		 */
 		 public setCurrentProcess(nextProcess: TSOS.ProcessControlBlock ):void {
 			this.runningProcess = nextProcess;
-		}	
+		}
+		 /**
+		  * Sets the current scheduling algorithm
+		  */
+		 public setSchedulingAlgorithm(newSchedulingAlgorithm: string){
+			 this.SchedulingAlgorithm = newSchedulingAlgorithm;
+		 }
+		/**
+		 * Gets the current scheduling algorithm
+		 */
+		 public getSchedulingAlgorithm(): string {
+			 return this.SchedulingAlgorithm;
+		 }
 		/**
 		 * Used to make a scheduling decision based on the current algorithm being used by the O/S
 		 * @Returns  {ProcessControlBlock} - The next process to be exeuted 

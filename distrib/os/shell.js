@@ -72,6 +72,9 @@ var TSOS;
             // Read <Filename>
             sc = new TSOS.ShellCommand(this.read, "read", "Read and display the contents of <Filename> or display an error if somthing went wrong");
             this.commandList[this.commandList.length] = sc;
+            // Write <Filename>
+            sc = new TSOS.ShellCommand(this.write, "write", "Write the data inside the quotes to <Filename> and display a message denoting success or failure");
+            this.commandList[this.commandList.length] = sc;
             // Delete <Filename>
             sc = new TSOS.ShellCommand(this.delete, "delete", "Remove <Filename> from storage and display a message denoting succss or failure");
             this.commandList[this.commandList.length] = sc;
@@ -417,26 +420,65 @@ var TSOS;
                 _StdOut.putText("Sorry, no processes are currently running... ");
             }
         };
+        /////////////////////////////////////////////////////////////////////////////////
+        //                                                                             //
+        //                     File System Shell Commands                              //
+        //                                                                             //
+        /////////////////////////////////////////////////////////////////////////////////
+        /**
+         * Used to create a new file in the file system
+         */
         Shell.prototype.create = function (args) {
-            console.log("Create shell command was called");
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, CREATE_FILE));
         };
+        /**
+         * Used to read a file in the file system
+         */
         Shell.prototype.read = function (args) {
-            console.log("read shell command was called");
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, READ_FILE));
         };
+        /**
+         * Used to write to a file in the file system
+         */
+        Shell.prototype.write = function (args) {
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, WRITE_FILE));
+        };
+        /**
+         * Used to delete a file in the file system
+         */
         Shell.prototype.delete = function (args) {
-            console.log("delete shell command was called");
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, DELETE_FILE));
         };
-        Shell.prototype.format = function () {
-            console.log("format shell command was called");
-        };
+        /**
+         * Used to list all the files in the file system
+         */
         Shell.prototype.list = function () {
-            console.log("list shell command was called");
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, LIST_FILES));
         };
-        Shell.prototype.setSchedule = function () {
-            console.log("set shell command was called");
+        /**
+         * Used to fomrat the drive
+         */
+        Shell.prototype.format = function () {
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, FORMAT_DRIVE));
         };
+        /**
+         * Sets the current scheduling algorithm for the CPU Scheduler
+         */
+        Shell.prototype.setSchedule = function (schedulingAlgorithm) {
+            // Check to see if the scheduling algorithm is valid
+            if (schedulingAlgorithm == ROUND_ROBIN || schedulingAlgorithm == FIRST_COME_FIRST_SERVE || schedulingAlgorithm == NON_PREEMPTIVE_PRIORITY) {
+                _CPUScheduler.setSchedulingAlgorithm(schedulingAlgorithm);
+            }
+            else {
+                _StdOut.putText("Error { " + schedulingAlgorithm + " } is not valid... Please enter either rr, fcfs, or priority <INT>");
+            }
+        };
+        /**
+         * Gets the current scheduling algorithm from the CPU Scheduler
+         */
         Shell.prototype.getSchedule = function () {
-            console.log("get shell command was called");
+            // Get the current scheduling algorithm and report it to the user
+            _StdOut.putText("The current scheduling algorithm is [ " + _CPUScheduler.getSchedulingAlgorithm + " ]");
         };
         Shell.prototype.shellHelp = function (args) {
             _StdOut.putText("Commands:");
