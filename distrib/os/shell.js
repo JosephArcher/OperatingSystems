@@ -66,6 +66,18 @@ var TSOS;
             // Kill
             sc = new TSOS.ShellCommand(this.kill, "kill", "<PID> - Kills the active process");
             this.commandList[this.commandList.length] = sc;
+            // Create <Filename>
+            sc = new TSOS.ShellCommand(this.create, "filename", "Create the file <Filename> and display a message denoting success or failure");
+            this.commandList[this.commandList.length] = sc;
+            // Read <Filename>
+            sc = new TSOS.ShellCommand(this.read, "read", "Read and display the contents of <Filename> or display an error if somthing went wrong");
+            this.commandList[this.commandList.length] = sc;
+            // Delete <Filename>
+            sc = new TSOS.ShellCommand(this.delete, "delete", "Remove <Filename> from storage and display a message denoting succss or failure");
+            this.commandList[this.commandList.length] = sc;
+            // Format
+            sc = new TSOS.ShellCommand(this.format, "format", "Initalize all blocks in all sectors in all tracks and display a message denoting success or failure");
+            this.commandList[this.commandList.length] = sc;
             // Help
             sc = new TSOS.ShellCommand(this.shellHelp, "help", "- This is the help command. Seek help.");
             this.commandList[this.commandList.length] = sc;
@@ -395,6 +407,18 @@ var TSOS;
                 // Tell the user the error and do nothing
                 _StdOut.putText("Sorry, no processes are currently running... ");
             }
+        };
+        Shell.prototype.create = function (args) {
+            console.log("Create shell command was called");
+        };
+        Shell.prototype.read = function (args) {
+            console.log("read shell command was called");
+        };
+        Shell.prototype.delete = function (args) {
+            console.log("delete shell command was called");
+        };
+        Shell.prototype.format = function () {
+            console.log("format shell command was called");
         };
         Shell.prototype.shellHelp = function (args) {
             _StdOut.putText("Commands:");

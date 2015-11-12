@@ -113,6 +113,30 @@ module TSOS {
                                 "<PID> - Kills the active process");
             this.commandList[this.commandList.length] = sc;
 
+            // Create <Filename>
+            sc = new ShellCommand(this.create,
+                "filename",
+                "Create the file <Filename> and display a message denoting success or failure");
+            this.commandList[this.commandList.length] = sc;
+
+            // Read <Filename>
+            sc = new ShellCommand(this.read,
+                "read",
+                "Read and display the contents of <Filename> or display an error if somthing went wrong");
+            this.commandList[this.commandList.length] = sc;
+
+            // Delete <Filename>
+            sc = new ShellCommand(this.delete,
+                "delete",
+                "Remove <Filename> from storage and display a message denoting succss or failure");
+            this.commandList[this.commandList.length] = sc;
+
+            // Format
+            sc = new ShellCommand(this.format,
+                "format",
+                "Initalize all blocks in all sectors in all tracks and display a message denoting success or failure");
+            this.commandList[this.commandList.length] = sc;
+
             // Help
             sc = new ShellCommand(this.shellHelp,
                                   "help",
@@ -529,6 +553,23 @@ module TSOS {
               _StdOut.putText("Sorry, no processes are currently running... ");
           }
         }
+
+        public create(args){
+            console.log("Create shell command was called");
+        }
+
+        public read(args) {
+            console.log("read shell command was called");
+        }
+
+        public delete(args) {
+            console.log("delete shell command was called");
+        }
+
+        public format() {
+            console.log("format shell command was called");
+        }
+
         public shellHelp(args) {
             _StdOut.putText("Commands:");
             for (var i in _OsShell.commandList) {
