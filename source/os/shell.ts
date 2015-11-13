@@ -115,7 +115,7 @@ module TSOS {
 
             // Create <Filename>
             sc = new ShellCommand(this.create,
-                "filename",
+                "create",
                 "Create the file <Filename> and display a message denoting success or failure");
             this.commandList[this.commandList.length] = sc;
 
@@ -589,37 +589,75 @@ module TSOS {
         * Used to create a new file in the file system
         */ 
         public create(args) {
-            _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, CREATE_FILE));
+
+            var response = [];
+
+            response[0] = CREATE_FILE;
+            response[1] = args;
+
+            _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, response));
         }
        /**
         * Used to read a file in the file system
         */ 
         public read(args) {
-            _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, READ_FILE));
+
+
+            var response = [];
+
+            response[0] = READ_FILE;
+            response[1] = args;
+
+            _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, response));
         }
        /**
         * Used to write to a file in the file system
         */ 
         public write(args){
-            _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, WRITE_FILE));
+
+            var response = [];
+
+            response[0] = WRITE_FILE;
+            response[1] = args;
+
+            _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, response));
         }
        /**
         * Used to delete a file in the file system
         */ 
         public delete(args) {
-            _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, DELETE_FILE));
+
+            var response = [];
+
+            response[0] = DELETE_FILE;
+            response[1] = args;
+
+            _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, response));
         }     
        /**
         * Used to list all the files in the file system
         */ 
         public list() {
-            _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, LIST_FILES));
+
+
+            var response = [];
+
+            response[0] = LIST_FILES;
+            response[1] = "";
+
+            _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, response));
         }
         /**
          * Used to fomrat the drive
          */
         public format() {
-            _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, FORMAT_DRIVE));
+
+            var response = [];
+
+            response[0] = FORMAT_DRIVE;
+            response[1] = "";
+
+            _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, response));
         
         }
 

@@ -13,6 +13,8 @@
 ///<reference path="cpuScheduler.ts" />
 ///<reference path="timer.ts" />
 ///<reference path="File.ts" />
+///<reference path="HardDiskManager.ts" />
+
 
 /* ------------
      Kernel.ts
@@ -107,12 +109,11 @@ module TSOS {
 
             // Launch the shell.
             this.krnTrace("Creating and Launching the shell.");
-            var test = new File("Joe", "C:/Joe", "234 Bytes");
-            console.log(test);
 
             //Initalize the shell
             _OsShell = new Shell();
             _OsShell.init();
+
 
             // Finally, initiate student testing protocol.
             if (_GLaDOS) {
@@ -213,7 +214,7 @@ module TSOS {
                     _krnKeyboardDriver.isr(params);     // Kernel mode device driver
                     _StdIn.handleInput();
                     break;
-                case FILE_SYSTEM_IRQ:                   // File System Device Driver
+                case  FILE_SYSTEM_IRQ:                  // File System Device Driver
                     _krnFileSystemDriver.isr(params);
                     break;
                 case PRINT_INTEGER_IRQ:                 // Integer Console Output

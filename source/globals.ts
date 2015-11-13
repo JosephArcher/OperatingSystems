@@ -75,6 +75,11 @@ const WRITE_FILE: string = "WRITE";    // Write File
 const LIST_FILES: string = "LIST";     // List Files
 const FORMAT_DRIVE: string = "FORMAT"; // Format Drive
 
+// HardDisk Block States
+const BLOCK_IN_USE: string = "BLOCK_IN_USE";
+const BLOCK_FREE: string = "BLOCK_FREE";
+
+
 //********************************************************\\
 //                 Global Variables                       \\
 //********************************************************\\
@@ -103,7 +108,7 @@ var _StdOut;    // Output
 
 // The Super Slick Scheduler
 var _CPUScheduler: TSOS.CpuScheduler;
-console.log(_CPUScheduler + " SDFKLJSDKLFJSLKDFJLKSDJFKLSJDFKLSDF");
+
 // The Sharp Shell
 var _OsShell: TSOS.Shell;
 
@@ -118,6 +123,9 @@ var _Mode: number = 0;  // 0 = Kernel Mode |  1 = User Mode
 
 // The Hardy Hardware Clock
 var _hardwareClockID: number = null;
+
+// The Hyper Active Hard Disk Manager
+var _HardDiskManager: TSOS.HardDiskManager;
 
 // The Kooky Kernel
 var _Kernel: TSOS.Kernel;

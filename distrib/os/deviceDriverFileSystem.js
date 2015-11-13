@@ -24,12 +24,55 @@ var TSOS;
         function DeviceDriverFileSystem() {
             _super.call(this, this.krnFSDriverEntry, this.krnFSOperationRespose);
         }
+        DeviceDriverFileSystem.prototype.formatHardDisk = function () {
+            var tracks = 4;
+            var sectors = 8;
+            var blocks = 8;
+            var nextStorageLocation = "";
+            // Loop and initalize the session storage
+            for (var i = 0; i < tracks; i++) {
+                for (var j = 0; j < sectors; j++) {
+                    for (var k = 0; k < blocks; k++) {
+                        nextStorageLocation = i.toString() + j.toString() + k.toString();
+                        console.log(nextStorageLocation + "storage Location");
+                        sessionStorage.setItem(nextStorageLocation, "00");
+                    }
+                }
+            }
+        };
+        DeviceDriverFileSystem.prototype.getNextAvailableMemoryLocation = function () {
+        };
         DeviceDriverFileSystem.prototype.krnFSDriverEntry = function () {
             // Initialization File System Device Driver.
             this.status = "loaded";
         };
         // Update the kernal with the status of File System Operations
-        DeviceDriverFileSystem.prototype.krnFSOperationRespose = function () {
+        DeviceDriverFileSystem.prototype.krnFSOperationRespose = function (args) {
+            var operation = args[0];
+            var data1 = args[1];
+            var data2 = args[2];
+            switch (operation) {
+                case CREATE_FILE:
+                    this.createFile(data1);
+                    break;
+                case READ_FILE:
+                    this.readFile(data1);
+                    break;
+                case WRITE_FILE:
+                    this.writeFile(data1, data2);
+                    break;
+                case DELETE_FILE:
+                    this.deleteFile(data1);
+                    break;
+                case LIST_FILES:
+                    this.listFiles();
+                    break;
+                case FORMAT_DRIVE:
+                    this.formatHardDisk();
+                    break;
+                default:
+                    break;
+            }
         };
         /**
          * Used to create a new file with the given file name
@@ -40,17 +83,21 @@ var TSOS;
         DeviceDriverFileSystem.prototype.createFile = function (filename) {
             // First check to see if the file name already exists in the file system
             var fileNameFound = this.filenameExists(filename);
+            console.log("CREATE FILE:  " + fileNameFound);
             // Create the properties for the new file
-            var newFileName = filename.trim();
+            var newFileName = filename;
             var newFileLocation = "C:\\" + newFileName;
             var newFileSize = "0 Bytes";
             // Check to see if the file name already exists 
             if (fileNameFound == false) {
                 // Create a new file 
                 var newFile = new TSOS.File(newFileName, newFileLocation, newFileSize);
+                sessionStorage.setItem(newFile.getFilename(), newFile.getFilename());
+                _StdOut.putText("Success: The file was created");
                 return true;
             }
             else {
+                _StdOut.putText("Error: The filename already exists \n");
                 return false;
             }
         };
@@ -116,23 +163,16 @@ var TSOS;
          * Used to check if a file name exists in the file system
          */
         DeviceDriverFileSystem.prototype.filenameExists = function (filename) {
-            // Initalize the variables
-            var fileList = [];
-            var nextFile = null;
-            // Get all the files in the file system
-            fileList = this.getAllFiles();
-            // Loop over the list comparing the name of the file to the given name
-            for (var i = 0; i < fileList.length; i++) {
-                // Get the next file in the list
-                nextFile = fileList[i];
-                // Compare that next files name to the given name
-                if (filename == nextFile.getFileName()) {
-                    // Return TRUE
-                    return true;
-                }
+            // Check to see if the file name is in stored in the session storage
+            var fileExists = sessionStorage.getItem(filename);
+            console.log(fileExists + "  :testing data");
+            if (fileExists != null) {
+                return true;
             }
-            // If after looping no matching name was found return false
-            return false;
+            else {
+                console.log("File does not exists");
+                return false;
+            }
         };
         /**
          * Checks to see if the given file name already exists in the file system

@@ -67,7 +67,7 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.kill, "kill", "<PID> - Kills the active process");
             this.commandList[this.commandList.length] = sc;
             // Create <Filename>
-            sc = new TSOS.ShellCommand(this.create, "filename", "Create the file <Filename> and display a message denoting success or failure");
+            sc = new TSOS.ShellCommand(this.create, "create", "Create the file <Filename> and display a message denoting success or failure");
             this.commandList[this.commandList.length] = sc;
             // Read <Filename>
             sc = new TSOS.ShellCommand(this.read, "read", "Read and display the contents of <Filename> or display an error if somthing went wrong");
@@ -429,37 +429,55 @@ var TSOS;
          * Used to create a new file in the file system
          */
         Shell.prototype.create = function (args) {
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, CREATE_FILE));
+            var response = [];
+            response[0] = CREATE_FILE;
+            response[1] = args;
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, response));
         };
         /**
          * Used to read a file in the file system
          */
         Shell.prototype.read = function (args) {
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, READ_FILE));
+            var response = [];
+            response[0] = READ_FILE;
+            response[1] = args;
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, response));
         };
         /**
          * Used to write to a file in the file system
          */
         Shell.prototype.write = function (args) {
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, WRITE_FILE));
+            var response = [];
+            response[0] = WRITE_FILE;
+            response[1] = args;
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, response));
         };
         /**
          * Used to delete a file in the file system
          */
         Shell.prototype.delete = function (args) {
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, DELETE_FILE));
+            var response = [];
+            response[0] = DELETE_FILE;
+            response[1] = args;
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, response));
         };
         /**
          * Used to list all the files in the file system
          */
         Shell.prototype.list = function () {
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, LIST_FILES));
+            var response = [];
+            response[0] = LIST_FILES;
+            response[1] = "";
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, response));
         };
         /**
          * Used to fomrat the drive
          */
         Shell.prototype.format = function () {
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, FORMAT_DRIVE));
+            var response = [];
+            response[0] = FORMAT_DRIVE;
+            response[1] = "";
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, response));
         };
         /**
          * Sets the current scheduling algorithm for the CPU Scheduler

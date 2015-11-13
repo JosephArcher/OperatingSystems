@@ -63,6 +63,9 @@ var READ_FILE = "READ"; // Read File
 var WRITE_FILE = "WRITE"; // Write File
 var LIST_FILES = "LIST"; // List Files
 var FORMAT_DRIVE = "FORMAT"; // Format Drive
+// HardDisk Block States
+var BLOCK_IN_USE = "BLOCK_IN_USE";
+var BLOCK_FREE = "BLOCK_FREE";
 //********************************************************\\
 //                 Global Variables                       \\
 //********************************************************\\
@@ -85,7 +88,6 @@ var _StdIn; // Input
 var _StdOut; // Output
 // The Super Slick Scheduler
 var _CPUScheduler;
-console.log(_CPUScheduler + " SDFKLJSDKLFJSLKDFJLKSDJFKLSJDFKLSDF");
 // The Sharp Shell
 var _OsShell;
 // The Magnificent Memory
@@ -96,6 +98,8 @@ var _MemoryManager;
 var _Mode = 0; // 0 = Kernel Mode |  1 = User Mode
 // The Hardy Hardware Clock
 var _hardwareClockID = null;
+// The Hyper Active Hard Disk Manager
+var _HardDiskManager;
 // The Kooky Kernel
 var _Kernel;
 // The Timely Timer

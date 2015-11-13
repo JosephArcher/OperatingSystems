@@ -17,17 +17,65 @@ module TSOS {
     // Extends DeviceDriver
     export class DeviceDriverFileSystem extends DeviceDriver {
 
+
+        
        public  constructor() {
            super(this.krnFSDriverEntry, this.krnFSOperationRespose);
-        }
-        public krnFSDriverEntry() {
+       }
+       public formatHardDisk() {
+
+          var tracks: number = 4;
+          var sectors: number = 8;
+          var blocks: number = 8;
+
+          var nextStorageLocation = "";
+          // Loop and initalize the session storage
+          for (var i = 0; i < tracks; i++) {
+              for (var j = 0; j < sectors; j++) {
+                   for (var k = 0; k < blocks; k++) {
+                       nextStorageLocation = i.toString() + j.toString() + k.toString();
+                       console.log(nextStorageLocation + "storage Location");
+                       sessionStorage.setItem(nextStorageLocation, "00");
+                   }
+               }
+           }
+       }
+       public getNextAvailableMemoryLocation() {
+
+       }
+       public krnFSDriverEntry() {
 
             // Initialization File System Device Driver.
             this.status = "loaded";    
         }
         // Update the kernal with the status of File System Operations
-        public krnFSOperationRespose () {
+        public krnFSOperationRespose(args){
+            var operation: string = args[0];
+            var data1: string = args[1];
+            var data2: string = args[2];
 
+            switch (operation) {
+                case CREATE_FILE:
+                    this.createFile(data1);
+                    break;
+                case READ_FILE:
+                    this.readFile(data1);
+                    break;
+                case WRITE_FILE:
+                    this.writeFile(data1 , data2);
+                    break;
+                case DELETE_FILE:
+                    this.deleteFile(data1);
+                    break;
+                case LIST_FILES:
+                    this.listFiles();
+                    break;
+                case FORMAT_DRIVE:
+                    this.formatHardDisk();
+                    break;
+               default:
+                    break;
+            }
         }
         /**
          * Used to create a new file with the given file name
@@ -40,20 +88,23 @@ module TSOS {
             // First check to see if the file name already exists in the file system
             var fileNameFound: boolean = this.filenameExists(filename);
 
+            console.log("CREATE FILE:  " + fileNameFound);
             // Create the properties for the new file
-            var newFileName     = filename.trim();
+            var newFileName = filename;
             var newFileLocation = "C:\\" + newFileName;
             var newFileSize = "0 Bytes";
 
            // Check to see if the file name already exists 
 
             if (fileNameFound == false) {  // If the file name is not found
-
                 // Create a new file 
-                var newFile = new File(newFileName, newFileLocation, newFileSize);
+                var newFile: TSOS.File = new File(newFileName, newFileLocation, newFileSize);
+                sessionStorage.setItem(newFile.getFilename(), newFile.getFilename());
+                _StdOut.putText("Success: The file was created"); 
                 return true;
             }
-            else {  // If the file name is found 
+            else {  // If the file name is found
+                _StdOut.putText("Error: The filename already exists \n"); 
                 return false;
             }
 
@@ -137,29 +188,20 @@ module TSOS {
          * Used to check if a file name exists in the file system
          */
         public filenameExists(filename: string ): boolean {
+            
+            // Check to see if the file name is in stored in the session storage
+            var fileExists = sessionStorage.getItem(filename);
 
-            // Initalize the variables
-            var fileList = [];
-            var nextFile = null;
+            console.log(fileExists + "  :testing data");
 
-            // Get all the files in the file system
-            fileList = this.getAllFiles();
-
-            // Loop over the list comparing the name of the file to the given name
-            for (var i = 0; i < fileList.length; i++) {
-
-                // Get the next file in the list
-                nextFile = fileList[i];
-
-                // Compare that next files name to the given name
-                if(filename == nextFile.getFileName() ) { // If the names match
-                    // Return TRUE
-                    return true;
-                }
-
+            if (fileExists != null) { // IF so 
+              
+                return true;
             }
-            // If after looping no matching name was found return false
-            return false;
+            else { // If Not 
+                console.log("File does not exists");
+                return false;
+            }
         }
 
         /**
@@ -185,6 +227,9 @@ module TSOS {
             // Return file list
             return fileList;
         }
+       // public findNextAvailableMemoryBlock(): string {
+
+        //}
 
     }
 }

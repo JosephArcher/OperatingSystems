@@ -6,6 +6,7 @@ var TSOS;
 (function (TSOS) {
     var File = (function () {
         function File(filename, fileLocation, fileSize) {
+            this.state = "";
             this.Name = "";
             this.Location = "";
             this.Size = "";
@@ -13,6 +14,10 @@ var TSOS;
             this.ReadOnly = false;
             this.Hidden = false;
             this.Data = "";
+            this.track = "";
+            this.sector = "";
+            this.block = "";
+            this.state = BLOCK_FREE;
             this.Name = filename;
             this.Location = fileLocation;
             this.Size = fileSize;
@@ -47,6 +52,20 @@ var TSOS;
         };
         File.prototype.setHidden = function (mode) {
             this.Hidden = mode;
+        };
+        File.prototype.convertToString = function () {
+            var output = "";
+            // First check the state to determine if in use or not
+            if (this.state == BLOCK_FREE) {
+                output = output + "0";
+            }
+            else {
+                output = output + "1";
+            }
+            // Next wrap up the sector , track , block info
+            output = output + this.track + this.sector + this.block;
+            // Next Wrap up the data 
+            return output;
         };
         return File;
     })();
