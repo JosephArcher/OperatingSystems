@@ -122,6 +122,7 @@ var TSOS;
             // First check to see if the file name already exists
             if (fileNameFound == false) {
                 _StdOut.putText("Read Error: The file name does not exist ");
+                // Advance line
                 _Console.advanceLine();
                 // Place the prompt
                 _OsShell.putPrompt();
@@ -129,6 +130,7 @@ var TSOS;
             }
             else {
                 _StdOut.putText("Read Successful ");
+                // Advance
                 _Console.advanceLine();
                 // Place the prompt
                 _OsShell.putPrompt();
@@ -142,17 +144,27 @@ var TSOS;
          * @Returns         <True>   - If the file was successfully writen to
                             <False>  - If the file is not writen to
          */
-        DeviceDriverFileSystem.prototype.writeFile = function (filedata, filename) {
-            // Initalize Variables
+        DeviceDriverFileSystem.prototype.writeFile = function (filename, filedata) {
+            // First check to see if the file name already exists in the file system
             var fileNameFound = this.filenameExists(filename);
-            // First check to see if the file exists
-            if (fileNameFound == true) {
-                // Get the data from the file and return it to the user
-                return true;
+            // First check to see if the file name already exists
+            if (fileNameFound == false) {
+                // Tell the user
+                _StdOut.putText("Write Error: The file name does not exist ");
+                // Advance the line
+                _Console.advanceLine();
+                // Place the prompt
+                _OsShell.putPrompt();
+                return false;
             }
             else {
-                // Return false
-                return false;
+                // Tell the user
+                _StdOut.putText("Write Successful ");
+                // Advance the line
+                _Console.advanceLine();
+                // Place the prompt
+                _OsShell.putPrompt();
+                return true;
             }
         };
         /**
@@ -162,16 +174,27 @@ var TSOS;
                             <False> - If the file is not deleted
          */
         DeviceDriverFileSystem.prototype.deleteFile = function (filename) {
-            // Initalize Variables
+            // First check to see if the file name already exists in the file system
             var fileNameFound = this.filenameExists(filename);
-            // First check to see if the file exists
-            if (fileNameFound == true) {
-                // Get the data from the file and return it to the user
-                return true;
+            // First check to see if the file name already exists
+            if (fileNameFound == false) {
+                // Tell the user
+                _StdOut.putText("Delete Error: The file name does not exist ");
+                // Advance the line
+                _Console.advanceLine();
+                // Place the prompt
+                _OsShell.putPrompt();
+                return false;
             }
             else {
-                // Return false
-                return false;
+                sessionStorage.removeItem(filename);
+                // Tell the user
+                _StdOut.putText("Delete Successful ");
+                // Advance the line
+                _Console.advanceLine();
+                // Place the prompt
+                _OsShell.putPrompt();
+                return true;
             }
         };
         /**

@@ -141,6 +141,8 @@ module TSOS {
             if (fileNameFound == false) {  // If the file name is not found
 
                 _StdOut.putText("Read Error: The file name does not exist "); 
+
+                // Advance line
                 _Console.advanceLine();
 
                 // Place the prompt
@@ -151,6 +153,8 @@ module TSOS {
             else { // If the file was found
 
                 _StdOut.putText("Read Successful ");
+
+                // Advance
                 _Console.advanceLine();
 
                 // Place the prompt
@@ -168,22 +172,38 @@ module TSOS {
          * @Returns         <True>   - If the file was successfully writen to
                             <False>  - If the file is not writen to
          */
-        public writeFile(filedata: string , filename: string){
+        public writeFile(filename: string, filedata){
 
-            // Initalize Variables
+            // First check to see if the file name already exists in the file system
             var fileNameFound: boolean = this.filenameExists(filename);
 
-            // First check to see if the file exists
-          
-            if (fileNameFound == true) { // If the files exists
+            // First check to see if the file name already exists
+            if (fileNameFound == false) {  // If the file name is not found
 
-                // Get the data from the file and return it to the user
-                return true;
+                // Tell the user
+                _StdOut.putText("Write Error: The file name does not exist ");
 
-            }
-            else { // If the file is not found
-                // Return false
+                // Advance the line
+                _Console.advanceLine();
+
+                // Place the prompt
+                _OsShell.putPrompt();
+
                 return false;
+            }
+            else { // If the file was found
+
+                // Tell the user
+                _StdOut.putText("Write Successful ");
+
+                // Advance the line
+                _Console.advanceLine();
+
+                // Place the prompt
+                _OsShell.putPrompt();
+
+
+                return true;
             }
 
         }
@@ -195,20 +215,37 @@ module TSOS {
          */
         public deleteFile(filename: string) {
 
-            // Initalize Variables
+            // First check to see if the file name already exists in the file system
             var fileNameFound: boolean = this.filenameExists(filename);
 
-            // First check to see if the file exists
-          
-            if (fileNameFound == true) { // If the files exists
+            // First check to see if the file name already exists
+            if (fileNameFound == false) {  // If the file name is not found
 
-                // Get the data from the file and return it to the user
-                return true;
+                // Tell the user
+                _StdOut.putText("Delete Error: The file name does not exist ");
 
-            }
-            else { // If the file is not found
-                // Return false
+                // Advance the line
+                _Console.advanceLine();
+
+                // Place the prompt
+                _OsShell.putPrompt();
+
                 return false;
+            }
+            else { // If the file was found
+
+                sessionStorage.removeItem(filename);
+                // Tell the user
+                _StdOut.putText("Delete Successful ");
+
+                // Advance the line
+                _Console.advanceLine();
+
+                // Place the prompt
+                _OsShell.putPrompt();
+
+
+                return true;
             }
         }
         /**
