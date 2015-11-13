@@ -80,6 +80,8 @@ const BLOCK_IN_USE: string = "BLOCK_IN_USE";
 const BLOCK_FREE: string = "BLOCK_FREE";
 
 
+
+
 //********************************************************\\
 //                 Global Variables                       \\
 //********************************************************\\
@@ -120,6 +122,9 @@ var _MemoryManager: TSOS.MemoryManager;
 
 // The Mysterious Mode
 var _Mode: number = 0;  // 0 = Kernel Mode |  1 = User Mode
+
+// The Dank Disk
+var _DiskIsFormated = false;
 
 // The Hardy Hardware Clock
 var _hardwareClockID: number = null;

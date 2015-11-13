@@ -96,6 +96,8 @@ var _MemoryBlock;
 var _MemoryManager;
 // The Mysterious Mode
 var _Mode = 0; // 0 = Kernel Mode |  1 = User Mode
+// The Dank Disk
+var _DiskIsFormated = false;
 // The Hardy Hardware Clock
 var _hardwareClockID = null;
 // The Hyper Active Hard Disk Manager

@@ -24,6 +24,8 @@ module TSOS {
        }
        public formatHardDisk() {
 
+          _DiskIsFormated = true;
+
           var tracks: number = 4;
           var sectors: number = 8;
           var blocks: number = 8;
@@ -49,32 +51,46 @@ module TSOS {
             this.status = "loaded";    
         }
         // Update the kernal with the status of File System Operations
-        public krnFSOperationRespose(args){
+        public krnFSOperationRespose(args) {
+
             var operation: string = args[0];
             var data1: string = args[1];
-            var data2: string = args[2];
+            var data2: string = args[2];         
 
-            switch (operation) {
-                case CREATE_FILE:
-                    this.createFile(data1);
-                    break;
-                case READ_FILE:
-                    this.readFile(data1);
-                    break;
-                case WRITE_FILE:
-                    this.writeFile(data1 , data2);
-                    break;
-                case DELETE_FILE:
-                    this.deleteFile(data1);
-                    break;
-                case LIST_FILES:
-                    this.listFiles();
-                    break;
-                case FORMAT_DRIVE:
-                    this.formatHardDisk();
-                    break;
-               default:
-                    break;
+            if (_DiskIsFormated == false && operation != FORMAT_DRIVE) {
+
+                // Tell the user the error
+                 _StdOut.putText("Error: Disk not formatted "); 
+
+                // Advance the line
+                _Console.advanceLine();
+
+                // Place the prompt
+                _OsShell.putPrompt();
+            }
+            else {
+                switch (operation) {
+                    case CREATE_FILE:
+                        this.createFile(data1);
+                            break;
+                        case READ_FILE:
+                            this.readFile(data1);
+                            break;
+                        case WRITE_FILE:
+                            this.writeFile(data1, data2);
+                            break;
+                        case DELETE_FILE:
+                            this.deleteFile(data1);
+                            break;
+                        case LIST_FILES:
+                            this.listFiles();
+                            break;
+                        case FORMAT_DRIVE:
+                            this.formatHardDisk();
+                            break;
+                        default:
+                            break;
+                  }
             }
         }
         /**
@@ -123,7 +139,6 @@ module TSOS {
 
                 return false;
             }
-
         }
         /**
          * Used to read a file with the given file name
@@ -159,11 +174,9 @@ module TSOS {
 
                 // Place the prompt
                 _OsShell.putPrompt();
-
-               
+            
                 return true;
             }
-
         }
         /**
          * Used to write <filedata> to a file with the given <Filename>
@@ -202,10 +215,8 @@ module TSOS {
                 // Place the prompt
                 _OsShell.putPrompt();
 
-
                 return true;
             }
-
         }
         /**
          * Used to delete a file with the given <Filename>
@@ -243,7 +254,6 @@ module TSOS {
 
                 // Place the prompt
                 _OsShell.putPrompt();
-
 
                 return true;
             }

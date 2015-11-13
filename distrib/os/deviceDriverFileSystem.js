@@ -25,6 +25,7 @@ var TSOS;
             _super.call(this, this.krnFSDriverEntry, this.krnFSOperationRespose);
         }
         DeviceDriverFileSystem.prototype.formatHardDisk = function () {
+            _DiskIsFormated = true;
             var tracks = 4;
             var sectors = 8;
             var blocks = 8;
@@ -51,27 +52,37 @@ var TSOS;
             var operation = args[0];
             var data1 = args[1];
             var data2 = args[2];
-            switch (operation) {
-                case CREATE_FILE:
-                    this.createFile(data1);
-                    break;
-                case READ_FILE:
-                    this.readFile(data1);
-                    break;
-                case WRITE_FILE:
-                    this.writeFile(data1, data2);
-                    break;
-                case DELETE_FILE:
-                    this.deleteFile(data1);
-                    break;
-                case LIST_FILES:
-                    this.listFiles();
-                    break;
-                case FORMAT_DRIVE:
-                    this.formatHardDisk();
-                    break;
-                default:
-                    break;
+            if (_DiskIsFormated == false && operation != FORMAT_DRIVE) {
+                // Tell the user the error
+                _StdOut.putText("Error: Disk not formatted ");
+                // Advance the line
+                _Console.advanceLine();
+                // Place the prompt
+                _OsShell.putPrompt();
+            }
+            else {
+                switch (operation) {
+                    case CREATE_FILE:
+                        this.createFile(data1);
+                        break;
+                    case READ_FILE:
+                        this.readFile(data1);
+                        break;
+                    case WRITE_FILE:
+                        this.writeFile(data1, data2);
+                        break;
+                    case DELETE_FILE:
+                        this.deleteFile(data1);
+                        break;
+                    case LIST_FILES:
+                        this.listFiles();
+                        break;
+                    case FORMAT_DRIVE:
+                        this.formatHardDisk();
+                        break;
+                    default:
+                        break;
+                }
             }
         };
         /**
