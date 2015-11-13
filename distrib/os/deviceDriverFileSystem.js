@@ -83,21 +83,30 @@ var TSOS;
         DeviceDriverFileSystem.prototype.createFile = function (filename) {
             // First check to see if the file name already exists in the file system
             var fileNameFound = this.filenameExists(filename);
-            console.log("CREATE FILE:  " + fileNameFound);
             // Create the properties for the new file
             var newFileName = filename;
             var newFileLocation = "C:\\" + newFileName;
             var newFileSize = "0 Bytes";
-            // Check to see if the file name already exists 
+            // If the file name is not found
             if (fileNameFound == false) {
                 // Create a new file 
                 var newFile = new TSOS.File(newFileName, newFileLocation, newFileSize);
+                // Store it in the session storage disk drive
                 sessionStorage.setItem(newFile.getFilename(), newFile.getFilename());
+                // Report to the user that the creation was successful
                 _StdOut.putText("Success: The file was created");
+                // Advance the line in the console
+                _Console.advanceLine();
+                // Place the prompt
+                _OsShell.putPrompt();
                 return true;
             }
             else {
-                _StdOut.putText("Error: The filename already exists \n");
+                _StdOut.putText("Error: The filename already exists ");
+                // Advance the line
+                _Console.advanceLine();
+                // Place the prompt
+                _OsShell.putPrompt();
                 return false;
             }
         };
@@ -108,16 +117,22 @@ var TSOS;
                             <False> - If the file is not read
          */
         DeviceDriverFileSystem.prototype.readFile = function (filename) {
-            // Initalize Variables
+            // First check to see if the file name already exists in the file system
             var fileNameFound = this.filenameExists(filename);
-            // First check to see if the file exists
-            if (fileNameFound == true) {
-                // Get the data from the file and return it to the user
-                return true;
+            // First check to see if the file name already exists
+            if (fileNameFound == false) {
+                _StdOut.putText("Read Error: The file name does not exist ");
+                _Console.advanceLine();
+                // Place the prompt
+                _OsShell.putPrompt();
+                return false;
             }
             else {
-                // Return false
-                return false;
+                _StdOut.putText("Read Successful ");
+                _Console.advanceLine();
+                // Place the prompt
+                _OsShell.putPrompt();
+                return true;
             }
         };
         /**
@@ -165,12 +180,13 @@ var TSOS;
         DeviceDriverFileSystem.prototype.filenameExists = function (filename) {
             // Check to see if the file name is in stored in the session storage
             var fileExists = sessionStorage.getItem(filename);
-            console.log(fileExists + "  :testing data");
+            // If the file exists
             if (fileExists != null) {
+                // Return true
                 return true;
             }
             else {
-                console.log("File does not exists");
+                // Return false
                 return false;
             }
         };

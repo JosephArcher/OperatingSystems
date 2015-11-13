@@ -85,26 +85,42 @@ module TSOS {
          */
         public createFile(filename: string): boolean {
 
-            // First check to see if the file name already exists in the file system
-            var fileNameFound: boolean = this.filenameExists(filename);
+           // First check to see if the file name already exists in the file system
+           var fileNameFound: boolean = this.filenameExists(filename);
 
-            console.log("CREATE FILE:  " + fileNameFound);
             // Create the properties for the new file
             var newFileName = filename;
             var newFileLocation = "C:\\" + newFileName;
             var newFileSize = "0 Bytes";
 
-           // Check to see if the file name already exists 
+            // If the file name is not found
+            if(fileNameFound == false) {  
 
-            if (fileNameFound == false) {  // If the file name is not found
                 // Create a new file 
                 var newFile: TSOS.File = new File(newFileName, newFileLocation, newFileSize);
+
+                // Store it in the session storage disk drive
                 sessionStorage.setItem(newFile.getFilename(), newFile.getFilename());
+
+                // Report to the user that the creation was successful
                 _StdOut.putText("Success: The file was created"); 
+
+                // Advance the line in the console
+                _Console.advanceLine();
+
+                // Place the prompt
+                _OsShell.putPrompt();
                 return true;
             }
             else {  // If the file name is found
-                _StdOut.putText("Error: The filename already exists \n"); 
+                _StdOut.putText("Error: The filename already exists "); 
+
+                // Advance the line
+                _Console.advanceLine();
+
+                // Place the prompt
+                _OsShell.putPrompt();
+
                 return false;
             }
 
@@ -117,20 +133,31 @@ module TSOS {
          */
         public readFile(filename: string) {
 
-            // Initalize Variables
+            // First check to see if the file name already exists in the file system
             var fileNameFound: boolean = this.filenameExists(filename);
 
-            // First check to see if the file exists
-          
-            if (fileNameFound == true) { // If the files exists
+            // First check to see if the file name already exists
 
-                // Get the data from the file and return it to the user
-                return true;
+            if (fileNameFound == false) {  // If the file name is not found
 
-            }
-            else { // If the file is not found
-                // Return false
+                _StdOut.putText("Read Error: The file name does not exist "); 
+                _Console.advanceLine();
+
+                // Place the prompt
+                _OsShell.putPrompt();
+
                 return false;
+            }
+            else { // If the file was found
+
+                _StdOut.putText("Read Successful ");
+                _Console.advanceLine();
+
+                // Place the prompt
+                _OsShell.putPrompt();
+
+               
+                return true;
             }
 
         }
@@ -192,18 +219,17 @@ module TSOS {
             // Check to see if the file name is in stored in the session storage
             var fileExists = sessionStorage.getItem(filename);
 
-            console.log(fileExists + "  :testing data");
-
-            if (fileExists != null) { // IF so 
-              
+            // If the file exists
+            if (fileExists != null) { 
+                // Return true
                 return true;
             }
-            else { // If Not 
-                console.log("File does not exists");
+            // If file does not exist
+            else { 
+                // Return false
                 return false;
             }
         }
-
         /**
          * Checks to see if the given file name already exists in the file system
          */
