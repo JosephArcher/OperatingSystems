@@ -101,6 +101,12 @@ module TSOS {
          */
         public createFile(filename: string): boolean {
 
+          // Two steps to create a file 
+
+          // First: Space in the file system must be found for the file
+          // Second: An entry for the new file must be made in the directoy
+
+
            // First check to see if the file name already exists in the file system
            var fileNameFound: boolean = this.filenameExists(filename);
 
@@ -148,6 +154,19 @@ module TSOS {
          */
         public readFile(filename: string) {
 
+
+          // To read from a file we use a system call that specifies the name of the file and where
+          // (in memory) the next block of the file should be put. 
+
+           // Again, the directoy is searched for the associated entry, and the system needs to keep a read pointer to the location 
+           // in the file where the next read is to take place.
+
+           // Once the read had taken place,  the read pointer is updated. Because a process is usually either reading or writing 
+           // to a file, the current operation location can be kept as a per-process current-file-position- pointer.
+
+           // Both the read and write operations use this same pointer, saving space and reducing system complexity
+
+
             // First check to see if the file name already exists in the file system
             var fileNameFound: boolean = this.filenameExists(filename);
 
@@ -187,6 +206,13 @@ module TSOS {
          */
         public writeFile(filename: string, filedata){
 
+
+            // To write a file, we make a system call specifiying both the name of the file and the information to be written to the file
+            // Given the name of the file, the system searches the directory to find the file's location
+            // The system keeps a write pointer to the location in the file where the next write occurs to take place
+            // The write pointer must be updated whenever a write occurs
+
+
             // First check to see if the file name already exists in the file system
             var fileNameFound: boolean = this.filenameExists(filename);
 
@@ -225,6 +251,13 @@ module TSOS {
                             <False> - If the file is not deleted
          */
         public deleteFile(filename: string) {
+
+
+            // To delete a file , we search the directory for the named file.
+
+            // Having found the associated directory entry, we relesase all file space, so that 
+            // it can be reused by other files, and erase the directory entry
+            
 
             // First check to see if the file name already exists in the file system
             var fileNameFound: boolean = this.filenameExists(filename);

@@ -55,6 +55,14 @@ var TSOS;
         CpuScheduler.prototype.getSchedulingAlgorithm = function () {
             return this.SchedulingAlgorithm;
         };
+        CpuScheduler.prototype.validSchedulingAlgorithm = function (algorithm) {
+            if (algorithm != ROUND_ROBIN && algorithm != NON_PREEMPTIVE_PRIORITY && algorithm != FIRST_COME_FIRST_SERVE) {
+                console.log("The algorithm is not valid");
+                return false;
+            }
+            console.log("The algorithm is  valid");
+            return true;
+        };
         /**
          * Used to make a scheduling decision based on the current algorithm being used by the O/S
          * @Returns  {ProcessControlBlock} - The next process to be exeuted

@@ -486,6 +486,7 @@ var TSOS;
             // Check to see if the scheduling algorithm is valid
             if (schedulingAlgorithm == ROUND_ROBIN || schedulingAlgorithm == FIRST_COME_FIRST_SERVE || schedulingAlgorithm == NON_PREEMPTIVE_PRIORITY) {
                 _CPUScheduler.setSchedulingAlgorithm(schedulingAlgorithm);
+                _StdOut.putText("Success!  " + schedulingAlgorithm + "  was set as the current scheduling algorithm");
             }
             else {
                 _StdOut.putText("Error { " + schedulingAlgorithm + " } is not valid... Please enter either rr, fcfs, or priority <INT>");

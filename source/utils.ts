@@ -48,9 +48,9 @@ module TSOS {
          */
         public static togglePowerOn(): void {
 
-          _ProgramSpinner.style.color = "#00B200";
+         _ProgramSpinner.style.color = "#00B200";
 
-      $(document).ready(function() {
+        $(document).ready(function() {
 
         $("#btnStartOS").removeClass("btn-navPowerOffBorder");
         $("#btnStartOS").addClass("btn-navPowerOnBorder");
@@ -78,6 +78,10 @@ module TSOS {
 
           $("#mainMemoryPanel").animate({ width: '100%' }, "slow");   
           $("#mainMemoryPanelCheck").fadeIn(); 
+
+          $("#processPanel").animate({ width: '100%' }, "slow");
+          $("#processPanelCheck").fadeIn(); 
+
          });    
        }
 

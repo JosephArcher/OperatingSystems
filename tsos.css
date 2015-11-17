@@ -1,9 +1,76 @@
 /* TSOS.css */
 
+
+.logDateTime {
+font-size: 1em;
+float:left;
+}
+.logSource {
+font-size: 1em;
+float:right;
+
+}
+.logCounter {
+background-color: green;
+font-size: 1.25em;
+float:right;
+
+}
+
+#divMain{
+  margin: 0 auto;
+  width: 970px;
+}
+#rightSide{
+  margin-left: 20px;
+}
+.sectionHeader {
+  text-align: center;
+  font-size: 1.2em;
+}
+.hostLogListItem{
+  font-size: 1.1em;
+}
+/* Let's get this party started */
+::-webkit-scrollbar {
+    width: 8px;
+}
+ 
+/* Track */
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.0); 
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(0,0,0,0); 
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.0); 
+}
+::-webkit-scrollbar-thumb:window-inactive {
+  background: rgba(0,0,0,0.0); 
+}
+::-webkit-scrollbar-track {
+      background-color: #006dcc;
+} /* the new scrollbar will have a flat appearance with the set background color */
+ 
+::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.2); 
+} /* this will style the thumb, ignoring the track */
+ 
+::-webkit-scrollbar-button {
+    
+} /* optionally, you can style the top and the bottom buttons (left and right for horizontal bars) */
+ 
+::-webkit-scrollbar-corner {
+      background-color: black;
+} /* if both the vertical and the horizontal bars appear, then perhaps the right bottom corner also needs to be styled */
 body {
  
   font-family: Helvetica, Verdana, Arial, sans-serif;
-  font-size: 12pt;
   font-weight: normal;
   font-style: normal;
 }
@@ -31,9 +98,6 @@ h3 {
   font-weight: normal;
   font-style: normal;
 }
-tr {
-  outline: thin solid black;
-}
 .right{
   float: right;
 }
@@ -49,21 +113,7 @@ tr {
     border-style: inset;
     border-width: 1px;
 } 
-::-webkit-scrollbar-track {
-      background-color: #b46868;
-} /* the new scrollbar will have a flat appearance with the set background color */
- 
-::-webkit-scrollbar-thumb {
-      background-color: rgba(0, 0, 0, 0.2); 
-} /* this will style the thumb, ignoring the track */
- 
-::-webkit-scrollbar-button {
-      background-color: #7c2929;
-} /* optionally, you can style the top and the bottom buttons (left and right for horizontal bars) */
- 
-::-webkit-scrollbar-corner {
-      background-color: black;
-} /* if both the vertical and the horizontal bars appear, then perhaps the right bottom corner also needs to be styled */
+
 .inv {
   visibility: hidden;
 }
@@ -98,7 +148,7 @@ tr {
 }
 .navBarButtonText {
   color: #C0C0C0;
-  font-size: 20pt;
+  font-size: 15pt;
   font-family: "Courier New", Courier, monospace;
 }
 .systemInformation {
@@ -121,8 +171,7 @@ tr {
   text-align: center;
 }
 .name{
-  margin-left: 125px;
-  font-size: 70pt;
+  font-size: 50pt;
   font-family: Helvetica;
 
 }

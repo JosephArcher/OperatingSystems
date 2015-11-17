@@ -50,6 +50,7 @@ module TSOS {
 		  * Sets the current scheduling algorithm
 		  */
 		 public setSchedulingAlgorithm(newSchedulingAlgorithm: string){
+
 			 this.SchedulingAlgorithm = newSchedulingAlgorithm;
 		 }
 		/**
@@ -57,6 +58,17 @@ module TSOS {
 		 */
 		 public getSchedulingAlgorithm(): string {
 			 return this.SchedulingAlgorithm;
+		 }
+		 public validSchedulingAlgorithm(algorithm: string): boolean {
+
+
+			 if (algorithm != ROUND_ROBIN && algorithm != NON_PREEMPTIVE_PRIORITY && algorithm != FIRST_COME_FIRST_SERVE){
+				 console.log("The algorithm is not valid");
+				 return false;
+			 }
+			 console.log("The algorithm is  valid");
+			 return true;
+			 
 		 }
 		/**
 		 * Used to make a scheduling decision based on the current algorithm being used by the O/S

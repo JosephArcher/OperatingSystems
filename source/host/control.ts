@@ -86,6 +86,7 @@ module TSOS {
             if (typeof Glados === "function") {
                 // function Glados() is here, so instantiate Her into
                 // the global (and properly capitalized) _GLaDOS variable.
+
                 _GLaDOS = new Glados();
                 _GLaDOS.init();
             }
@@ -93,18 +94,8 @@ module TSOS {
         public static hostLog(msg: string, source: string = "?"): void {
             // Note the OS CLOCK.
             var clock: number = _OSclock;
-
-            // Note the REAL clock in milliseconds since January 1, 1970.
-            var now: number = new Date().getTime();
-
-            // Build the log string.
-            var str: string = "({ clock:" + clock + ", source:" + source + ", msg:" + msg + ", now:" + now  + " })"  + "\n";
-          
-            // Update the log console.
-            var taLog = <HTMLInputElement> document.getElementById("taHostLog");
-            taLog.value = str + taLog.value;
-
-            // TODO in the future: Optionally update a log database or some streaming service.
+            var counter = "3";
+            $("#taHostLog").append('<li class="list-group-item" style="height:75px;"> <p class="" >' + msg + '<span class="label logCounter">' + counter +'</span> </p> <span class="logDateTime">' + Utils.getTime() + ' </span > <span class="logSource" >' + source + '</span> </li>');
         }
         //
         // Host Events
@@ -173,6 +164,9 @@ module TSOS {
 
                    _SingleStepMode = true; // Turn on single step moode
                    Utils.toggleStepModeOn(); // Handle the UI for single step mode
+                   $("#taHostLog").append('<li class="list-group-item">Dapibus ac facilisis in <span class="badge">3</span> </li>');
+                   
+
         }
         /**
          * What happens when the user is in single step mode and wants to step forward

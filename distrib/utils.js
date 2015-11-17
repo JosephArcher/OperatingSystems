@@ -64,6 +64,8 @@ var TSOS;
                 $("#processControlBlockPanelCheck").fadeIn();
                 $("#mainMemoryPanel").animate({ width: '100%' }, "slow");
                 $("#mainMemoryPanelCheck").fadeIn();
+                $("#processPanel").animate({ width: '100%' }, "slow");
+                $("#processPanelCheck").fadeIn();
             });
         };
         /**

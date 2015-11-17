@@ -108,20 +108,20 @@
 ******************************************************/
 .btn.outline {
 	background: none;
-	padding: 12px 22px;
+	padding: 6px 11px;
 }
 .btn-navPowerOnBorder.outline {
 	background: none;
     color: #00B200;
     border: 4px solid #C0C0C0;
-   	font-size: 20pt;
+   	font-size: 15pt;
   	font-family: "Courier New", Courier, monospace;
 }
 .btn-navPowerOffBorder.outline {
 	background: none;
     color:#FF0000;
     border: 4px solid #C0C0C0;
-    font-size: 20pt;
+    font-size: 15pt;
   	font-family: "Courier New", Courier, monospace;
 }
 .btn-navPowerOnBorder:focus, .btn:active:focus, .btn.active:focus {
@@ -134,21 +134,21 @@
 	background: none;
     color: #FFFFFF;
     border: 4px solid #FFFFFF;
-   	font-size: 20pt;
+   	font-size: 15pt;
   	font-family: "Courier New", Courier, monospace;
 }
 .btn-unselectedMode.outline {
 	background: none;
     color:#C0C0C0;
     border: 4px solid #C0C0C0;
-    font-size: 20pt;
+    font-size: 15pt;
   	font-family: "Courier New", Courier, monospace;
 }
 .btn-disabledMode.outline {
 	background: none;
     color:#C0C0C0;
     border: none;
-    font-size: 20pt;
+    font-size: 15pt;
   	font-family: "Courier New", Courier, monospace;
 }
 .btn-navStepOn:focus, .btn:active:focus, .btn.active:focus {
@@ -161,7 +161,7 @@
 	background: none;
     color: #FFFFFF;
     border: 4px solid #FFFFFF;
-   	font-size: 20pt;
+   	font-size: 15pt;
   	font-family: "Courier New", Courier, monospace;
 }
 .btn-navRunOff.outline {

@@ -1,0 +1,386 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+   <meta name="author"             content="Alan G. Labouseur , Joseph Archer" />
+   <link rel="stylesheet" href="tsos.css" type="text/css" media="screen" />
+   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> <!-- Added Bootstrap -->
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"> <!-- Added Font Awesome -->
+   <link rel="stylesheet" href="buttons.css" type="text/css" /> <!-- Added Bootstrap Button Extras --> 
+   <link rel="stylesheet" href="title.css" type="text/css" /> <!-- Added Bootstrap Button Extras -->
+   <link rel="stylesheet" href="face.css" type="text/css" /> <!-- Added Bootstrap Button Extras --> 
+   <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+   <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+   <title>Joe/S </title>
+
+   <!-- Globals CONSTANTS and _Variables. Must included be first. -->
+   <script type="text/javascript" src="distrib/globals.js"></script>
+
+   <!-- Host (Virtual Machine / Hardware Simulation) Routines -->
+   <script type="text/javascript" src="distrib/host/control.js"></script>
+   <script type="text/javascript" src="distrib/host/devices.js"></script>
+   <script type="text/javascript" src="distrib/host/cpu.js"></script>
+   <script type="text/javascript" src="distrib/host/Instruction.js"></script>
+   <script type="text/javascript" src="distrib/host/memory.js"></script>
+   <script type="text/javascript" src="distrib/host/byte.js"></script>
+
+   <!-- Virtual OS Routines: Make sure Kernel code is last, since it needs those above it. -->
+   <script type="text/javascript" src="distrib/os/interrupt.js"></script>
+   <script type="text/javascript" src="distrib/os/canvastext.js"></script>
+   <script type="text/javascript" src="distrib/os/console.js"></script>
+   <script type="text/javascript" src="distrib/os/deviceDriver.js"></script>
+   <script type="text/javascript" src="distrib/os/deviceDriverKeyboard.js"></script>
+   <script type="text/javascript" src="distrib/os/queue.js"></script>
+   <script type="text/javascript" src="distrib/os/shell.js"></script>
+   <script type="text/javascript" src="distrib/os/shellCommand.js"></script>
+   <script type="text/javascript" src="distrib/os/userCommand.js"></script>
+   <script type="text/javascript" src="distrib/os/kernel.js"></script>
+   <script type="text/javascript" src="distrib/os/memoryManager.js"></script>
+   <script type="text/javascript" src="distrib/os/cpuScheduler.js"></script>
+   <script type="text/javascript" src="distrib/os/processControlBlock.js"></script>
+   <script type="text/javascript" src="distrib/os/CpuStatisticsTable.js"></script>
+   <script type="text/javascript" src="distrib/os/MemoryInformationTable.js"></script>
+   <script type="text/javascript" src="distrib/os/ResidentListTable.js"></script>
+   <script type="text/javascript" src="distrib/os/ReadyQueueTable.js"></script>
+   <script type="text/javascript" src="distrib/os/TerminatedProcessTable.js"></script>
+   <script type="text/javascript"  src="distrib/os/systemInformationSection.js"></script>
+   <script type="text/javascript" src="distrib/os/collections.js"></script>
+   <script type="text/javascript" src="distrib/os/timer.js"></script>
+   <script type="text/javascript" src="distrib/os/ReadyQueue.js"></script>
+   <script type="text/javascript" src="distrib/os/ResidentList.js"></script>
+   <script type="text/javascript" src="distrib/os/deviceDriverFileSystem.js"></script>
+   <script type="text/javascript" src="distrib/os/File.js"></script>
+   <script type="text/javascript" src="distrib/os/HardDiskManager.js"></script>
+
+  
+   <!-- Other Routines -->
+   <script type="text/javascript" src="distrib/utils.js"></script>
+  
+   <!-- Uncomment this line below to enable GLaDOS testing -->
+<!-- <script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script> -->
+</head>
+
+<body onload="onDocumentLoad()">
+
+<nav class="navbar navbar-default navBarTextSize navbar-inverse">
+
+<div class="navbar-header ">
+ <p class="navbar-text  name "> J<i id = "programSpinner" class="fa fa-spinner " style="font-size:70px; color: #FF0000;"> </i>e/s 
+</p>
+
+</div>
+
+    <div  class="navbar-left"
+          style="margin-left: 150px;"
+           >
+    <form class="navbar-form" >
+
+        <div class="form-group ">
+
+         <button
+              type="button" 
+              id="btnStartOS"  
+              name="brnStartOS" 
+             
+              onclick="TSOS.Control.hostBtnStartOS_click(this);" 
+              tabindex="0"  
+              class="btn btn-navPowerOffBorder outline btn-group-lg ">
+              <p>
+              <i class="fa fa-power-off" id="powerButtonIcon"></i>
+              </p> 
+              <p style= "color: #C0C0C0"> Power </p> 
+            </button>
+
+          <button type="button" 
+              id="btnReset"  
+              name="brnReset" 
+              style = "margin-left: 60px;" 
+              onclick="TSOS.Control.hostBtnReset_click(this);" 
+              tabindex="0"  
+              class="btn btn-group-lg navbar-btn btn-unselectedMode outline"> 
+
+              <p class ="navBarButtonText">
+                  <i class="fa fa-refresh"></i> </p> 
+
+              <p class = "navBarButtonText">Reset</p> </button>
+
+          <button type="button" 
+                  id="btnStepForward"  
+                  name="brnStepForward" 
+                  style = "margin-left: 60px;" 
+                  onclick="TSOS.Control.hostBtnStepForward_click(this);" 
+                  tabindex="0"  
+                  class="btn btn-group-lg navbar-btn btn-unselectedMode inv outline"> 
+
+              <p class ="navBarButtonText">
+                  <i class="fa fa-fast-forward"></i> </p> 
+
+              <p class = "navBarButtonText">Advance</p> </button>
+       </div>
+
+    </form>
+    </div>
+    <form class="navbar-form navbar-right"
+          style = "margin-right: 50px;  border-left: thick solid #C0C0C0;" >
+
+        <div class="form-group">
+
+           <button type="button" 
+              id="btnStepOS"  
+              name="brnStepOS" 
+              style="margin-left: 60px; float: left;" 
+              onclick="TSOS.Control.hostBtnStepOS_click(this);" 
+              tabindex="0"  
+              class="btn  btn-group-lg navbar-btn btn-unselectedMode outline ">
+
+              <p  class ="navBarButtonText">
+                  <i class="fa fa-step-forward"></i></p>              
+              <p class = "navBarButtonText">Step</p> 
+              </button>
+
+             <button type="button" 
+              id="btnRunOS"  
+              name="brnRunOS" 
+              style="margin-left: 60px; float: right;" 
+              onclick="TSOS.Control.hostBtnRunOS_click(this);" 
+              tabindex="0"  
+              class="btn  btn-group-lg navbar-btn btn-selectedMode outline pull-right">
+
+              <p  class ="navBarButtonText">
+                  <i class="fa fa-play"></i></p>              
+              <p class = "navBarButtonText">Run</p> </button>    
+                   
+         </div>   
+       <!-- <p style = "color: #C0C0C0; text-align: center; font-size: 16pt; margin-top: 5px; margin-left: 50px;"> Execution Mode </p> -->
+    </form>
+  </div><!-- /.container-fluid -->
+</nav>
+<div id="divMain" style="width:100%;"> 
+
+<div id = "leftNav" style=" float: left; margin-left: 25px; width: 600px; ">
+
+  <div id="divConsole" class="form-group" style=" width: 600px; margin-left: 25px;">
+
+      <div class="panel panel-primary" id  = "systemInformationPanel" style="width: 45%; ">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" href="#systemInformationCollapse"> <h4> System Information <i id= "systemInformationPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i> </h4> </a>
+      </h4>
+    </div>
+
+    <div id="systemInformationCollapse" class="panel-collapse collapse">
+    <div class="panel-body">
+          <p id = "statusArea"> Status: </p> 
+          <p id = "timeArea" >Time:  </p>
+          <p  id = "dateArea" >Date:  </p>   
+    </div>
+    </div>
+  </div>
+      <canvas id="display"
+              width="600px"
+              height="500px"
+              tabindex="3">
+      </canvas>
+
+     <div id="divLog" class="form-group " style = " width: 600px;">
+       <div style = "width: 600px;"> <h2 style="font-size: 15pt;"> Host Log </h2> </div>
+       <textarea class="form-control hostLog" rows="8" id="taHostLog" name="taHostLog" disabled="true"></textarea>
+    </div>
+
+</div> 
+   </div>
+
+   <div id="rightNav" style = "float: left; margin-left: 75px; width: 55%;">
+
+     <div class="panel panel-primary" id = "mainMemoryPanel" style="width: 55%; float:left; max-height: 300px; overflow: auto;">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#memoryInfoTableCollapse"><h4> Memory Manager <i id= "mainMemoryPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i> </h4> </a>
+        </h4>
+      </div>
+
+      <div id="memoryInfoTableCollapse" class="panel-collapse collapse">
+        <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#mainMemory">Main Memory</a></li>
+          <li><a data-toggle="tab" href="#hardDisk">Hard Disk </a></li>
+      </ul>
+
+      <div class="tab-content">
+
+        <div id="mainMemory" class="tab-pane fade in active">
+          <h3> Main Memory </h3>
+           <table class="table tableText" id="memoryInfoTable" >
+                <thead>
+                    <th>0</th>
+                    <th>1</th>
+                    <th>2</th>
+                    <th>3</th>
+                    <th>4</th>
+                    <th>5</th>
+                    <th>6</th>
+                    <th>7</th>
+                </thead>                
+                 <tbody>                
+                </tbody>
+              </table>
+        </div>
+
+       <div id="hardDisk" class="tab-pane fade in active">
+          <h3> Hard Disk </h3>
+           <table class="table tableText" id="hardDiskTable" >
+                <thead>
+                    <th>0</th>
+                    <th>1</th>
+                    <th>2</th>
+                    <th>3</th>
+                    <th>4</th>
+                    <th>5</th>
+                    <th>6</th>
+                    <th>7</th>
+                </thead>                
+                 <tbody>                
+                </tbody>
+              </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-primary" id = "processPanel" style="width: 55%; float:left; max-height: 300px; overflow: auto;">
+      <div class="panel-heading">
+       <h4 class="panel-title">
+        <a data-toggle="collapse" href="#processPanelCollapse"><h4> Process Manager <i id= "processPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i> </h4> </a>
+        </h4>
+      </div>
+      <div id="processPanelCollapse" class="panel-collapse collapse">
+
+      <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#readyQueue">Ready Queue</a></li>
+          <li><a data-toggle="tab" href="#residentList">Resident List</a></li>
+          <li><a data-toggle="tab" href="#terminatedList">Terminated List</a></li>
+      </ul>
+
+      <div class="tab-content">
+
+        <div id="readyqueue" class="tab-pane fade in active">
+          <h3>Current Active Processes </h3>
+            <table class="table tableText" id="readyQueueTableElement" >
+              <thead>
+                <tr>
+                  <th>State</th>
+                  <th>PC</th>
+                  <th>Acc</th>
+                  <th>X</th>
+                  <th>Y</th>
+                  <th>Z</th>
+                  <th>PID </th>
+                  <th>Base</th>
+                  <th>Turn</th>
+                  <th>Wait</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+        </div>
+
+        <div id="residentList" class="tab-pane fade">
+          <h3>Processes loaded in memory</h3>
+          <table class="table tableText" id="residentListTableElement" >
+              <thead>
+                <tr>
+                  <th>State</th>
+                  <th>PC</th>
+                  <th>Acc</th>
+                  <th>X</th>
+                  <th>Y</th>
+                  <th>Z</th>
+                  <th>PID </th>
+                  <th>Base</th>
+                  <th>Turn</th>
+                  <th>Wait</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+        </div>
+
+        <div id="terminatedList" class="tab-pane fade">
+          <h3>Terminated Processes</h3>
+          <table class="table tableText" id="terminatedListTableElement" >
+              <thead>
+                <tr>
+                  <th>State</th>
+                  <th>PC</th>
+                  <th>Acc</th>
+                  <th>X</th>
+                  <th>Y</th>
+                  <th>Z</th>
+                  <th>PID </th>
+                  <th>Base</th>
+                  <th>Turn</th>
+                  <th>Wait</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+        </div>
+
+      </div>    
+    </div>
+  </div>
+
+  <div class="panel panel-primary" id = "cpuStatPanel" style="width: 45%; ">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" href="#cpuStatTableCollapse"><h4> CPU  <i id= "cpuStatPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i></h4> </a>
+      </h4>
+    </div>
+    <div id="cpuStatTableCollapse" class="panel-collapse collapse">
+       <table class="table tableText" id="cpuStatTable" >
+              <thead class="tableText">
+                <tr>
+                  <th>PC</th>
+                  <th>IR</th>
+                  <th>Acc</th>
+                  <th>X</th>
+                  <th>Y</th>
+                  <th>Z</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>00</td>
+                  <td>00</td>
+                  <td>00</td>
+                  <td>00</td>
+                  <td>00</td>
+                  <td>00</td>
+                </tr>
+              </tbody>
+            </table>
+    </div>
+  </div>
+
+    <div class="panel panel-primary" id = "userPanel" style="width: 45%; ">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" href="#userPanelCollapse"><h4> User Input  <i id= "userPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i></h4> </a>
+      </h4>
+    </div>
+    <div id="userPanelCollapse" class="panel-collapse collapse">
+         
+        
+    </div>
+    </div>
+  </div>
+
+  </div>   
+</div>
+</body>
+</html>

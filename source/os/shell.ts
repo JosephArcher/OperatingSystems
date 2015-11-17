@@ -669,6 +669,7 @@ module TSOS {
             // Check to see if the scheduling algorithm is valid
             if (schedulingAlgorithm == ROUND_ROBIN || schedulingAlgorithm == FIRST_COME_FIRST_SERVE || schedulingAlgorithm == NON_PREEMPTIVE_PRIORITY) {
                 _CPUScheduler.setSchedulingAlgorithm(schedulingAlgorithm);
+                _StdOut.putText("Success!  " + schedulingAlgorithm + "  was set as the current scheduling algorithm");
             }
             // If not dont set it and tell the user
             else{

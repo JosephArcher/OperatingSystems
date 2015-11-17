@@ -9,26 +9,33 @@ module TSOS {
 
     export class File {
 
-		public state: string = "";
-		public Name: string = "";
-		public Location: string = "";
-		public Size: string = "";
-		public Created: string = "";
-		public ReadOnly: boolean = false;
-		public Hidden: boolean = false;
-		public Data: string = "";
-		public track: string = "";
-		public sector: string = "";
-		public block: string = "";
-
+		public Name: string = "";          // The File name
+		public Indentifier: string = "";   // The ID for the file 
+		public Type: string = "";          // The type of file 
+		public Location: string = "";      // This information is a pointer to a device and to the location of the file on that device
+		public Size: string = "";          // The size of the file
+		public TimeCreated: string = "";   // The time the file was created
+		public DateCreated: string = "";   // The day the file was first created
+		public ReadOnly: boolean = false;  // If the file is able to be written to
+		public Hidden: boolean = false;    // If the file should be shown 
 
 		public constructor(filename: string , fileLocation: string , fileSize: string) {
-			this.state = BLOCK_FREE;
-			this.Name = filename;
+
+			this.Name = filename;               
 			this.Location = fileLocation;
 			this.Size = fileSize;
-			this.Created = Utils.getDate() + Utils.getTime();
+			this.TimeCreated = Utils.getTime();
+			this.DateCreated = Utils.getDate();
+
 		}
+
+		///////////////////////////////////////////////////////////////////////////////////////
+		//                                                                                   //
+		//																					 //
+		//                           GETTERS and SETTERS 									 //
+		//																					 //
+		///////////////////////////////////////////////////////////////////////////////////////
+
 		public getFilename(): string {
 			return this.Name;	
 		}
@@ -38,8 +45,11 @@ module TSOS {
 		public getFileSize(): string {
 			return this.Size;
 		}
-		public getCreationTime(): string {
-			return this.Created;
+		public getTimeCreated(): string {
+			return this.TimeCreated;
+		}
+		public getDateCreated(): string {
+			return this.DateCreated;
 		}
 		public isReadyOnly(): boolean {
 			return this.ReadOnly;
@@ -47,38 +57,12 @@ module TSOS {
 		public isHidden(): boolean {
 			return this.Hidden;
 		}
-		public writeToFile(data: string){
-			this.Data = this.Data + data;
-		}
-		public readFromFile(): string {
-			return this.Data;
-		}
-		public setReadyOnly(mode: boolean){
+		public setReadyOnly(mode: boolean) {
 			this.ReadOnly = mode;
 		}
-		public setHidden(mode: boolean){
-			this.Hidden = mode;			
+		public setHidden(mode: boolean) {
+			this.Hidden = mode;
 		}
-		public convertToString(): string {	
-			var output: string = "";
-
-			// First check the state to determine if in use or not
-			if(this.state == BLOCK_FREE){
-				output = output + "0";
-			}
-			else{
-				output = output + "1";
-			}
-
-			// Next wrap up the sector , track , block info
-			output = output + this.track + this.sector + this.block;
-
-			// Next Wrap up the data 
-
-
-
-			return output;
-			
-		}
+		
     }
 }

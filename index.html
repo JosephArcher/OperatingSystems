@@ -65,76 +65,66 @@
 
 <body onload="onDocumentLoad()">
 
-<nav class="navbar navbar-default navBarTextSize navbar-inverse">
+<nav class="navbar navbar-default navbar-inverse" >
 
-<div class="navbar-header ">
- <p class="navbar-text  name "> J<i id = "programSpinner" class="fa fa-spinner " style="font-size:70px; color: #FF0000;"> </i>e/s 
-</p>
+  <div class="container-fluid">
 
-</div>
+   <div class="navbar-header">
+      <a class="navbar-brand" href="#"> <span class="navbar-text  name "> J<i id = "programSpinner" class="fa fa-spinner" style="color: #FF0000;"> </i>e/s </span></a>
+    </div>
 
-    <div  class="navbar-left"
-          style="margin-left: 150px;"
-           >
-    <form class="navbar-form" >
-
-        <div class="form-group ">
-
-         <button
+    <form class="navbar-form navbar-left" role="presentation">
+      <div class="form-group">
+       <button
               type="button" 
               id="btnStartOS"  
-              name="brnStartOS" 
-             
+              name="brnStartOS"
               onclick="TSOS.Control.hostBtnStartOS_click(this);" 
               tabindex="0"  
-              class="btn btn-navPowerOffBorder outline btn-group-lg ">
+              class="btn btn-group-sm navbar-btn btn-navPowerOffBorder outline  ">
               <p>
               <i class="fa fa-power-off" id="powerButtonIcon"></i>
               </p> 
-              <p style= "color: #C0C0C0"> Power </p> 
+              <p style= "color: #C0C0C0;"> Power </p> 
             </button>
 
-          <button type="button" 
-              id="btnReset"  
-              name="brnReset" 
-              style = "margin-left: 60px;" 
-              onclick="TSOS.Control.hostBtnReset_click(this);" 
-              tabindex="0"  
-              class="btn btn-group-lg navbar-btn btn-unselectedMode outline"> 
+            <button type="button" 
+                id="btnReset"  
+                name="brnReset" 
+                style = "margin-left: 25px;" 
+                onclick="TSOS.Control.hostBtnReset_click(this);" 
+                tabindex="0"  
+                class="btn btn-group-sm navbar-btn btn-unselectedMode outline"> 
 
-              <p class ="navBarButtonText">
-                  <i class="fa fa-refresh"></i> </p> 
+                <p class ="navBarButtonText">
+                    <i class="fa fa-refresh"></i> </p> 
 
-              <p class = "navBarButtonText">Reset</p> </button>
+                <p class = "navBarButtonText">Reset</p> 
+              </button>
 
-          <button type="button" 
-                  id="btnStepForward"  
-                  name="brnStepForward" 
-                  style = "margin-left: 60px;" 
-                  onclick="TSOS.Control.hostBtnStepForward_click(this);" 
-                  tabindex="0"  
-                  class="btn btn-group-lg navbar-btn btn-unselectedMode inv outline"> 
+              <button type="button" 
+                      id="btnStepForward"  
+                      name="brnStepForward" 
+                      style = "margin-left: 25px;" 
+                      onclick="TSOS.Control.hostBtnStepForward_click(this);" 
+                      tabindex="0"  
+                      class="btn btn-group-sm navbar-btn btn-unselectedMode inv outline"> 
 
-              <p class ="navBarButtonText">
-                  <i class="fa fa-fast-forward"></i> </p> 
+                  <p class ="navBarButtonText"><i class="fa fa-fast-forward"></i> </p> 
+                  <p class = "navBarButtonText">Advance</p> 
+              </button>
+            </div>
+          </form>     
+          <form class="navbar-form navbar-right" role="presentation">
+            <div class="form-group">
 
-              <p class = "navBarButtonText">Advance</p> </button>
-       </div>
-
-    </form>
-    </div>
-    <form class="navbar-form navbar-right"
-          style = "margin-right: 50px;  border-left: thick solid #C0C0C0;" >
-
-        <div class="form-group">
-
-           <button type="button" 
+              <button type="button" 
               id="btnStepOS"  
               name="brnStepOS" 
-              style="margin-left: 60px; float: left;" 
+              style="margin-left: 25px; " 
               onclick="TSOS.Control.hostBtnStepOS_click(this);" 
               tabindex="0"  
-              class="btn  btn-group-lg navbar-btn btn-unselectedMode outline ">
+              class="btn  btn-group-sm navbar-btn btn-unselectedMode outline ">
 
               <p  class ="navBarButtonText">
                   <i class="fa fa-step-forward"></i></p>              
@@ -144,95 +134,125 @@
              <button type="button" 
               id="btnRunOS"  
               name="brnRunOS" 
-              style="margin-left: 60px; float: right;" 
+              style="margin-left: 25px;" 
               onclick="TSOS.Control.hostBtnRunOS_click(this);" 
               tabindex="0"  
-              class="btn  btn-group-lg navbar-btn btn-selectedMode outline pull-right">
+              class="btn btn-group-sm navbar-btn btn-selectedMode outline">
 
               <p  class ="navBarButtonText">
                   <i class="fa fa-play"></i></p>              
-              <p class = "navBarButtonText">Run</p> </button>    
-                   
-         </div>   
-       <!-- <p style = "color: #C0C0C0; text-align: center; font-size: 16pt; margin-top: 5px; margin-left: 50px;"> Execution Mode </p> -->
-    </form>
-  </div><!-- /.container-fluid -->
-</nav>
-<div id="divMain" style="width:100%;"> 
+              <p class = "navBarButtonText">Run</p> </button>
 
-<div id = "leftNav" style=" float: left; margin-left: 25px; width: 600px; ">
+            </div>
+        </form>
 
-  <div id="divConsole" class="form-group" style=" width: 600px; margin-left: 25px;">
+      </div>
+    </nav>
 
-      <div class="panel panel-primary" id  = "systemInformationPanel" style="width: 45%; ">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" href="#systemInformationCollapse"> <h4> System Information <i id= "systemInformationPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i> </h4> </a>
-      </h4>
-    </div>
+<div id="divMain" style="overflow: hidden;">
 
-    <div id="systemInformationCollapse" class="panel-collapse collapse">
-    <div class="panel-body">
-          <p id = "statusArea"> Status: </p> 
-          <p id = "timeArea" >Time:  </p>
-          <p  id = "dateArea" >Date:  </p>   
-    </div>
-    </div>
-  </div>
-      <canvas id="display"
-              width="600px"
-              height="500px"
-              tabindex="3">
-      </canvas>
+  <div id="leftSide" style = "width:400px; float:left;">
 
-     <div id="divLog" class="form-group " style = " width: 600px;">
-       <div style = "width: 600px;"> <h2 style="font-size: 15pt;"> Host Log </h2> </div>
-       <textarea class="form-control hostLog" rows="8" id="taHostLog" name="taHostLog" disabled="true"></textarea>
+       <div id="divConsole" class="form-group" style=" width: 400px; ">
+          <canvas id="display"
+                  width="400px"
+                  height="400px"
+                  tabindex="3">
+          </canvas>
+        </div>
+
+      <div id="divLog" style="width: 400px;">
+
+        <div style = "width:400px;"> <p class="sectionHeader">Host Log</p></div>
+          <div id="divLog1" class="form-group " style = " width: 400px; overflow: auto; height: 350px;">
+
+            <ul class="list-group hostLogListItem" id="taHostLog">
+             
+          </ul>
+
+      </div>
+
     </div>
 
 </div> 
-   </div>
 
-        <div id="rightNav" style = "float: left; margin-left: 75px; width: 55%;">
-          <div class="panel panel-primary" id = "mainMemoryPanel" style="width: 55%; float:left; max-height: 300px; overflow: auto;">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" href="#memoryInfoTableCollapse"><h4> Main Memory <i id= "mainMemoryPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i> </h4> </a>
-      </h4>
-    </div>
-    <div id="memoryInfoTableCollapse" class="panel-collapse collapse">
-       <table class="table tableText" id="memoryInfoTable" >
+<div id="rightSide" style="display: inline-block; width: 550px;">
+
+    <div class="panel panel-primary" id = "mainMemoryPanel" style=" max-height: 300px; overflow: auto;">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#memoryInfoTableCollapse"><h4> Memory Manager <i id= "mainMemoryPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i> </h4> </a>
+        </h4>
+      </div>
+
+      <div id="memoryInfoTableCollapse" class="panel-collapse collapse">
+        <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#mainMemory">Main Memory</a></li>
+          <li><a data-toggle="tab" href="#hardDisk">Hard Disk </a></li>
+      </ul>
+
+      <div class="tab-content">
+
+        <div id="mainMemory" class="tab-pane fade in active">
+          <p class="sectionHeader"> Main Memory </p>
+           <table class="table tableText" id="memoryInfoTable" >
+                <thead>
+                    <th>0</th>
+                    <th>1</th>
+                    <th>2</th>
+                    <th>3</th>
+                    <th>4</th>
+                    <th>5</th>
+                    <th>6</th>
+                    <th>7</th>
+                </thead>                
+                 <tbody>                
+                </tbody>
+              </table>
+        </div>
+
+       <div id="hardDisk" class="tab-pane fade in active">
+          <p class="sectionHeader"> Hard Disk </p>
+           <table class="table tableText" id="hardDiskTable" >
+                <thead>
+                    <th>0</th>
+                    <th>1</th>
+                    <th>2</th>
+                    <th>3</th>
+                    <th>4</th>
+                    <th>5</th>
+                    <th>6</th>
+                    <th>7</th>
+                </thead>                
+                 <tbody>                
+                </tbody>
+              </table>
+        </div>
+      </div>
+</div>
+</div>
+
+    <div class="panel panel-primary" id ="processPanel" style=" max-height: 300px; overflow: auto;">
+      <div class="panel-heading">
+       <h4 class="panel-title">
+        <a data-toggle="collapse" href="#processPanelCollapse"><h4> Process Manager <i id= "processPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i> </h4> </a>
+        </h4>
+      </div>
+      <div id="processPanelCollapse" class="panel-collapse collapse">
+
+      <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#readyQueue">Ready Queue</a></li>
+          <li><a data-toggle="tab" href="#residentList">Resident List</a></li>
+          <li><a data-toggle="tab" href="#terminatedList">Terminated List</a></li>
+      </ul>
+
+      <div class="tab-content">
+
+        <div id="readyQueue" class="tab-pane fade in active">
+          <p class="sectionHeader">Current Active Processes </p>
+            <table class="table tableText" id="readyQueueTableElement" >
               <thead>
-                  <th>0</th>
-                  <th>1</th>
-                  <th>2</th>
-                  <th>3</th>
-                  <th>4</th>
-                  <th>5</th>
-                  <th>6</th>
-                  <th>7</th>
-              </thead>
-               
-               <tbody>
-                
-              </tbody>
-            </table>
-    </div>
-  </div>
-
-
-
-<div id = "testLeft" style = "float:left; width: 50%;">
- <div class="panel panel-primary" id = "residentListPanel" style="width: 45%; ">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" href="#collapse1"> <h4> Terminated Process List <i id= "residentListPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i> </h4> </a>
-      </h4>
-    </div>
-    <div id="collapse1" class="panel-collapse collapse">
-     <table class="table tableText" id="terminatedProcessTableElement" >
-              <thead>
-                <tr class="tableText">
+                <tr>
                   <th>State</th>
                   <th>PC</th>
                   <th>Acc</th>
@@ -246,14 +266,58 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                </tr>
               </tbody>
             </table>
+        </div>
+
+        <div id="residentList" class="tab-pane fade">
+          <p class="sectionHeader">Processes loaded in memory</p>
+          <table class="table tableText" id="residentListTableElement" >
+              <thead>
+                <tr>
+                  <th>State</th>
+                  <th>PC</th>
+                  <th>Acc</th>
+                  <th>X</th>
+                  <th>Y</th>
+                  <th>Z</th>
+                  <th>PID </th>
+                  <th>Base</th>
+                  <th>Turn</th>
+                  <th>Wait</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+        </div>
+
+        <div id="terminatedList" class="tab-pane fade">
+            <p class="sectionHeader">Terminated Processes</p>
+          <table class="table tableText" id="terminatedListTableElement" >
+              <thead>
+                <tr>
+                  <th>State</th>
+                  <th>PC</th>
+                  <th>Acc</th>
+                  <th>X</th>
+                  <th>Y</th>
+                  <th>Z</th>
+                  <th>PID </th>
+                  <th>Base</th>
+                  <th>Turn</th>
+                  <th>Wait</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+        </div>
+      </div>    
     </div>
   </div>
 
-  <div class="panel panel-primary" id = "cpuStatPanel" style="width: 45%; ">
+  <div class="panel panel-primary" id = "cpuStatPanel">
     <div class="panel-heading">
       <h4 class="panel-title">
         <a data-toggle="collapse" href="#cpuStatTableCollapse"><h4> CPU  <i id= "cpuStatPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i></h4> </a>
@@ -283,58 +347,23 @@
               </tbody>
             </table>
     </div>
-  </div>
- 
- 
 
   </div>
-  <div id ="testRight" style="float: right; width: 45%;">
-
- <div class="panel panel-primary" id = "readyQueuePanel" style="width: 45%; ">
+    <div class="panel panel-primary" id = "userProgramInputPanel">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a data-toggle="collapse" href="#collapse2"><h4> Ready Queue  <i id= "readyQueuePanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i></h4> </a>
-      </h4>
-    </div>
-    <div id="collapse2" class="panel-collapse collapse">
-     <table class="table tableText" id="readyQueueTableElement" >
-              <thead>
-                <tr>
-                  <th>State</th>
-                  <th>PC</th>
-                  <th>Acc</th>
-                  <th>X</th>
-                  <th>Y</th>
-                  <th>Z</th>
-                  <th>PID </th>
-                  <th>Base</th>
-                  <th>Turn</th>
-                  <th>Wait</th>
-                </tr>
-              </thead>
-              <tbody>
-              </tbody>
-            </table>
-    </div>
-  </div>
-
-    <div class="panel panel-primary" id = "userProgramInputPanel" style="width: 45%; ">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" href="#programInputCollapse"> <h4> User Program Input <i id= "userProgramInputPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i> </h4> </a>
+        <a data-toggle="collapse" href="#programInputCollapse"><h4> User Input  <i id= "userProgramInputPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i></h4> </a>
       </h4>
     </div>
     <div id="programInputCollapse" class="panel-collapse collapse">
+       <div id="divUserProgramInput">
+      <textarea class="form-control" rows="5" id="taProgramInput" name="taProgramInput" ></textarea>
+    </div>
+    </div>
+  </div>
 
-      <div  id="divUserProgramInput">
-      <textarea class="form-control hostLog" rows="5" id="taProgramInput" name="taProgramInput" ></textarea>
-    </div>
- 
-    </div>
-    </div>
-  </div>     
+
 </div>
-
-
+</div>
 </body>
 </html>

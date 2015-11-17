@@ -21,34 +21,34 @@ module TSOS {
 		 * Used to set the status message on the UI
 		 */ 
 		public setStatusMessage(statusMessage: string): void {
-			this.statusSectionElement.innerHTML =  "Status: " + statusMessage;
+		//	this.statusSectionElement.innerHTML =  "Status: " + statusMessage;
 		}
 		/**
 		 * Used to set the date on the UI
 		 */
 		private setDateSection(dateString: string): void {
-			this.dateSectionElement.innerHTML =  "Date: " + dateString;
+			//this.dateSectionElement.innerHTML =  "Date: " + dateString;
 		}
 		/**
 		 * Used to set the time on the UI
 		 */
 		private setTimeSection(timeString: string): void {
-			this.timeSectionElement.innerHTML = "Time: " + timeString;			
+			//this.timeSectionElement.innerHTML = "Time: " + timeString;			
 		}
 		/**
 		 * Used to update the curret date and time, called on every clock tick
 		 */
 		public updateDateTime(): void {
-			this.setDateSection(Utils.getDate() );
-			this.setTimeSection(Utils.getTime() );
+			//this.setDateSection(Utils.getDate() );
+			//this.setTimeSection(Utils.getTime() );
 		}
 		/**
 		 * Used to clear the time, date, and status information
 		 */
 		public systemOffMode(): void {
-			this.setTimeSection("");
-			this.setDateSection("");
-			this.setStatusMessage("");
+			//this.setTimeSection("");
+			//this.setDateSection("");
+			//this.setStatusMessage("");
 		}
 	}
 }
