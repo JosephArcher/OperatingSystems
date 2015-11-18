@@ -3,6 +3,7 @@
 ///<reference path="deviceDriver.ts" />
 ///<reference path="canvastext.ts" />
 ///<reference path="File.ts" />
+///<reference path="FileDirectoryObject.ts" />
 
 /* ----------------------------------
    DeviceDriverFileSystem.ts
@@ -12,16 +13,29 @@
    The Kernel File System Driver
    ---------------------------------- */
 
+
+   /**
+
+
+T S B  | [0-1] T S B  | FileName
+0 0 0  | MASTA BOOT RECORD
+0 0 1  | Start of DIR
+X X X  |
+0 7 7  |
+   */
+
 module TSOS {
 
     // Extends DeviceDriver
     export class DeviceDriverFileSystem extends DeviceDriver {
 
-
-        
        public  constructor() {
            super(this.krnFSDriverEntry, this.krnFSOperationRespose);
        }
+       /**
+        * Used to format the hard disk from 0 0 0 -> 3 3 7
+        *
+        */
        public formatHardDisk() {
 
           _DiskIsFormated = true;
@@ -31,20 +45,148 @@ module TSOS {
           var blocks: number = 8;
 
           var nextStorageLocation = "";
+          var testFile = new File("afsd", "asdf", "asdf");
           // Loop and initalize the session storage
+
+           // For every track
           for (var i = 0; i < tracks; i++) {
+              // For every sector
               for (var j = 0; j < sectors; j++) {
+                  // A block is chilling out
                    for (var k = 0; k < blocks; k++) {
-                       nextStorageLocation = i.toString() + j.toString() + k.toString();
-                       console.log(nextStorageLocation + "storage Location");
-                       sessionStorage.setItem(nextStorageLocation, "00");
+                       // Initalize the session storage at location i , j , k  with the initial value of *
+                       sessionStorage.setItem(this.createFileLocationString(i, j, k), this.createDirectoryFileDataString(0, i, j, k, NO_FILE_DATA));
                    }
                }
            }
-       }
-       public getNextAvailableMemoryLocation() {
+       } 
+       /**
+        * Used to create a well formated key for the hard drive 
+        * @Params track {number} - The track of the location
+        *         sector {number} - The sector of the location
+        *         block {number}  - The block of the location
+        * @Returns {string} - A well formated key to be used for session storage or look-up
+        * 
+        */
+       public createFileLocationString(track: number, sector: number, block: number):string {
+           var locationString: string = "";
 
+           locationString = "" + track + "," + sector + "," + block + "";
+
+           return locationString;          
        }
+       /**
+        * Used to create a well formated value for the hard drive
+        * @Params filename {string} - The name of the file to be created
+        * @Returns {string} - A well formated value to be used for session storage
+        */
+       public createDirectoryFileDataString(in_use: number, track: number, sector: number, block: number, filename: string): string {
+
+           // Create the start of the File data string
+           var fileDataString = "";
+
+           // Add the in_use to the string
+           fileDataString = fileDataString + in_use + ",";
+
+           // Add the track to the string
+           fileDataString = fileDataString + track + ",";
+
+           // Add the sector to the string
+           fileDataString = fileDataString + sector + ",";
+
+           // Add the block to the string
+           fileDataString = fileDataString + block + ",";
+
+           // Add the name to the string
+           fileDataString = fileDataString + filename;
+       
+
+           // Return that shizz
+           return fileDataString;
+       }
+       /**
+        * Used to search the file directory to see if the file name exists 
+        * @Params filename {string} - The name of the file to search for
+        * @Returns {string} - The key of the matching filename
+        *
+        */
+       public searchForFile(filename) {
+
+           // Initalize the variables
+           var nextFileDataString: string;
+           var nextFileData = [];
+
+           // First convert the filename to hex
+           filename = filename + "";
+
+           // Loop from 0 0 1 - > 0 7 7 and search each value for a matching file name
+           for (var i = 0; i < 1; i++) {
+               for (var j = 0; j < 7; j++) {
+                   for (var k = 0; k < 7; k++) {
+
+                       // Get the next directory entry
+                       nextFileDataString = sessionStorage.getItem(this.createFileLocationString(i, j, k));
+
+                       // Break up the string by the commas and add it to an array
+                       nextFileData = nextFileDataString.split(',');
+
+                       // First check to see if the current index in the directory is being used
+                       if (nextFileData[0] == "1") { // If the directory is in use
+
+                           // compare the file name of the current index in the directory to the one that the user is searching for
+                           if (nextFileData[4] == filename) {
+                               // Return the string 
+                               return nextFileData.toString();
+                           }
+                       }
+                   }
+               }
+           }
+           // If the code makes it to this section then the file does not exist and return null
+           console.log("THE FILE DOES NOT EXISTS");
+           return null;
+       } 
+       /**
+        * Used to get the next open file directoy location
+        * Possible location are | 0 0 1 -> 0 7 7  |
+        * 
+        */
+       public getNextFileDirectoryLocation(): string {
+
+           // Initalize the variables
+           var nextFileDataString: string;
+           var nextFileData = [];
+
+           // Loop over the possible file directory locations and check for the first one that is not in use
+           for (var i = 0; i < 1; i++) {
+               for (var j = 0; j < 7; j++){
+                   for (var k = 1; k < 7; k++){
+
+                       // Get the next directory entry
+                       nextFileDataString = sessionStorage.getItem(this.createFileLocationString(i, j, k));
+
+                       // Break up the string by the commas and add it to an array
+                       nextFileData = nextFileDataString.split(',');
+
+                       // Check the in use byte
+                       if (nextFileData[0] == 0) {  // If the directory index is not currently in use
+                           console.log("The next free directory location is... " + i + j + k);
+                            // return the key for the free index
+                           return this.createFileLocationString(i, j, k);
+                       }
+                   }
+               }
+           }
+           // If the code is unable to find a free directory location then return null
+           return null; // If not more space if left
+       }
+       /**
+        * USed to get the next open file data location
+        */
+       public getNextFileDataLocation(): string {
+
+           return "";
+       }    
        public krnFSDriverEntry() {
 
             // Initialization File System Device Driver.
@@ -101,41 +243,72 @@ module TSOS {
          */
         public createFile(filename: string): boolean {
 
-          // Two steps to create a file 
-
-          // First: Space in the file system must be found for the file
-          // Second: An entry for the new file must be made in the directoy
-
+       
+            // Initalize variables
+            var nextFreeDirectoryLocation;
+            var nextFreeDataLocation = 12;
+            var fileDirectoryData;
 
            // First check to see if the file name already exists in the file system
-           var fileNameFound: boolean = this.filenameExists(filename);
+           if(this.searchForFile(filename) == null) { // If not file of that name exists then 
 
-            // Create the properties for the new file
-            var newFileName = filename;
-            var newFileLocation = "C:\\" + newFileName;
-            var newFileSize = "0 Bytes";
+               // Get the next free directory index
+               nextFreeDirectoryLocation = this.getNextFileDirectoryLocation();
+               fileDirectoryData = nextFreeDirectoryLocation.split(',');
 
-            // If the file name is not found
-            if(fileNameFound == false) {  
+               // If a free index exists 
+               if(nextFreeDirectoryLocation != null) {
 
-                // Create a new file 
-                var newFile: TSOS.File = new File(newFileName, newFileLocation, newFileSize);
+                   // Check to see if free space exists for the file data
+                   if(nextFreeDataLocation != null) { // If a free data index exists
 
-                // Store it in the session storage disk drive
-                sessionStorage.setItem(newFile.getFilename(), newFile.getFilename());
+                    sessionStorage.setItem(nextFreeDirectoryLocation, this.createDirectoryFileDataString(1, fileDirectoryData[1], fileDirectoryData[2], fileDirectoryData[3], filename));
 
-                // Report to the user that the creation was successful
-                _StdOut.putText("Success: The file was created"); 
+                    // Report to the user that the creation was successful
+                    _StdOut.putText("Success: The file was created"); 
 
-                // Advance the line in the console
-                _Console.advanceLine();
+                    // Advance the line in the console
+                    _Console.advanceLine();
 
-                // Place the prompt
-                _OsShell.putPrompt();
-                return true;
-            }
-            else {  // If the file name is found
-                _StdOut.putText("Error: The filename already exists "); 
+                    // Place the prompt
+                    _OsShell.putPrompt();
+
+                    // IT WORKED !
+                    return true;
+                   }
+                   else { // If no file blocks are availble
+                       // Tell the user 
+                       _StdOut.putText("Error: No file table space"); 
+
+                       // Advance the line
+                       _Console.advanceLine();
+
+                       // Place the prompt
+                       _OsShell.putPrompt();
+
+                       return false;
+                   }
+
+               }
+               else { // If no free directory location exists
+
+                   // Tell the user 
+                   _StdOut.putText("Error: No file directory index space"); 
+
+                   // Advance the line
+                   _Console.advanceLine();
+
+                   // Place the prompt
+                   _OsShell.putPrompt();
+
+                   return false;
+               }
+
+           }
+           else {  // If the file name is found
+
+               // Tell the user 
+               _StdOut.putText("Error: The filename already exists "); 
 
                 // Advance the line
                 _Console.advanceLine();

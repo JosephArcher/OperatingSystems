@@ -79,7 +79,7 @@ const FORMAT_DRIVE: string = "FORMAT"; // Format Drive
 const BLOCK_IN_USE: string = "BLOCK_IN_USE";
 const BLOCK_FREE: string = "BLOCK_FREE";
 
-
+const NO_FILE_DATA: string = "#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#";
 
 
 //********************************************************\\
