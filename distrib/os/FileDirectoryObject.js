@@ -10,9 +10,8 @@ var TSOS;
             this.filename = filename;
         }
         ///////////////////////////////////////////////////////////////////////////////////////
-        //                                                                                   //
-        //																					 //
-        //                           GETTERS and SETTERS 									 //
+        //                                                                                   //																				 //
+        //                             GETTERS and SETTERS 									 //
         //																					 //
         ///////////////////////////////////////////////////////////////////////////////////////
         FileDirectory.prototype.isFileInUse = function () {

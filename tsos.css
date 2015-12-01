@@ -14,7 +14,12 @@ float:right;
 background-color: green;
 font-size: 1.25em;
 float:right;
+}
 
+#divLog1 {
+    border-style: solid;
+    border-width: 1px;
+    border-color: red;
 }
 
 #divMain{
@@ -30,6 +35,9 @@ float:right;
 }
 .hostLogListItem{
   font-size: 1.1em;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #008CBA;
 }
 /* Let's get this party started */
 ::-webkit-scrollbar {

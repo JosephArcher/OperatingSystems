@@ -372,6 +372,13 @@ module TSOS {
             _KernelInterruptQueue.enqueue(new Interrupt(BSOD_IRQ, params)); // Create a new Interupt to handle the Blue Screen of death and add it to the queue    
 
         }
+
+        /////////////////////////////////////////////////////////////////////////////////
+        //                                                                             //
+        //                     Process and Memory Shell Commands                       //
+        //                                                                             //
+        /////////////////////////////////////////////////////////////////////////////////
+
         /**
          * used to load the user program in the text area into main memory
         */
@@ -619,7 +626,6 @@ module TSOS {
 
             response[0] = WRITE_FILE;
             response[1] = args;
-
             _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, response));
         }
        /**
@@ -660,6 +666,12 @@ module TSOS {
             _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, response));
         
         }
+
+        /////////////////////////////////////////////////////////////////////////////////
+        //                                                                             //
+        //                    CPU Scheduling Shell Commands                            //
+        //                                                                             //
+        /////////////////////////////////////////////////////////////////////////////////
 
         /**
          * Sets the current scheduling algorithm for the CPU Scheduler

@@ -264,6 +264,11 @@ var TSOS;
             var params = "";
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(BSOD_IRQ, params)); // Create a new Interupt to handle the Blue Screen of death and add it to the queue    
         };
+        /////////////////////////////////////////////////////////////////////////////////
+        //                                                                             //
+        //                     Process and Memory Shell Commands                       //
+        //                                                                             //
+        /////////////////////////////////////////////////////////////////////////////////
         /**
          * used to load the user program in the text area into main memory
         */
@@ -479,6 +484,11 @@ var TSOS;
             response[1] = "";
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, response));
         };
+        /////////////////////////////////////////////////////////////////////////////////
+        //                                                                             //
+        //                    CPU Scheduling Shell Commands                            //
+        //                                                                             //
+        /////////////////////////////////////////////////////////////////////////////////
         /**
          * Sets the current scheduling algorithm for the CPU Scheduler
          */

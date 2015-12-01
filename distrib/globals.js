@@ -176,6 +176,9 @@ var _TerminatedProcessTable;
 //Ready Queue UI
 var _ReadyQueueTableElement;
 var _ReadyQueueTable;
+// Host Log UI Tracker
+var lastUIMessage = "";
+var hostCounter = 0;
 // Create an image global for the blue screen of death
 var BSOD_IMAGE = new Image();
 // Get the Image from the web

@@ -234,6 +234,10 @@ var _TerminatedProcessTable: TSOS.TerminatedProcessTable;
 var _ReadyQueueTableElement: HTMLTableElement;
 var _ReadyQueueTable: TSOS.ReadyQueueTable;
 
+// Host Log UI Tracker
+var lastUIMessage: string = "";
+var hostCounter: number = 0;
+
 // Create an image global for the blue screen of death
 var BSOD_IMAGE = new Image();
 

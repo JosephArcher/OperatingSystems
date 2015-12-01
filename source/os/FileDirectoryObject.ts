@@ -10,7 +10,7 @@ module TSOS {
 		public filename: string;
 
 		public constructor(inuse: number , track: number, sector: number , block : number, filename: string ) {
-
+			
 			this.In_Use = inuse;
 			this.track = track;
 			this.sector = sector;
@@ -19,9 +19,8 @@ module TSOS {
 		}
 
 		///////////////////////////////////////////////////////////////////////////////////////
-		//                                                                                   //
-		//																					 //
-		//                           GETTERS and SETTERS 									 //
+		//                                                                                   //																				 //
+		//                             GETTERS and SETTERS 									 //
 		//																					 //
 		///////////////////////////////////////////////////////////////////////////////////////
 

@@ -18,8 +18,6 @@ var __extends = (this && this.__extends) || function (d, b) {
    The Kernel File System Driver
    ---------------------------------- */
 /**
-
-
 T S B  | [0-1] T S B  | FileName
 0 0 0  | MASTA BOOT RECORD
 0 0 1  | Start of DIR
@@ -44,7 +42,6 @@ var TSOS;
             var sectors = 8;
             var blocks = 8;
             var nextStorageLocation = "";
-            var testFile = new TSOS.File("afsd", "asdf", "asdf");
             // Loop and initalize the session storage
             // For every track
             for (var i = 0; i < tracks; i++) {
@@ -53,7 +50,7 @@ var TSOS;
                     // A block is chilling out
                     for (var k = 0; k < blocks; k++) {
                         // Initalize the session storage at location i , j , k  with the initial value of *
-                        sessionStorage.setItem(this.createFileLocationString(i, j, k), this.createDirectoryFileDataString(0, i, j, k, NO_FILE_DATA));
+                        sessionStorage.setItem(this.createFileLocationString(i + "", j + "", k + ""), this.createDirectoryFileDataString(0, i, j, k, NO_FILE_DATA));
                     }
                 }
             }
@@ -92,6 +89,22 @@ var TSOS;
             // Return that shizz
             return fileDataString;
         };
+        DeviceDriverFileSystem.prototype.createDataFileString = function (in_use, track, sector, block, filedata) {
+            // Create the start of the File data string
+            var fileDataString = "";
+            // Add the in_use to the string
+            fileDataString = fileDataString + in_use + ",";
+            // Add the track to the string
+            fileDataString = fileDataString + track + ",";
+            // Add the sector to the string
+            fileDataString = fileDataString + sector + ",";
+            // Add the block to the string
+            fileDataString = fileDataString + block + ",";
+            // Add the name to the string
+            fileDataString = fileDataString + filedata;
+            // Return that shizz
+            return fileDataString;
+        };
         /**
          * Used to search the file directory to see if the file name exists
          * @Params filename {string} - The name of the file to search for
@@ -109,7 +122,7 @@ var TSOS;
                 for (var j = 0; j < 7; j++) {
                     for (var k = 0; k < 7; k++) {
                         // Get the next directory entry
-                        nextFileDataString = sessionStorage.getItem(this.createFileLocationString(i, j, k));
+                        nextFileDataString = sessionStorage.getItem(this.createFileLocationString(i + "", j + "", k + ""));
                         // Break up the string by the commas and add it to an array
                         nextFileData = nextFileDataString.split(',');
                         // First check to see if the current index in the directory is being used
@@ -124,7 +137,6 @@ var TSOS;
                 }
             }
             // If the code makes it to this section then the file does not exist and return null
-            console.log("THE FILE DOES NOT EXISTS");
             return null;
         };
         /**
@@ -141,14 +153,14 @@ var TSOS;
                 for (var j = 0; j < 7; j++) {
                     for (var k = 1; k < 7; k++) {
                         // Get the next directory entry
-                        nextFileDataString = sessionStorage.getItem(this.createFileLocationString(i, j, k));
+                        nextFileDataString = sessionStorage.getItem(this.createFileLocationString(i + "", j + "", k + ""));
                         // Break up the string by the commas and add it to an array
                         nextFileData = nextFileDataString.split(',');
                         // Check the in use byte
-                        if (nextFileData[0] == 0) {
+                        if (nextFileData[0] == "0") {
                             console.log("The next free directory location is... " + i + j + k);
                             // return the key for the free index
-                            return this.createFileLocationString(i, j, k);
+                            return this.createFileLocationString(i + "", j + "", k + "");
                         }
                     }
                 }
@@ -158,9 +170,31 @@ var TSOS;
         };
         /**
          * USed to get the next open file data location
+         * Possible locations 1 0 0 - > 3 7 7
          */
         DeviceDriverFileSystem.prototype.getNextFileDataLocation = function () {
-            return "";
+            // Initalize the variables
+            var nextFileDataString;
+            var nextFileData = [];
+            // Loop over the possible file data locations and check for the first one that is not in use
+            for (var i = 1; i < 3; i++) {
+                for (var j = 0; j < 7; j++) {
+                    for (var k = 0; k < 7; k++) {
+                        // Get the next directory entry
+                        nextFileDataString = sessionStorage.getItem(this.createFileLocationString(i + "", j + "", k + ""));
+                        // Break up the string by the commas and add it to an array
+                        nextFileData = nextFileDataString.split(',');
+                        // Check the in use byte
+                        if (nextFileData[0] == "0") {
+                            console.log("The next free data location is... " + i + j + k);
+                            // return the key for the free index
+                            return this.createFileLocationString(i + "", j + "", k + "");
+                        }
+                    }
+                }
+            }
+            // If the code is unable to find a free directory location then return null
+            return null; // If not more space if left
         };
         DeviceDriverFileSystem.prototype.krnFSDriverEntry = function () {
             // Initialization File System Device Driver.
@@ -170,7 +204,6 @@ var TSOS;
         DeviceDriverFileSystem.prototype.krnFSOperationRespose = function (args) {
             var operation = args[0];
             var data1 = args[1];
-            var data2 = args[2];
             if (_DiskIsFormated == false && operation != FORMAT_DRIVE) {
                 // Tell the user the error
                 _StdOut.putText("Error: Disk not formatted ");
@@ -188,7 +221,7 @@ var TSOS;
                         this.readFile(data1);
                         break;
                     case WRITE_FILE:
-                        this.writeFile(data1, data2);
+                        this.writeFile(data1);
                         break;
                     case DELETE_FILE:
                         this.deleteFile(data1);
@@ -213,18 +246,37 @@ var TSOS;
         DeviceDriverFileSystem.prototype.createFile = function (filename) {
             // Initalize variables
             var nextFreeDirectoryLocation;
-            var nextFreeDataLocation = 12;
+            var nextFreeDataLocation;
             var fileDirectoryData;
-            // First check to see if the file name already exists in the file system
+            var fileTableData;
+            // Check to see if a file name was given and if not stop
+            if (filename == "") {
+                // Report an error to the user
+                _StdOut.putText("Error: A file name must be given");
+                // Advance the line
+                _Console.advanceLine();
+                // Place the prompt
+                _OsShell.putPrompt();
+                return false;
+            }
+            // Check to see if the file name already exists in the file system
             if (this.searchForFile(filename) == null) {
                 // Get the next free directory index
                 nextFreeDirectoryLocation = this.getNextFileDirectoryLocation();
                 fileDirectoryData = nextFreeDirectoryLocation.split(',');
                 // If a free index exists 
                 if (nextFreeDirectoryLocation != null) {
+                    // Get the next free data index
+                    nextFreeDataLocation = this.getNextFileDataLocation();
+                    fileTableData = nextFreeDataLocation.split(',');
                     // Check to see if free space exists for the file data
                     if (nextFreeDataLocation != null) {
-                        sessionStorage.setItem(nextFreeDirectoryLocation, this.createDirectoryFileDataString(1, fileDirectoryData[1], fileDirectoryData[2], fileDirectoryData[3], filename));
+                        // Create the directory entry for the new file
+                        sessionStorage.setItem(nextFreeDirectoryLocation, this.createDirectoryFileDataString(1, fileTableData[0], fileTableData[1], fileTableData[2], filename));
+                        // Create the table entry for the new file
+                        sessionStorage.setItem(nextFreeDataLocation, this.createDataFileString("1", "0", "0", "0", "" + nextFreeDataLocation));
+                        console.log(nextFreeDirectoryLocation + "test1");
+                        console.log(nextFreeDataLocation + "test2");
                         // Report to the user that the creation was successful
                         _StdOut.putText("Success: The file was created");
                         // Advance the line in the console
@@ -271,31 +323,31 @@ var TSOS;
                             <False> - If the file is not read
          */
         DeviceDriverFileSystem.prototype.readFile = function (filename) {
-            // To read from a file we use a system call that specifies the name of the file and where
-            // (in memory) the next block of the file should be put. 
-            // Again, the directoy is searched for the associated entry, and the system needs to keep a read pointer to the location 
-            // in the file where the next read is to take place.
-            // Once the read had taken place,  the read pointer is updated. Because a process is usually either reading or writing 
-            // to a file, the current operation location can be kept as a per-process current-file-position- pointer.
-            // Both the read and write operations use this same pointer, saving space and reducing system complexity
-            // First check to see if the file name already exists in the file system
-            var fileNameFound = this.filenameExists(filename);
-            // First check to see if the file name already exists
-            if (fileNameFound == false) {
-                _StdOut.putText("Read Error: The file name does not exist ");
-                // Advance line
+            // Search for the file 
+            var fileIndex = this.searchForFile(filename);
+            // If the file exists
+            if (fileIndex != null) {
+                // Split apart the index and get the track , sector, block from the index
+                var fileDataIndex = fileIndex.split(',');
+                var Lookup = this.createFileLocationString(fileDataIndex[1], fileDataIndex[2], fileDataIndex[3]);
+                var value = sessionStorage.getItem(Lookup);
+                var test = value.split(',');
+                // Tell the user 
+                _StdOut.putText("Data: " + test[4]);
+                // Advance the line
                 _Console.advanceLine();
                 // Place the prompt
                 _OsShell.putPrompt();
                 return false;
             }
             else {
-                _StdOut.putText("Read Successful ");
-                // Advance
+                // Tell the user 
+                _StdOut.putText("Error: The filename does not exist");
+                // Advance the line
                 _Console.advanceLine();
                 // Place the prompt
                 _OsShell.putPrompt();
-                return true;
+                return false;
             }
         };
         /**
@@ -305,17 +357,29 @@ var TSOS;
          * @Returns         <True>   - If the file was successfully writen to
                             <False>  - If the file is not writen to
          */
-        DeviceDriverFileSystem.prototype.writeFile = function (filename, filedata) {
-            // To write a file, we make a system call specifiying both the name of the file and the information to be written to the file
-            // Given the name of the file, the system searches the directory to find the file's location
-            // The system keeps a write pointer to the location in the file where the next write occurs to take place
-            // The write pointer must be updated whenever a write occurs
-            // First check to see if the file name already exists in the file system
-            var fileNameFound = this.filenameExists(filename);
-            // First check to see if the file name already exists
-            if (fileNameFound == false) {
-                // Tell the user
-                _StdOut.putText("Write Error: The file name does not exist ");
+        DeviceDriverFileSystem.prototype.writeFile = function (fileInfo) {
+            console.log("filename   " + fileInfo[0]);
+            console.log("file data    " + fileInfo[1]);
+            // split the n   ame into two parts the real file name and the data to write
+            // Search for the file 
+            var filename = fileInfo[0];
+            var filedata = fileInfo[1];
+            var fileIndex = this.searchForFile(filename);
+            console.log("FILE INDEX IS : " + fileIndex);
+            // If the file exists
+            if (fileIndex != null) {
+                // Split apart the index and get the track , sector, block from the index
+                var fileDataIndex = fileIndex.split(',');
+                var Lookup = this.createFileLocationString(fileDataIndex[1], fileDataIndex[2], fileDataIndex[3]);
+                var value = sessionStorage.getItem(Lookup);
+                var test = value.split(',');
+                console.log(filedata + "   SD FJKSDKLFJSKLDJFLKSDJFLKSJDF:L");
+                // Append the new file data to the end of the file
+                test[4] = test[4] + filedata;
+                var fun = test[4];
+                // Tell the user 
+                _StdOut.putText("New File data is... " + fun);
+                sessionStorage.setItem(Lookup, fun);
                 // Advance the line
                 _Console.advanceLine();
                 // Place the prompt
@@ -323,13 +387,13 @@ var TSOS;
                 return false;
             }
             else {
-                // Tell the user
-                _StdOut.putText("Write Successful ");
+                // Tell the user 
+                _StdOut.putText("Error: The filename does not exist");
                 // Advance the line
                 _Console.advanceLine();
                 // Place the prompt
                 _OsShell.putPrompt();
-                return true;
+                return false;
             }
         };
         /**

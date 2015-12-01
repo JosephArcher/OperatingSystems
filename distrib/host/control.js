@@ -75,10 +75,24 @@ var TSOS;
         };
         Control.hostLog = function (msg, source) {
             if (source === void 0) { source = "?"; }
+            // Check to see if the new message is equal to the previous one
+            if (msg == lastUIMessage) {
+                // If they are equal
+                // Increase the global repeat ui counter
+                hostCounter = hostCounter + 1;
+                // Update the UI
+                $("#taHostLog li:first-child").replaceWith('<li class="hostLogListItem" style="height:75px;"> <p class="" >' + msg + '<span class="label logCounter">' + hostCounter + '</span> </p> <span class="logDateTime">' + TSOS.Utils.getTime() + ' </span > <span class="logSource" >' + source + '</span> </li>');
+            }
+            else {
+                // If they are not equal
+                hostCounter = 1;
+                $("#taHostLog").prepend('<li class="hostLogListItem" style="height:75px;"> <p class="" >' + msg + '<span class="label logCounter">' + hostCounter + '</span> </p> <span class="logDateTime">' + TSOS.Utils.getTime() + ' </span > <span class="logSource" >' + source + '</span> </li>');
+                // Reset the counter to one
+                // Update the last UI message
+                lastUIMessage = msg;
+            }
             // Note the OS CLOCK.
             var clock = _OSclock;
-            var counter = "3";
-            $("#taHostLog").append('<li class="list-group-item" style="height:75px;"> <p class="" >' + msg + '<span class="label logCounter">' + counter + '</span> </p> <span class="logDateTime">' + TSOS.Utils.getTime() + ' </span > <span class="logSource" >' + source + '</span> </li>');
         };
         //
         // Host Events

@@ -31,6 +31,8 @@ module TSOS {
 
     export class Control {
 
+
+
         public static hostInit(): void {
             // This is called from index.html's onLoad event via the onDocumentLoad function pointer.
 
@@ -80,6 +82,7 @@ module TSOS {
 
             // Ready Queue
             _ReadyQueueTableElement = <HTMLTableElement> document.getElementById("readyQueueTableElement");
+
            
             // Check for our testing and enrichment core, which
             // may be referenced here (from index.html) as function Glados().
@@ -92,10 +95,34 @@ module TSOS {
             }
         }
         public static hostLog(msg: string, source: string = "?"): void {
+
+                 // Check to see if the new message is equal to the previous one
+                 if(msg == lastUIMessage){
+                     // If they are equal
+
+                     // Increase the global repeat ui counter
+                     hostCounter = hostCounter + 1;
+
+                     // Update the UI
+                  
+                     $("#taHostLog li:first-child").replaceWith('<li class="hostLogListItem" style="height:75px;"> <p class="" >' + msg + '<span class="label logCounter">' + hostCounter + '</span> </p> <span class="logDateTime">' + Utils.getTime() + ' </span > <span class="logSource" >' + source + '</span> </li>');
+                 }
+                 else{
+                    // If they are not equal
+
+                     hostCounter = 1;
+
+                     $("#taHostLog").prepend('<li class="hostLogListItem" style="height:75px;"> <p class="" >' + msg + '<span class="label logCounter">' + hostCounter + '</span> </p> <span class="logDateTime">' + Utils.getTime() + ' </span > <span class="logSource" >' + source + '</span> </li>');
+                     // Reset the counter to one
+                     
+                     // Update the last UI message
+                     lastUIMessage = msg;
+                 }
+
+
             // Note the OS CLOCK.
             var clock: number = _OSclock;
-            var counter = "3";
-            $("#taHostLog").append('<li class="list-group-item" style="height:75px;"> <p class="" >' + msg + '<span class="label logCounter">' + counter +'</span> </p> <span class="logDateTime">' + Utils.getTime() + ' </span > <span class="logSource" >' + source + '</span> </li>');
+            
         }
         //
         // Host Events
