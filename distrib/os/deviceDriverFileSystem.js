@@ -379,13 +379,19 @@ var TSOS;
                 var Lookup = this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3]);
                 var value = sessionStorage.getItem(Lookup);
                 var test = value.split(',');
-                console.log(filedata + "   SD FJKSDKLFJSKLDJFLKSDJFLKSJDF:L");
-                // Append the new file data to the end of the file
-                test[4] = test[4] + filedata;
-                var fun = test[4];
+                var littleLessFun = test[4];
+                for (var i = 0; i < filedata.length - 2; i++) {
+                    console.log(i);
+                    if (i == filedata.length) {
+                    }
+                    else {
+                        littleLessFun = littleLessFun + filedata.charAt(i + 1);
+                    }
+                }
+                var splits = Lookup.split(',');
+                sessionStorage.setItem(Lookup, this.createDataFileString("1", test[1], test[2], test[3], littleLessFun));
                 // Tell the user 
-                _StdOut.putText("New File data is... " + fun);
-                sessionStorage.setItem(Lookup, fun);
+                _StdOut.putText("File Write Success");
                 // Advance the line
                 _Console.advanceLine();
                 // Place the prompt
@@ -393,13 +399,6 @@ var TSOS;
                 return false;
             }
             else {
-                // Tell the user 
-                _StdOut.putText("Error: The filename does not exist");
-                // Advance the line
-                _Console.advanceLine();
-                // Place the prompt
-                _OsShell.putPrompt();
-                return false;
             }
         };
         /**
