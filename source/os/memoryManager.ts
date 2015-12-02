@@ -185,7 +185,7 @@ module TSOS {
 		 * @Params userProgram {String} - The user program to be loaded into memory
 		 * @Return processID {Number}   - The process ID of the newly created process
 		 */
-		public loadProgramIntoMemory(userProgram: string): number {
+		public loadProgramIntoMemory(userProgram: string , priority: string): number {
 
 			// Initalize needed variables
 			var firstHexNumber: string = "";   // The first hex digit while looping
@@ -193,7 +193,7 @@ module TSOS {
 			var nextByteValue: string = "";	   // The value of the next byte
 			var baseMemoryOffset: number = 0;  // The offest to track each where each byte is being placed
 			var nextMemoryAddress: number = 0; // The value of the next memory address
-
+		
 			// Get the next base address to write the user program
 			var nextBaseMemoryPartitionAddress: number = this.getNextAvailableMemoryPartition();
 
@@ -218,7 +218,11 @@ module TSOS {
 		
 		     // Create a new process control block
 			var newProcess: TSOS.ProcessControlBlock = _Kernel.createProcess(nextBaseMemoryPartitionAddress);
-				
+			
+			// Set the priority of the new process
+			newProcess.setPriority(priority);
+
+			console.log(newProcess.getPriority() + " Loaded process with a priority off...");
             // Return the newly created process ID 
             return newProcess.getProcessID();
 		}

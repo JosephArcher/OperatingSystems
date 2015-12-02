@@ -487,21 +487,20 @@ module TSOS {
                      littleLessFun = littleLessFun + filedata.charAt(i + 1);
                   }
                  
-
                 }
                
-                 var splits = Lookup.split(',');
+               var splits = Lookup.split(',');
                
-                sessionStorage.setItem(Lookup, this.createDataFileString("1" , test[1] , test[2] , test[3]  , littleLessFun));
+               sessionStorage.setItem(Lookup, this.createDataFileString("1" , test[1] , test[2] , test[3]  , littleLessFun));
 
                // Tell the user 
                _StdOut.putText("File Write Success"); 
 
-                // Advance the line
-                _Console.advanceLine();
+               // Advance the line
+               _Console.advanceLine();
 
                 // Place the prompt
-                _OsShell.putPrompt();
+               _OsShell.putPrompt();
 
                 return false;
             }

@@ -384,6 +384,9 @@ module TSOS {
         */
         public shellLoad(args) {
 
+            var priority = "3";
+            console.log(args + " JOE THESE ARE THE LOADING ARAGS");
+
             // Before doing any work check to see if any free space is available in memory
             if (_MemoryManager.availableMemoryPartitions.getSize() < 1) {
 
@@ -391,8 +394,23 @@ module TSOS {
                 _StdOut.putText("Unable to load program, no free memory partition ");
 
                 // then stop and do nothing else
+                 return;
+            }
+
+            // Check to see if the current scheduling algorithm is eqaul to NON PREEMPTIVE PRIORITY
+            if (_CPUScheduler.getSchedulingAlgorithm() == NON_PREEMPTIVE_PRIORITY) {  // If the priority matters 
+
+                if(args != ""){
+                    priority = args;
+                }
+               
+            }
+            else if (_CPUScheduler.getSchedulingAlgorithm() != NON_PREEMPTIVE_PRIORITY && args != ""){
+                _StdOut.putText("Error, user specified a priority while the cpu scheduler was not set to priority");
                 return;
             }
+            else{
+                console.log("should never happen");            }
 
             // Initalize Globals
             var counter = 0;       // Set the counter to zero to load the user program into memory 0000
@@ -425,7 +443,7 @@ module TSOS {
             }   
             // *** If the flow makes it here then the userInput is valid *** \\  
             // Load the program into memory and clean up the whitespace
-            var processID = _MemoryManager.loadProgramIntoMemory(userInput.replace(/ /g, '')); // Load the program into memory and save its process ID to be printed out to user
+            var processID = _MemoryManager.loadProgramIntoMemory(userInput.replace(/ /g, ''), priority); // Load the program into memory and save its process ID to be printed out to user
 
             _StdOut.putText("Program loaded and assigned a Process ID of " + processID + " Size " + _ResidentList.getSize()); // Tell the user the process ID 
 

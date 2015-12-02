@@ -145,7 +145,7 @@ var TSOS;
          * @Params userProgram {String} - The user program to be loaded into memory
          * @Return processID {Number}   - The process ID of the newly created process
          */
-        MemoryManager.prototype.loadProgramIntoMemory = function (userProgram) {
+        MemoryManager.prototype.loadProgramIntoMemory = function (userProgram, priority) {
             // Initalize needed variables
             var firstHexNumber = ""; // The first hex digit while looping
             var secondHexNumber = ""; // The second hex digit while looping
@@ -171,6 +171,9 @@ var TSOS;
             }
             // Create a new process control block
             var newProcess = _Kernel.createProcess(nextBaseMemoryPartitionAddress);
+            // Set the priority of the new process
+            newProcess.setPriority(priority);
+            console.log(newProcess.getPriority() + " Loaded process with a priority off...");
             // Return the newly created process ID 
             return newProcess.getProcessID();
         };
