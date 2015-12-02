@@ -69,38 +69,20 @@ var TSOS;
          * 									- If no processes exists then return null
          */
         CpuScheduler.prototype.getNextProcess = function () {
-            var schedulingAlgorithm = this.SchedulingAlgorithm;
-            switch (schedulingAlgorithm) {
-                case ROUND_ROBIN:
-                    return this.getNextProcessRR();
-                    break;
-                case NON_PREEMPTIVE_PRIORITY:
-                    return this.getNextProcessPriority();
-                    break;
-                case FIRST_COME_FIRST_SERVE:
-                    return this.getNextProcessFCFS();
-                    break;
-                default:
-                    break;
+            var nextProcess = null;
+            //First check the next size of the ready queue
+            if (_ReadyQueue.getSize() > 0) {
+                // Next check what current scheduling algorithm is being used
+                if (this.SchedulingAlgorithm == NON_PREEMPTIVE_PRIORITY) {
+                    // Just get next one 	
+                    nextProcess = _ReadyQueue.dequeue(); // Get the next process from  the ready queue
+                }
+                else {
+                    // Just get next one 	
+                    nextProcess = _ReadyQueue.dequeue(); // Get the next process from  the ready queue
+                }
             }
-            //var nextProcess: TSOS.ProcessControlBlock = null;
-            // First check the next size of the ready queue
-            //if (_ReadyQueue.getSize() > 0) {
-            //		nextProcess = _ReadyQueue.dequeue(); // Get the next process from  the ready queue
-            //		}
-            //			this.setCurrentProcess(nextProcess);//
-            //	return nextProcess;
-        };
-        CpuScheduler.prototype.getNextProcessRR = function () {
-            var nextProcess = null;
-            return nextProcess;
-        };
-        CpuScheduler.prototype.getNextProcessFCFS = function () {
-            var nextProcess = null;
-            return nextProcess;
-        };
-        CpuScheduler.prototype.getNextProcessPriority = function () {
-            var nextProcess = null;
+            this.setCurrentProcess(nextProcess); //
             return nextProcess;
         };
         return CpuScheduler;

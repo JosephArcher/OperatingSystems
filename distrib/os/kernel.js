@@ -131,12 +131,16 @@ var TSOS;
                     // Update the UI 
                     _ReadyQueue.incrementWaitTime();
                     _ReadyQueue.incrementTurnAroundTime();
-                    // Decrement the timer by one and check to see if it is finished
-                    if (_Timer.decreaseTimerByOne() == TIMER_FINISHED) {
-                        _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TIMER_IRQ, _CPUScheduler.getCurrentProcess()));
-                    }
-                    else {
-                    }
+                    // Before any timer stuff is done check for FCFS
+                    if (_CPUScheduler.getSchedulingAlgorithm() == ROUND_ROBIN) {
+                        // If the CPU is not 
+                        // Decrement the timer by one and check to see if it is finished
+                        if (_Timer.decreaseTimerByOne() == TIMER_FINISHED) {
+                            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TIMER_IRQ, _CPUScheduler.getCurrentProcess()));
+                        }
+                        else {
+                        }
+                    } // If not using round robin then do nothing with the timer
                 }
             }
             else {

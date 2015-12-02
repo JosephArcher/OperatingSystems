@@ -12,7 +12,7 @@
 
    The Kernel File System Driver
    ---------------------------------- */
-   
+
 /**
 T S B  | [0-1] T S B  | FileName
 0 0 0  | MASTA BOOT RECORD
@@ -125,7 +125,7 @@ module TSOS {
        /**
         * Used to search the file directory to see if the file name exists 
         * @Params filename {string} - The name of the file to search for
-        * @Returns {string} - The key of the matching filename
+        * @Returns {Array} -  0[The I , J , K] 1[filedirectorydata] position 
         *
         */
        public searchForFile(filename) {
@@ -133,6 +133,7 @@ module TSOS {
            // Initalize the variables
            var nextFileDataString: string;
            var nextFileData = [];
+           var response = []; // The response array
 
            // First convert the filename to hex
            filename = filename + "";
@@ -153,8 +154,11 @@ module TSOS {
 
                            // compare the file name of the current index in the directory to the one that the user is searching for
                            if (nextFileData[4] == filename) {
-                               // Return the string 
-                               return nextFileData.toString();
+                               // Fill the array
+                               response[0] = this.createFileLocationString(i + "" , j + "" , k + "");
+                               response[1] = nextFileData.toString();
+
+                               return response;
                            }
                        }
                    }
@@ -162,7 +166,8 @@ module TSOS {
            }
            // If the code makes it to this section then the file does not exist and return null
            return null;
-       } 
+       }
+
        /**
         * Used to get the next open file directoy location
         * Possible location are | 0 0 1 -> 0 7 7  |
@@ -217,6 +222,8 @@ module TSOS {
 
                        // Break up the string by the commas and add it to an array
                        nextFileData = nextFileDataString.split(',');
+
+                       console.log("Index " + i + j + k + "is equal to" + nextFileData[0]);
 
                        // Check the in use byte
                        if (nextFileData[0] == "0") {  // If the directory index is not currently in use
@@ -329,11 +336,9 @@ module TSOS {
                     sessionStorage.setItem(nextFreeDirectoryLocation, this.createDirectoryFileDataString(1, fileTableData[0], fileTableData[1], fileTableData[2], filename));
 
                     // Create the table entry for the new file
-                    sessionStorage.setItem(nextFreeDataLocation, this.createDataFileString("1", "0", "0", "0", "" + nextFreeDataLocation));
+                    sessionStorage.setItem(nextFreeDataLocation, this.createDataFileString("1", "0", "0", "0", "IPSUM YOUSUM" ));
 
-                    console.log(nextFreeDirectoryLocation + "test1");
-                    console.log(nextFreeDataLocation + "test2");
-
+                   
                     // Report to the user that the creation was successful
                     _StdOut.putText("Success: The file was created"); 
 
@@ -398,15 +403,19 @@ module TSOS {
         public readFile(filename: string) {
 
             // Search for the file 
-            var fileIndex = this.searchForFile(filename);
+            var response = this.searchForFile(filename);
 
             // If the file exists
-            if(fileIndex != null) {
+            if(response != null) {
+
+                // Split apart the response array
+                var fileLocation = response[0];
+                var fileData = response[1]; 
 
                 // Split apart the index and get the track , sector, block from the index
-                var fileDataIndex = fileIndex.split(',');
+                var fileDataArray = fileData.split(',');
                 
-                var Lookup = this.createFileLocationString(fileDataIndex[1], fileDataIndex[2], fileDataIndex[3]);
+                var Lookup = this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3]);
                 var value = sessionStorage.getItem(Lookup);
                 var test = value.split(',');
 
@@ -444,23 +453,25 @@ module TSOS {
                             <False>  - If the file is not writen to
          */
         public writeFile(fileInfo) {
-
-            console.log("filename   " + fileInfo[0]);
-            console.log("file data    " + fileInfo[1]);
+          
             // split the n   ame into two parts the real file name and the data to write
             // Search for the file 
             var filename: string  = fileInfo[0];
             var filedata = fileInfo[1];
 
-            var fileIndex = this.searchForFile(filename);
-            console.log("FILE INDEX IS : " + fileIndex);
+            var response = this.searchForFile(filename);
+           // console.log("FILE INDEX IS : " + fileIndex);
             // If the file exists
-            if (fileIndex != null) {
+            if (response != null) {
+
+                // Split apart the response array
+                var fileLocation = response[0];
+                var fileData = response[1]; 
 
                 // Split apart the index and get the track , sector, block from the index
-                var fileDataIndex = fileIndex.split(',');
+                var fileDataArray = fileData.split(',');
 
-                var Lookup = this.createFileLocationString(fileDataIndex[1], fileDataIndex[2], fileDataIndex[3]);
+                var Lookup = this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3]);
                 var value = sessionStorage.getItem(Lookup);
                 var test = value.split(',');
 
@@ -503,21 +514,75 @@ module TSOS {
          */
         public deleteFile(filename: string) {
 
+            // Search for the file 
+            var response = this.searchForFile(filename);
 
-            // To delete a file , we search the directory for the named file.
+            // If the file exists
+            if (response != null) {
 
-            // Having found the associated directory entry, we relesase all file space, so that 
-            // it can be reused by other files, and erase the directory entry
-            
+                // Split apart the response array
+                var fileLocation = response[0];
+                var fileData = response[1]; 
 
-            // First check to see if the file name already exists in the file system
-            var fileNameFound: boolean = this.filenameExists(filename);
+                // Split apart the file directory location
+                var fileLocationArray = fileLocation.split(',');
 
-            // First check to see if the file name already exists
-            if (fileNameFound == false) {  // If the file name is not found
+                // Get the TSB of the directory location
+                var orgTrack = fileLocationArray[0];
+                var orgSector = fileLocationArray[1];
+                var orgBlock = fileLocationArray[2];
 
-                // Tell the user
-                _StdOut.putText("Delete Error: The file name does not exist ");
+                var value = sessionStorage.getItem(this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + ""));
+
+                console.log("Deleting from index  item " + this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + ""));
+
+                // Clear the Directory entry(Sets the in use bit to 0 T = -1 S = -1 B = -1 and a blank file name)
+                sessionStorage.setItem(this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + ""), this.createDirectoryFileDataString( 0, 0, 0, 0, ""));
+
+                 // Next cascade delete from the table sooooooooooooooo.............
+                
+                // Split apart the index and get the track , sector, block from the index
+
+                 var fileDataArray = fileData.split(',');
+                 var track = fileDataArray[1];
+                 var sector = fileDataArray[2];
+                 var block = fileDataArray[3];
+
+                 // Recusively delete untill all blocks have been vaporized
+                 if (this.cascadeDeleteFileBlocks(this.createFileLocationString(track + "", sector + "", block + "")) == true) {
+
+                     // Tell the user 
+                     _StdOut.putText("File Successfully Deleted"); 
+
+                     // Advance the line
+                     _Console.advanceLine();
+
+                     // Place the prompt
+                     _OsShell.putPrompt();
+
+                     return false;
+                 }
+                 else {
+
+                     // Tell the user 
+                     _StdOut.putText("Woops.... some shit happened"); 
+
+                     // Advance the line
+                     _Console.advanceLine();
+
+                     // Place the prompt
+                     _OsShell.putPrompt();
+
+                     return false;
+
+                 }
+
+               
+            }
+            else {
+
+                // Tell the user 
+                _StdOut.putText("Error: The filename does not exist"); 
 
                 // Advance the line
                 _Console.advanceLine();
@@ -527,20 +592,49 @@ module TSOS {
 
                 return false;
             }
-            else { // If the file was found
+        }
+        /**
+         * This is a recurisive function that when given a starting location string
+         * it will delete blocks until the section of the header of the block that
+         * is being deleted is equal to 000
+         * @Params startingLocation: {String} - The first block in the chain
+         *
+         */
+        public cascadeDeleteFileBlocks(startingLocation: string) { 
 
-                sessionStorage.removeItem(filename);
-                // Tell the user
-                _StdOut.putText("Delete Successful ");
+            console.log("Starting the cascading delete at... " + startingLocation);
 
-                // Advance the line
-                _Console.advanceLine();
+            // First get the Item at the location
+            var block = sessionStorage.getItem(startingLocation);
 
-                // Place the prompt
-                _OsShell.putPrompt();
+            console.log(block + " THIS IS THE NEXT ITEM");
 
+            // Split next item data into an array
+            var blockDataArray = block.split(',');
+
+            console.log(" THIS IS ANOTHER TEST   " + blockDataArray[0] + blockDataArray[1] + blockDataArray[2] + blockDataArray[3] + blockDataArray[4]);
+
+            // Build a string with the next block location for late use to determine if recursion is needed
+            var nextBlockLocation = "" + blockDataArray[1] + blockDataArray[2] + blockDataArray[3];
+            
+            // Delete the current block
+            sessionStorage.setItem(startingLocation, this.createDataFileString("0" , "0" , "0" , "0" , ""));
+
+            console.log(startingLocation + "was just deleted");
+            // Check to see if recursion is needed
+            if(nextBlockLocation == "000") {
+                // STOP RECURSION
+                console.log("RECURSION STOPING");
                 return true;
             }
+            else{
+
+                console.log("RECURSION IS HAPPENING !!!");
+                // If another location needs to be deleted then recurse 
+                this.cascadeDeleteFileBlocks(this.createFileLocationString(blockDataArray[1], blockDataArray[2], blockDataArray[3]));
+            }
+
+
         }
         /**
          * Used to check if a file name exists in the file system

@@ -44,6 +44,7 @@ var TIMER_IS_SET = "SET"; //  Set
 var TIMER_IS_OFF = "OFF"; //  OFF
 var TIMER_NOT_FINISHED = "TIMER_NOT_FINISHED"; // Timer not finished yet
 var TIMER_FINISHED = "TIMER_FINISHED"; // Timer is finished
+var TIMER_INDEF = "TIMER_GOT_NO_BRAKES";
 // Not Really Sure What to Call These Yet
 var TIMER_ENDED_PROCESS = "TIMER"; // * The timer has been called and ended the user process
 var BREAK_ENDED_PROCESS = "BREAK"; // * The break instruction was called and ended the user process

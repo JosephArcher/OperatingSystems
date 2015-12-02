@@ -51,6 +51,7 @@ const TIMER_IS_SET: string = "SET";                       //  Set
 const TIMER_IS_OFF: string = "OFF";                       //  OFF
 const TIMER_NOT_FINISHED: string = "TIMER_NOT_FINISHED";  // Timer not finished yet
 const TIMER_FINISHED: string = "TIMER_FINISHED";          // Timer is finished
+const TIMER_INDEF: string = "TIMER_GOT_NO_BRAKES";
 
 // Not Really Sure What to Call These Yet
 const TIMER_ENDED_PROCESS: string = "TIMER";              // * The timer has been called and ended the user process

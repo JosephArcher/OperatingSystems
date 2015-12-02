@@ -166,14 +166,20 @@ module TSOS {
                         _ReadyQueue.incrementWaitTime();
                         _ReadyQueue.incrementTurnAroundTime();
 
-                       // Decrement the timer by one and check to see if it is finished
-                       if (_Timer.decreaseTimerByOne() == TIMER_FINISHED) {
+                        // Before any timer stuff is done check for FCFS
+                        if(_CPUScheduler.getSchedulingAlgorithm() == ROUND_ROBIN) {
 
-                             _KernelInterruptQueue.enqueue(new Interrupt(TIMER_IRQ, _CPUScheduler.getCurrentProcess() ));
+                            // If the CPU is not 
 
-                        } else {
-                           // If the timer is not finished then do nothing
-                       }
+                           // Decrement the timer by one and check to see if it is finished
+                            if (_Timer.decreaseTimerByOne() == TIMER_FINISHED) {
+
+                                 _KernelInterruptQueue.enqueue(new Interrupt(TIMER_IRQ, _CPUScheduler.getCurrentProcess() ));
+
+                            } else {
+                               // If the timer is not finished then do nothing
+                            }
+                        }// If not using round robin then do nothing with the timer
                     }
             } 
             else {// If there are no interrupts and there is nothing being executed then just be idle. :(

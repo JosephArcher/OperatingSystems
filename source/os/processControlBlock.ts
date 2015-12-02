@@ -17,6 +17,8 @@ module TSOS {
 		public limitReg: number = 256;         // Limit Register
 		public turnAroundTime: number = 0;     // Turnaround Time
 		public waitTime: number = 0;           // Wait Time
+		public priority: number = 0;           // Process Priority
+		public location: string = "";          // Process Location 
 			
 		public constructor() {
 			
@@ -226,5 +228,22 @@ module TSOS {
 				this.incrementWaitTime();
 			}
 		}
+		/**
+ 		* Returns the priority of the process
+ 		* @Return {Number} - The priority of the process
+ 		* 
+		*/
+		public getPriority(): number {
+			return this.priority;
+		}
+		/**
+		* Sets the priority of the process
+		* @Params {Number} - The priority to be set
+		* 
+		*/
+		public setPriority(priority: number) {
+			this.priority = priority;
+		}
+
 	}
 }
