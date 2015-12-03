@@ -177,6 +177,12 @@ var _TerminatedProcessTable;
 //Ready Queue UI
 var _ReadyQueueTableElement;
 var _ReadyQueueTable;
+// File System UI
+var _FileSystemTableElement;
+var _FileSystemTable;
+// Hard Disk UI
+var _HardDiskTableElement;
+var _HardDiskTable;
 // Host Log UI Tracker
 var lastUIMessage = "";
 var hostCounter = 0;

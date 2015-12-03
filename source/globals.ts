@@ -235,6 +235,15 @@ var _TerminatedProcessTable: TSOS.TerminatedProcessTable;
 var _ReadyQueueTableElement: HTMLTableElement;
 var _ReadyQueueTable: TSOS.ReadyQueueTable;
 
+// File System UI
+var _FileSystemTableElement: HTMLTableElement;
+var _FileSystemTable: TSOS.FileSystemTable;
+
+// Hard Disk UI
+var _HardDiskTableElement: HTMLTableElement;
+var _HardDiskTable: TSOS.HardDiskTable;
+
+
 // Host Log UI Tracker
 var lastUIMessage: string = "";
 var hostCounter: number = 0;

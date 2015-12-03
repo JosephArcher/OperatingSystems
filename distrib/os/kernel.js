@@ -78,6 +78,10 @@ var TSOS;
             _ReadyQueueTable = new TSOS.ReadyQueueTable(_ReadyQueueTableElement);
             //Initalize the Terminated Process List
             _TerminatedProcessTable = new TSOS.TerminatedProcessTable(_TerminatedProcessTableElement);
+            // Initalize the File System Table
+            _FileSystemTable = new TSOS.FileSystemTable(_FileSystemTableElement);
+            // Initalize the Hard Disk Table
+            _HardDiskTable = new TSOS.HardDiskTable(_HardDiskTableElement);
             // Initalize the timer
             _Timer = new TSOS.Timer();
             // Initalize the CPU Scheduler
@@ -414,7 +418,7 @@ var TSOS;
             // Clear the Process from the UI Ready queue
             _ReadyQueueTable.removeProcessById(process);
             // Add to the terminated UI Table
-            _TerminatedProcessTable.addRow(process);
+            // _TerminatedProcessTable.addRow(process);   
         };
         /*
          * Used to set the _CPU.isExecuting Property to False

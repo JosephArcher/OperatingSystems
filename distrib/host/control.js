@@ -64,6 +64,10 @@ var TSOS;
             _TerminatedProcessTableElement = document.getElementById("terminatedProcessTableElement");
             // Ready Queue
             _ReadyQueueTableElement = document.getElementById("readyQueueTableElement");
+            // File System
+            _FileSystemTableElement = document.getElementById("fileSystemTable");
+            // Hard Disk
+            _HardDiskTableElement = document.getElementById("hardDiskTable");
             // Check for our testing and enrichment core, which
             // may be referenced here (from index.html) as function Glados().
             if (typeof Glados === "function") {

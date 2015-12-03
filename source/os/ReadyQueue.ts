@@ -95,6 +95,38 @@
 
 			return <TSOS.ProcessControlBlock> this.q[index];
 		}
+		/**
+		 * Used to find the priority with the highest priority in the ready queue
+		 * @Returns {Number} - The index in the ready queue with the highest priority
+		 */
+		public findHighestPriorityIndex(): number {
+
+			// Initialize variables
+			var currentLargestPriority = -1;
+			var largestIndex = -1;
+			var nextProcecss = null;
+
+			// Loop over the list checking each pcb in the ready queue for the heightest Process with ties being broken by FCFS
+			for (var i = 0; i < _ReadyQueue.getSize(); i++){
+
+				// Get the next PCB in the next queue
+				nextProcecss = _ReadyQueue.getElementAt(i);
+
+				// Compare the next process's priority to the current heightest priority
+				if(nextProcecss.getPriority() > currentLargestPriority ) { // If the priority is larger
+					// Update the globals
+					currentLargestPriority = nextProcecss.getPriority();
+					largestIndex = i;
+				}
+				else { // If the priority is not larger then ignore it
+					// I LOVE DOING NOTHING!
+				}
+
+			}
+			// Return the index of the highest priority
+			return largestIndex;
+
+		}
 		public incrementWaitTime() {
 
 			// Get the size of the ready queue

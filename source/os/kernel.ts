@@ -100,7 +100,13 @@ module TSOS {
 
             //Initalize the Terminated Process List
             _TerminatedProcessTable = new TerminatedProcessTable(_TerminatedProcessTableElement);
- 
+
+            // Initalize the File System Table
+            _FileSystemTable = new FileSystemTable(_FileSystemTableElement);
+
+            // Initalize the Hard Disk Table
+            _HardDiskTable = new HardDiskTable(_HardDiskTableElement);
+
             // Initalize the timer
             _Timer = new Timer();
 
@@ -522,7 +528,7 @@ module TSOS {
                 _ReadyQueueTable.removeProcessById(process);
 
                 // Add to the terminated UI Table
-                _TerminatedProcessTable.addRow(process);   
+               // _TerminatedProcessTable.addRow(process);   
         }
         /*
          * Used to set the _CPU.isExecuting Property to False

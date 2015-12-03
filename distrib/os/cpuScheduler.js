@@ -69,20 +69,28 @@ var TSOS;
          * 									- If no processes exists then return null
          */
         CpuScheduler.prototype.getNextProcess = function () {
+            // Initialize variables
             var nextProcess = null;
+            var tempProcess = null;
+            var nextProcessIndex;
             //First check the next size of the ready queue
             if (_ReadyQueue.getSize() > 0) {
                 // Next check what current scheduling algorithm is being used
                 if (this.SchedulingAlgorithm == NON_PREEMPTIVE_PRIORITY) {
-                    // Just get next one 	
-                    nextProcess = _ReadyQueue.dequeue(); // Get the next process from  the ready queue
+                    // Find the index of the highest process
+                    nextProcessIndex = _ReadyQueue.findHighestPriorityIndex();
+                    // Get the next process to be run
+                    nextProcess = _ReadyQueue.getElementAt(nextProcessIndex);
+                    // Remove the process from the ready queue
+                    _ReadyQueue = _ReadyQueue.removeElementAtIndex(nextProcessIndex);
                 }
                 else {
                     // Just get next one 	
                     nextProcess = _ReadyQueue.dequeue(); // Get the next process from  the ready queue
                 }
             }
-            this.setCurrentProcess(nextProcess); //
+            // Set the current process
+            this.setCurrentProcess(nextProcess);
             return nextProcess;
         };
         return CpuScheduler;

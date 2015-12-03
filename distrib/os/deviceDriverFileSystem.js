@@ -4,12 +4,7 @@
 ///<reference path="canvastext.ts" />
 ///<reference path="File.ts" />
 ///<reference path="FileDirectoryObject.ts" />
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
+///<reference path="FileSystemTable.ts" />
 /* ----------------------------------
    DeviceDriverFileSystem.ts
 
@@ -17,6 +12,12 @@ var __extends = (this && this.__extends) || function (d, b) {
 
    The Kernel File System Driver
    ---------------------------------- */
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
 /**
 T S B  | [0-1] T S B  | FileName
 0 0 0  | MASTA BOOT RECORD
@@ -281,6 +282,8 @@ var TSOS;
                         sessionStorage.setItem(nextFreeDataLocation, this.createDataFileString("1", "0", "0", "0", "IPSUM YOUSUM"));
                         // Report to the user that the creation was successful
                         _StdOut.putText("Success: The file was created");
+                        // Update the UI
+                        _FileSystemTable.addRow(filename + "", fileTableData[0] + "", fileTableData[1] + "", fileTableData[2] + "", "IPSUM YOUSUM");
                         // Advance the line in the console
                         _Console.advanceLine();
                         // Place the prompt
@@ -390,6 +393,7 @@ var TSOS;
                 }
                 var splits = Lookup.split(',');
                 sessionStorage.setItem(Lookup, this.createDataFileString("1", test[1], test[2], test[3], littleLessFun));
+                _FileSystemTable.updateFileByName(filename, littleLessFun);
                 // Tell the user 
                 _StdOut.putText("File Write Success");
                 // Advance the line
@@ -399,6 +403,13 @@ var TSOS;
                 return false;
             }
             else {
+                // Tell the user 
+                _StdOut.putText("Error: The filename does not exist");
+                // Advance the line
+                _Console.advanceLine();
+                // Place the prompt
+                _OsShell.putPrompt();
+                return false;
             }
         };
         /**
@@ -425,6 +436,7 @@ var TSOS;
                 console.log("Deleting from index  item " + this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + ""));
                 // Clear the Directory entry(Sets the in use bit to 0 T = -1 S = -1 B = -1 and a blank file name)
                 sessionStorage.setItem(this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + ""), this.createDirectoryFileDataString(0, 0, 0, 0, ""));
+                _FileSystemTable.removeFileByName(filename);
                 // Next cascade delete from the table sooooooooooooooo.............
                 // Split apart the index and get the track , sector, block from the index
                 var fileDataArray = fileData.split(',');
@@ -515,9 +527,33 @@ var TSOS;
         DeviceDriverFileSystem.prototype.listFiles = function () {
             // Initlize Variables
             var fileList = [];
+            var nextDirLocation;
             // Find all the files in the File System and add them into the arrary
-            // Return file list
-            return fileList;
+            // Loop over the file directory and check each spot for an in use
+            // For every track
+            for (var i = 0; i < 1; i++) {
+                // For every sector
+                for (var j = 0; j < 7; j++) {
+                    // A block is chilling out
+                    for (var k = 1; k < 7; k++) {
+                        // Get the next directory location
+                        nextDirLocation = sessionStorage.getItem(this.createFileLocationString(i + "", j + "", k + ""));
+                        // Split the Location into an array 
+                        var nextDirLocationArray = nextDirLocation.split(',');
+                        // Check to see if the in use bit is equal to 1
+                        if (nextDirLocationArray[0] == "1") {
+                            // Add the file to the file list to be returned
+                            fileList.push(nextDirLocationArray[4]);
+                        }
+                    }
+                }
+            }
+            // Tell the user 
+            _StdOut.putText(fileList.toString());
+            // Advance the line
+            _Console.advanceLine();
+            // Place the prompt
+            _OsShell.putPrompt();
         };
         DeviceDriverFileSystem.prototype.getAllFiles = function () {
             // Initlize Variables

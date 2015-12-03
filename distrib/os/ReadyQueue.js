@@ -86,6 +86,31 @@ var TSOS;
         ReadyQueue.prototype.getElementAt = function (index) {
             return this.q[index];
         };
+        /**
+         * Used to find the priority with the highest priority in the ready queue
+         * @Returns {Number} - The index in the ready queue with the highest priority
+         */
+        ReadyQueue.prototype.findHighestPriorityIndex = function () {
+            // Initialize variables
+            var currentLargestPriority = -1;
+            var largestIndex = -1;
+            var nextProcecss = null;
+            // Loop over the list checking each pcb in the ready queue for the heightest Process with ties being broken by FCFS
+            for (var i = 0; i < _ReadyQueue.getSize(); i++) {
+                // Get the next PCB in the next queue
+                nextProcecss = _ReadyQueue.getElementAt(i);
+                // Compare the next process's priority to the current heightest priority
+                if (nextProcecss.getPriority() > currentLargestPriority) {
+                    // Update the globals
+                    currentLargestPriority = nextProcecss.getPriority();
+                    largestIndex = i;
+                }
+                else {
+                }
+            }
+            // Return the index of the highest priority
+            return largestIndex;
+        };
         ReadyQueue.prototype.incrementWaitTime = function () {
             // Get the size of the ready queue
             var size = _ReadyQueue.getSize();

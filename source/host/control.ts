@@ -83,6 +83,13 @@ module TSOS {
             // Ready Queue
             _ReadyQueueTableElement = <HTMLTableElement> document.getElementById("readyQueueTableElement");
 
+            // File System
+            _FileSystemTableElement = <HTMLTableElement>document.getElementById("fileSystemTable");
+
+            // Hard Disk
+            _HardDiskTableElement = <HTMLTableElement>document.getElementById("hardDiskTable");
+
+
            
             // Check for our testing and enrichment core, which
             // may be referenced here (from index.html) as function Glados().
@@ -171,7 +178,6 @@ module TSOS {
                 this.hostBtnHaltOS_click(null);
             }          
         }
-
         public static hostBtnHaltOS_click(btn): void {
             console.log("HALT BUTTON");
             Control.hostLog("Emergency halt", "host");
@@ -192,8 +198,6 @@ module TSOS {
                    _SingleStepMode = true; // Turn on single step moode
                    Utils.toggleStepModeOn(); // Handle the UI for single step mode
                    $("#taHostLog").append('<li class="list-group-item">Dapibus ac facilisis in <span class="badge">3</span> </li>');
-                   
-
         }
         /**
          * What happens when the user is in single step mode and wants to step forward

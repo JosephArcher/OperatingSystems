@@ -77,7 +77,11 @@ module TSOS {
 		 */
 		public getNextProcess(): TSOS.ProcessControlBlock {
 
+			// Initialize variables
 			var nextProcess: TSOS.ProcessControlBlock = null;
+			var tempProcess: TSOS.ProcessControlBlock = null;
+			var nextProcessIndex;
+
 
 			//First check the next size of the ready queue
 			if (_ReadyQueue.getSize() > 0) {
@@ -86,8 +90,14 @@ module TSOS {
 
 				if(this.SchedulingAlgorithm == NON_PREEMPTIVE_PRIORITY) {
 					
-					// Just get next one 	
-					nextProcess = _ReadyQueue.dequeue(); // Get the next process from  the ready queue
+					// Find the index of the highest process
+					nextProcessIndex = _ReadyQueue.findHighestPriorityIndex();
+
+					// Get the next process to be run
+					nextProcess = _ReadyQueue.getElementAt(nextProcessIndex);
+
+					// Remove the process from the ready queue
+					_ReadyQueue = _ReadyQueue.removeElementAtIndex(nextProcessIndex);
 
 				}
 				else {
@@ -98,7 +108,9 @@ module TSOS {
 
 				
 			}
-			this.setCurrentProcess(nextProcess);//
+			// Set the current process
+			this.setCurrentProcess(nextProcess);
+
 			return nextProcess;
 		}
 	}

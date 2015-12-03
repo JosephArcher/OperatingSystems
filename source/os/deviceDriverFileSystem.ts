@@ -4,7 +4,7 @@
 ///<reference path="canvastext.ts" />
 ///<reference path="File.ts" />
 ///<reference path="FileDirectoryObject.ts" />
-
+///<reference path="FileSystemTable.ts" />
 /* ----------------------------------
    DeviceDriverFileSystem.ts
 
@@ -338,9 +338,12 @@ module TSOS {
                     // Create the table entry for the new file
                     sessionStorage.setItem(nextFreeDataLocation, this.createDataFileString("1", "0", "0", "0", "IPSUM YOUSUM" ));
 
-                   
+                    
                     // Report to the user that the creation was successful
                     _StdOut.putText("Success: The file was created"); 
+
+                    // Update the UI
+                    _FileSystemTable.addRow(filename + "", fileTableData[0] + "", fileTableData[1] + "", fileTableData[2] + "", "IPSUM YOUSUM");
 
                     // Advance the line in the console
                     _Console.advanceLine();
@@ -493,6 +496,7 @@ module TSOS {
                
                sessionStorage.setItem(Lookup, this.createDataFileString("1" , test[1] , test[2] , test[3]  , littleLessFun));
 
+               _FileSystemTable.updateFileByName(filename, littleLessFun);
                // Tell the user 
                _StdOut.putText("File Write Success"); 
 
@@ -505,6 +509,16 @@ module TSOS {
                 return false;
             }
             else {
+                // Tell the user 
+                _StdOut.putText("Error: The filename does not exist"); 
+
+                // Advance the line
+                _Console.advanceLine();
+
+                // Place the prompt
+                _OsShell.putPrompt();
+
+                return false;
             }
         }
         /**
@@ -539,6 +553,8 @@ module TSOS {
 
                 // Clear the Directory entry(Sets the in use bit to 0 T = -1 S = -1 B = -1 and a blank file name)
                 sessionStorage.setItem(this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + ""), this.createDirectoryFileDataString( 0, 0, 0, 0, ""));
+
+                _FileSystemTable.removeFileByName(filename);
 
                  // Next cascade delete from the table sooooooooooooooo.............
                 
@@ -575,10 +591,7 @@ module TSOS {
                      _OsShell.putPrompt();
 
                      return false;
-
                  }
-
-               
             }
             else {
 
@@ -663,11 +676,41 @@ module TSOS {
 
             // Initlize Variables
             var fileList = [];
-
+            var nextDirLocation;
             // Find all the files in the File System and add them into the arrary
 
-            // Return file list
-            return fileList;
+            // Loop over the file directory and check each spot for an in use
+            // For every track
+            for (var i = 0; i < 1; i++) {
+              // For every sector
+              for (var j = 0; j < 7; j++) {
+                // A block is chilling out
+                for (var k = 1; k < 7; k++) {
+
+                  // Get the next directory location
+                  nextDirLocation = sessionStorage.getItem(this.createFileLocationString(i + "", j + "", k + ""));
+
+                  // Split the Location into an array 
+                  var nextDirLocationArray = nextDirLocation.split(',');
+
+                  // Check to see if the in use bit is equal to 1
+                  if (nextDirLocationArray[0] == "1") {   // If a file exists at that directory location
+                    // Add the file to the file list to be returned
+                    fileList.push(nextDirLocationArray[4]);
+                  }
+
+                }
+              }
+            }
+            // Tell the user 
+            _StdOut.putText(fileList.toString()); 
+
+            // Advance the line
+            _Console.advanceLine();
+
+            // Place the prompt
+            _OsShell.putPrompt();
+
         }
 
         public getAllFiles() {

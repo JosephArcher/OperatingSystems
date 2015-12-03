@@ -81,7 +81,7 @@ module TSOS {
 
           $("#processPanel").animate({ width: '100%' }, "slow");
           $("#processPanelCheck").fadeIn(); 
-
+          $("#fileSystemPanelCheck").fadeIn(); 
          });    
        }
 
