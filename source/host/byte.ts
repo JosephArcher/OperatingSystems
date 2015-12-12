@@ -65,7 +65,7 @@ module TSOS {
 			var newValue: string;
 
 			if(value.length > 1){
-				console.log("ERROR: user string to long");
+				
 				return;
 			}
 			else if(value.length == 1){
@@ -82,7 +82,7 @@ module TSOS {
 
 			}
 			else{
-				console.log("This should never happen");
+				
 				return;
 			}
 
@@ -96,7 +96,7 @@ module TSOS {
 			var newValue: string;
 
 			if (value.length > 1) {
-				console.log("ERROR: user string to long");
+				
 				return;
 			}
 			else if (value.length == 1) {
@@ -113,7 +113,7 @@ module TSOS {
 
 			}
 			else {
-				console.log("This should never happen");
+				
 				return;
 			}
 		}

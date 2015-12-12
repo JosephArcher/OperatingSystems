@@ -14,22 +14,22 @@ var TSOS;
             _super.apply(this, arguments);
         }
         ReadyQueue.prototype.removeElementAtIndex = function (index) {
-            console.log('THE index is ' + index);
+            //console.log('THE index is ' + index);
             var tempQueue = new ReadyQueue();
             if (_ReadyQueue.getSize() == 0) {
-                console.log("TEMP QUEUE : THE SIZE WAS ZERO");
+                //console.log("TEMP QUEUE : THE SIZE WAS ZERO");
                 return tempQueue; // do nothing because nothing is in the queue
             }
             if (_ReadyQueue.getSize() == 1) {
                 // When only one element is in queue then just dequeue it... so it will be an empty queue anyways
-                console.log("TEMP QUEUE : THE SIZE WAS ONE");
+                //console.log("TEMP QUEUE : THE SIZE WAS ONE");
                 return tempQueue;
             }
             if (_ReadyQueue.getSize() > 1) {
                 // When more than one element is in the queue then need to do some ugly shit... srry
                 var len = _ReadyQueue.getSize();
                 var nextElement;
-                console.log("TEMP QUEUE : THE SIZE WAS " + len);
+                //	console.log("TEMP QUEUE : THE SIZE WAS " + len);
                 // Loop over the entire queue 
                 for (var i = 0; i < len; i++) {
                     // Get the next Elment in the queue
@@ -66,7 +66,7 @@ var TSOS;
                 nextProcessBlock = this.q[i];
                 processArray.push(nextProcessBlock.processID);
             }
-            console.log(processArray);
+            //console.log(processArray);
             return processArray;
         };
         ReadyQueue.prototype.isExistingProcess = function (processID) {
@@ -86,13 +86,13 @@ var TSOS;
         ReadyQueue.prototype.isFileWrittenToDisk = function () {
             var size = _ReadyQueue.getSize();
             var nextProcess;
-            console.log("IS THE FILE WRITTEN " + size);
-            console.log(_ReadyQueue);
+            //	console.log("IS THE FILE WRITTEN " + size);
+            //	console.log(_ReadyQueue);
             // Loop over the queue 
             for (var i = 0; i < size; i++) {
                 nextProcess = _ReadyQueue.getElementAt(i);
-                console.log(nextProcess.location + "test for adis");
-                console.log(PROCESS_ON_DISK + "test for adis 3");
+                //	console.log(nextProcess.location + "test for adis");
+                //console.log(PROCESS_ON_DISK + "test for adis 3");
                 // Check the next process to see if the process is on the disk or in mem
                 if (nextProcess.location == PROCESS_ON_DISK) {
                     return true;

@@ -28,8 +28,9 @@ module TSOS {
 			}
 		}
 		public clearTable(): void {
+
 			for (var i = 0; i < 378; i++) {
-				this.addRow(i, "", "");
+				this.table.deleteRow(1);
 			}
 		}
 

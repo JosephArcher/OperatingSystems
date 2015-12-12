@@ -2,9 +2,6 @@
 ///<reference path="../utils.ts" />
 ///<reference path="deviceDriver.ts" />
 ///<reference path="canvastext.ts" />
-///<reference path="File.ts" />
-///<reference path="FileDirectoryObject.ts" />
-///<reference path="FileSystemTable.ts" />
 /* ----------------------------------
    DeviceDriverFileSystem.ts
 
@@ -55,8 +52,6 @@ var TSOS;
                     }
                 }
             }
-            // Update the FIle System UI
-            _FileSystemTable.clearTable();
             // Update the hard disk table
             for (var i = 0; i < 378; i++) {
                 // Update the UI Table 
@@ -122,8 +117,9 @@ var TSOS;
          * @Returns {Array} -  0[The I , J , K] 1[filedirectorydata] position
          *
          */
-        DeviceDriverFileSystem.prototype.searchForFile = function (filename) {
+        DeviceDriverFileSystem.prototype.searchForFile = function (theFilename) {
             console.log("HERRE");
+            var filename = TSOS.Utils.StringToHexString(theFilename + "");
             // Initalize the variables
             var nextFileDataString;
             var nextFileData = [];
@@ -312,7 +308,8 @@ var TSOS;
          * @Returns        <True>  - If the file is successfully created
                            <False> - If the file is not created
          */
-        DeviceDriverFileSystem.prototype.createFile = function (filename) {
+        DeviceDriverFileSystem.prototype.createFile = function (theFilename) {
+            var filename = TSOS.Utils.StringToHexString(theFilename + "");
             // Initalize variables
             var nextFreeDirectoryLocation;
             var nextFreeDataLocation;
@@ -354,8 +351,6 @@ var TSOS;
                         var bString = bSplit[0] + bSplit[1] + bSplit[2];
                         _HardDiskTable.updateRow(parseInt(aString), this.createHeaderString("1", bSplit[0], bSplit[1], bSplit[2]), filename); // The Directory entry
                         _HardDiskTable.updateRow(parseInt(bString), "1000", ""); // The Data block
-                        // Update the FIle System UI
-                        _FileSystemTable.addRow(filename + "", fileTableData[0] + "", fileTableData[1] + "", fileTableData[2] + "", "");
                         // Advance the line in the console
                         _Console.advanceLine();
                         // Place the prompt
@@ -410,7 +405,7 @@ var TSOS;
                 // Split apart the index and get the track , sector, block from the index
                 var fileDataArray = fileData.split(',');
                 // Using the starting location find the final block in the chain
-                var data = this.readDataFromAllBlocks(this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3]));
+                var data = TSOS.Utils.HexStringToPeopleString(this.readDataFromAllBlocks(this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3])));
                 // Tell the user 
                 _StdOut.putText("DATA : " + data);
                 // Advance the line
@@ -460,7 +455,8 @@ var TSOS;
         DeviceDriverFileSystem.prototype.writeFile = function (fileInfo) {
             // Split apart the data that is passed in for the write
             var filename = fileInfo[0];
-            var filedata = fileInfo[1];
+            var theFiledata = fileInfo[1];
+            var filedata = TSOS.Utils.StringToHexString(theFiledata);
             // Search to see if the file name exists and the write is valid
             var response = this.searchForFile(filename);
             // If the file exists
@@ -548,8 +544,6 @@ var TSOS;
                 console.log("Deleting from index  item " + this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + ""));
                 // Clear the Directory entry(Sets the in use bit to 0 T = -1 S = -1 B = -1 and a blank file name)
                 sessionStorage.setItem(this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + ""), this.createDirectoryFileDataString(0, 0, 0, 0, ""));
-                // Update the File System UI
-                _FileSystemTable.removeFileByName(filename);
                 // Update the Hard Disk Table UI
                 var aSplit = this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + "").split(',');
                 var aString = aSplit[0] + aSplit[1] + aSplit[2];

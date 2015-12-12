@@ -180,7 +180,7 @@ module TSOS {
                      }
                  }
                  else {
-                     console.log("Opps user cant tab with nothing being typed! do nothing");
+                     
                  }
                  // Check the length of the array and if  1 then only one commmand matched 
                  if(matchingCommands.length === 1) {  

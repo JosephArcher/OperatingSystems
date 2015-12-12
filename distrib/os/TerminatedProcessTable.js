@@ -13,7 +13,6 @@ var TSOS;
         }
         TerminatedProcessTable.prototype.numberOfRows = function () {
             var rows = this.table.rows.length;
-            console.log("number of rows: " + rows);
             return rows;
         };
         TerminatedProcessTable.prototype.setCellData = function (row, cell, data) {
@@ -44,7 +43,6 @@ var TSOS;
             var test = this.table.rows.item(row);
             var nextTablePID = test.cells.item(6);
             var output = parseInt(nextTablePID.innerHTML, 16);
-            console.log(output + " Joe this is the table output");
             return output;
         };
         TerminatedProcessTable.prototype.clearTable = function () {
@@ -52,26 +50,6 @@ var TSOS;
                 this.removeRow(i);
             }
         };
-        // public updateTableContents(): void {
-        // 	this.setProcessStateValue(PROCESS_STATE_TERMINATED);
-        // 	this.setProgramCounterValue(_CPU.PC + "");
-        // 	this.setXRegisterValue(_CPU.Xreg + "");
-        // 	this.setYRegisterValue(_CPU.Yreg + "");
-        // 	this.setAccumulatorValue(_CPU.Acc + "");
-        // 	this.setZFlagValue(_CPU.Zflag + "");
-        // }
-        // public clearTable(): void {
-        // 	this.setProcessStateValue("00");
-        // 	this.setProgramCounterValue("00");
-        // 	this.setXRegisterValue("00");
-        // 	this.setYRegisterValue("00");
-        // 	this.setAccumulatorValue("00");
-        // 	this.setZFlagValue("00");
-        // }
-        // public addNewProcess(newProcess: TSOS.ProcessControlBlock): void {
-        // 	console.log(this.table.rows.length + "ROWDSFSDFSDSF");
-        // 	this.addRow(newProcess);
-        // }
         TerminatedProcessTable.prototype.addRow = function (process) {
             var row = this.table.insertRow(this.numberOfRows());
             var cell0 = row.insertCell(0); // PID

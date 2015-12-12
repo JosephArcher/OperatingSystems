@@ -1,4 +1,3 @@
-///<reference path="os/collections.ts" />
 /// <reference path="jquery.d.ts" />
 ///<reference path="os/ReadyQueue.ts" />
 /* ------------
@@ -105,8 +104,6 @@ var _Mode = 0; // 0 = Kernel Mode |  1 = User Mode
 var _DiskIsFormated = false;
 // The Hardy Hardware Clock
 var _hardwareClockID = null;
-// The Hyper Active Hard Disk Manager
-var _HardDiskManager;
 // The Kooky Kernel
 var _Kernel;
 // The Timely Timer
@@ -180,9 +177,6 @@ var _TerminatedProcessTable;
 //Ready Queue UI
 var _ReadyQueueTableElement;
 var _ReadyQueueTable;
-// File System UI
-var _FileSystemTableElement;
-var _FileSystemTable;
 // Hard Disk UI
 var _HardDiskTableElement;
 var _HardDiskTable;

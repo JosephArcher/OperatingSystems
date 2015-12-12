@@ -1,6 +1,5 @@
 ///<reference path="../globals.ts" />
 ///<reference path="../utils.ts" />
-///<reference path="collections.ts" />
 ///<reference path="queue.ts" />
 ///<reference path="console.ts" />
 ///<reference path="memoryManager.ts" />
@@ -12,8 +11,6 @@
 ///<reference path="ReadyQueueTable.ts" />
 ///<reference path="cpuScheduler.ts" />
 ///<reference path="timer.ts" />
-///<reference path="File.ts" />
-///<reference path="HardDiskManager.ts" />
 
 
 /* ------------
@@ -49,7 +46,7 @@ module TSOS {
             _KernelBuffers = new Array();          // Buffers... for the kernel.
             _KernelInputQueue = new Queue();       // Where device input lands before being processed out somewhere.   
 
-            _ReadyQueue = new ReadyQueue();        // Initialize the Ready Queue             
+            _ReadyQueue = new ReadyQueue();        // Initialize the Ready Queue    
             _ResidentList = new ResidentList();    // Initialize the Resident Queue 
             _TerminatedProcessQueue = new Queue(); // Initalize the Terminated Process Queue
             
@@ -100,9 +97,6 @@ module TSOS {
 
             //Initalize the Terminated Process List
             _TerminatedProcessTable = new TerminatedProcessTable(_TerminatedProcessTableElement);
-
-            // Initalize the File System Table
-            _FileSystemTable = new FileSystemTable(_FileSystemTableElement);
 
             // Initalize the Hard Disk Table
             _HardDiskTable = new HardDiskTable(_HardDiskTableElement);
@@ -335,7 +329,7 @@ module TSOS {
                // check to see if you need to start another process 
                if(_ReadyQueue.getSize() > 0 ){
 
-           console.log("ANOTHER PROCES EXISTS ! GETITING IT NOW HOMIE G");
+          // console.log("ANOTHER PROCES EXISTS ! GETITING IT NOW HOMIE G");
                    // Start the next process
                    var nextProcess: TSOS.ProcessControlBlock = _CPUScheduler.getNextProcess();
 
@@ -343,7 +337,7 @@ module TSOS {
                }
                else{
 
-           console.log("NO PROCESS EXISTS SO STOP ");
+          // console.log("NO PROCESS EXISTS SO STOP ");
                    _KernelInterruptQueue.enqueue(new Interrupt(END_CPU_IRQ, null));
                }
         }
@@ -428,7 +422,7 @@ module TSOS {
                 // Check for a timing error
                 if(_CPUScheduler.getCurrentProcess().getProcessID() == process.getProcessID()) {
 
-                console.log("THE TIMER HAS ENDED RING RING RING");
+              //  console.log("THE TIMER HAS ENDED RING RING RING");
 
                 // Clear the timer and turn it off
                 _Timer.clearTimer();  
@@ -456,7 +450,7 @@ module TSOS {
                 }
                 else{
                     // dont switch this was just handled in timing error
-                    console.log("ERROR FIXED");
+                   
                 }
             }
         }
@@ -466,12 +460,12 @@ module TSOS {
         public terminateProcess(process: TSOS.ProcessControlBlock) {
 
 
-            console.log("Teminating process " + process.getProcessID() );
+           // console.log("Teminating process " + process.getProcessID() );
 
              // Check to see if the process is currently running
             if ( process.getProcessID() == _CPUScheduler.getCurrentProcess().getProcessID() ) {   // The process to terminate is running
                   
-                console.log("Terminating the current process");
+               // console.log("Terminating the current process");
 
                 // Save the current CPU Register values into the process control block
                 _CPUScheduler.runningProcess.setProgramCounter(_CPU.PC);
@@ -490,7 +484,7 @@ module TSOS {
                 // Check to see if another process wants to run
                 if (_ReadyQueue.getSize() > 0) {
 
-                    console.log("starting process after termination");
+                   // console.log("starting process after termination");
 
                     // Get the next process
                     var nextProcess: TSOS.ProcessControlBlock = _CPUScheduler.getNextProcess();
@@ -506,7 +500,7 @@ module TSOS {
                 }
             } else {
 
-                console.log("the current process is not being terminated");
+              //  console.log("the current process is not being terminated");
 
                 // The process to terminate is not running and chilling in the Ready Queue
 
@@ -540,7 +534,7 @@ module TSOS {
          */
         public stopCpuExecution(): void {
 
-            console.log("Stopping the CPU execution becuase no processes are currently active");
+          //  console.log("Stopping the CPU execution becuase no processes are currently active");
             // Stop the Cpu from executing
             _CPU.isExecuting = false;
             _CPUScheduler.runningProcess = null;

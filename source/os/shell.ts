@@ -410,7 +410,7 @@ module TSOS {
                         return;
                     }
                     else {
-                        console.log("should never happen");            
+                        //console.log("should never happen");            
                     }
             }
             else {
@@ -424,7 +424,7 @@ module TSOS {
             // Check to see if there is room in memory
             if (_MemoryManager.availableMemoryPartitions.getSize() < 1) {
 
-                   console.log(_ResidentList.isFileWrittenToDisk() + "joe is calasdf");
+                  // console.log(_ResidentList.isFileWrittenToDisk() + "joe is calasdf");
                 // Next check to see if a file is written to the disk yet
                 if(_ResidentList.isFileWrittenToDisk() == false){
 
@@ -597,7 +597,7 @@ module TSOS {
                 // Get the process form the  ready queue / _CPU Scheduler }
                 var process: TSOS.ProcessControlBlock = _ReadyQueue.isExistingProcess(processID);
 
-                console.log(process + " JOE THIS IS THE PRCESS SHISDFJKLSJDL:KFJSKDL:FJ:SKLDFJ:KLSJF:KLSJDF:LKSJD:FLKJSD:");
+               // console.log(process + " JOE THIS IS THE PRCESS SHISDFJKLSJDL:KFJSKDL:FJ:SKLDFJ:KLSJF:KLSJDF:LKSJD:FLKJSD:");
 
                 // Check to see if the process exists in ready queue
                 if (process != null) {
@@ -721,12 +721,12 @@ module TSOS {
         */ 
         public list() {
 
-            console.log("testing roll out");
+          
             var response = [];
 
             response[0] = LIST_FILES;
             response[1] = "";
-            //_krnFileSystemDriver.rollOutProcess();
+
             _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, response));
         }
         /**

@@ -1,4 +1,4 @@
-///<reference path="queue.ts" />
+//<reference path="queue.ts" />
 ///<reference path="processControlBlock.ts" />
 
 /**

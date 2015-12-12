@@ -63,10 +63,10 @@ module TSOS {
 
 
 			 if (algorithm != ROUND_ROBIN && algorithm != NON_PREEMPTIVE_PRIORITY && algorithm != FIRST_COME_FIRST_SERVE){
-				 console.log("The algorithm is not valid");
+				
 				 return false;
 			 }
-			 console.log("The algorithm is  valid");
+			
 			 return true;
 			 
 		 }

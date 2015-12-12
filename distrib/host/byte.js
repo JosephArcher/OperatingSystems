@@ -55,7 +55,6 @@ var TSOS;
         Byte.prototype.setFirstNibble = function (value) {
             var newValue;
             if (value.length > 1) {
-                console.log("ERROR: user string to long");
                 return;
             }
             else if (value.length == 1) {
@@ -70,7 +69,6 @@ var TSOS;
                 return;
             }
             else {
-                console.log("This should never happen");
                 return;
             }
         };
@@ -81,7 +79,6 @@ var TSOS;
         Byte.prototype.setSecondNibble = function (value) {
             var newValue;
             if (value.length > 1) {
-                console.log("ERROR: user string to long");
                 return;
             }
             else if (value.length == 1) {
@@ -96,7 +93,6 @@ var TSOS;
                 return;
             }
             else {
-                console.log("This should never happen");
                 return;
             }
         };

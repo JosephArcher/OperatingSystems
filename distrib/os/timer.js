@@ -12,11 +12,11 @@ var TSOS;
          */
         Timer.prototype.setNewTimer = function (value) {
             if (this.state == TIMER_IS_SET) {
-                console.log("ERROR: Unable to set a new timer because one is already running");
+                //console.log("ERROR: Unable to set a new timer because one is already running");
                 return;
             }
             else if (this.state == TIMER_IS_OFF) {
-                console.log("SUCCESS: Setting a timer for " + value + " clock cycles");
+                //	console.log("SUCCESS: Setting a timer for " + value + " clock cycles");
                 this.timeRemaining = value;
                 this.state = TIMER_IS_SET;
             }

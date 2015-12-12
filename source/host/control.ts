@@ -81,9 +81,6 @@ module TSOS {
             // Ready Queue
             _ReadyQueueTableElement = <HTMLTableElement> document.getElementById("readyQueueTableElement");
 
-            // File System
-            _FileSystemTableElement = <HTMLTableElement>document.getElementById("fileSystemTable");
-
             // Hard Disk
             _HardDiskTableElement = <HTMLTableElement>document.getElementById("hardDiskTable");
 
@@ -170,6 +167,7 @@ module TSOS {
                 _MemoryInformationTable.fillRows();
                 _TerminatedProcessTable.clearTable();
                 _ReadyQueueTable.clearTable();
+                _HardDiskTable.clearTable();
                 Utils.togglePowerOff(); // Handle what happens to the UI when the system turns off
 
                 // Call the halt button becuase that is really what this is supposed to be
@@ -177,8 +175,6 @@ module TSOS {
             }          
         }
         public static hostBtnHaltOS_click(btn): void {
-            console.log("HALT BUTTON");
-            Control.hostLog("Emergency halt", "host");
             Control.hostLog("Attempting Kernel shutdown.", "host");
             // Call the OS shutdown routine.
             _Kernel.krnShutdown();

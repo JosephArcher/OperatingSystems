@@ -21,7 +21,7 @@ var TSOS;
             this.location = ""; // Process Location 
             this.processID = this.assignNextProcessID();
             this.processState = PROCESS_STATE_NEW;
-            console.log("Creating new PCB");
+            //console.log("Creating new PCB");
         }
         /**
          * Used to auto increment the Process ID for a ProcessControlBlock on creation

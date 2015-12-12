@@ -89,7 +89,7 @@ module TSOS {
          * Used to handle the UI changes when the power is turned off
          */
         public static togglePowerOff(): void {
-      console.log("OFFFFFFFFFFF");
+     
             _ProgramSpinner.style.color = "#FF0000";
             this.endProgramSpinner();
   
@@ -190,12 +190,43 @@ module TSOS {
             $("#btnStepOS").addClass("btn-unselectedMode");
           });
         }
+        public static StringToHexString(input) {
+  
+            var nextChar;
+            var output = "";
+         for (var i = 0; i < input.length; i++){
+             nextChar = input.charCodeAt(i);
+             output = output + nextChar.toString(16);
+         }
+         console.log(" The output iss  " + output);
+          return output;  
+        }
+
+
+        public static HexStringToPeopleString(input){
+
+         var nextChar;
+         var output = "";
+
+          for (var i = 0; i < input.length; i = i + 2) {
+
+
+              nextChar = input.charAt(i) + input.charAt(i + 1);
+        console.log("next char is   " + nextChar);
+              output = output + String.fromCharCode(parseInt(nextChar, 16));
+
+            }
+
+            console.log(" The output iss  " + output);
+            return output;
+        }
+        
         /**
          * Used to convert a decimal string into a hex string
            @Params {String} - A decimal string
            @Returns {String} - A hex string
         */
-        public static decimalToHex(input: string): string {
+        public static decimalToHex(input: string):string {
 
           
           var decimalNumber: number = parseInt(input, 10);
@@ -205,6 +236,7 @@ module TSOS {
           return hexNumber;
 
         }
+
         /**
          * Used to convert a hex string into a decimal string
            @Params {String} - A hex string
@@ -234,8 +266,7 @@ module TSOS {
            // nextProcess = <TSOS.ProcessControlBlock>_ReadyQueue.elementAtIndex(i);
 
             if (nextProcess.getProcessID() == processID) {
-              console.log(nextProcess.getProcessID() + " 1");
-              console.log(processID + " 2");
+           
               return true;
             }
           }
@@ -261,7 +292,7 @@ module TSOS {
         */
         public static getTableRowPosition(address:number):number {
           var rowNumber:number = Math.floor(address / 8);         
-          console.log(rowNumber);        
+             
           return rowNumber;
         }
         /**
@@ -271,7 +302,7 @@ module TSOS {
         */
         public static getTableColumnPosition(address: number):number {
           var columnNumber:number = address % 8;
-          console.log(columnNumber);
+         
           return columnNumber;
         }
         /**
@@ -413,9 +444,9 @@ module TSOS {
         }
         public static hexToAscii(hexString: string): string {
 
-        //  console.log("Hex Value is " + hexString);
+       
           var test = String.fromCharCode(parseInt(hexString, 16))
-        //  console.log("Ascii Value is " + test);
+    
           return test;
 
         }

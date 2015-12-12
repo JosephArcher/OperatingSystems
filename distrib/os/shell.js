@@ -292,7 +292,6 @@ var TSOS;
                     return;
                 }
                 else {
-                    console.log("should never happen");
                 }
             }
             else {
@@ -302,7 +301,7 @@ var TSOS;
             // Determine where to write the program too
             // Check to see if there is room in memory
             if (_MemoryManager.availableMemoryPartitions.getSize() < 1) {
-                console.log(_ResidentList.isFileWrittenToDisk() + "joe is calasdf");
+                // console.log(_ResidentList.isFileWrittenToDisk() + "joe is calasdf");
                 // Next check to see if a file is written to the disk yet
                 if (_ResidentList.isFileWrittenToDisk() == false) {
                     var nextId = _MemoryManager.loadProgramOntoDisk(userInput.replace(/ /g, ''), priority); // Load the program onto the disk and save its process ID to be printed out to user
@@ -439,7 +438,7 @@ var TSOS;
             if (_ReadyQueue.getSize() > 0 || _CPUScheduler.getCurrentProcess() != null) {
                 // Get the process form the  ready queue / _CPU Scheduler }
                 var process = _ReadyQueue.isExistingProcess(processID);
-                console.log(process + " JOE THIS IS THE PRCESS SHISDFJKLSJDL:KFJSKDL:FJ:SKLDFJ:KLSJF:KLSJDF:LKSJD:FLKJSD:");
+                // console.log(process + " JOE THIS IS THE PRCESS SHISDFJKLSJDL:KFJSKDL:FJ:SKLDFJ:KLSJF:KLSJDF:LKSJD:FLKJSD:");
                 // Check to see if the process exists in ready queue
                 if (process != null) {
                     _StdOut.putText("R.I.P process " + process.getProcessID());
@@ -528,11 +527,9 @@ var TSOS;
          * Used to list all the files in the file system
          */
         Shell.prototype.list = function () {
-            console.log("testing roll out");
             var response = [];
             response[0] = LIST_FILES;
             response[1] = "";
-            //_krnFileSystemDriver.rollOutProcess();
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, response));
         };
         /**

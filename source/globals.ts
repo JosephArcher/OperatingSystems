@@ -1,4 +1,3 @@
-///<reference path="os/collections.ts" />
 /// <reference path="jquery.d.ts" />
 ///<reference path="os/ReadyQueue.ts" />
 
@@ -135,9 +134,6 @@ var _DiskIsFormated = false;
 // The Hardy Hardware Clock
 var _hardwareClockID: number = null;
 
-// The Hyper Active Hard Disk Manager
-var _HardDiskManager: TSOS.HardDiskManager;
-
 // The Kooky Kernel
 var _Kernel: TSOS.Kernel;
 
@@ -192,7 +188,6 @@ var _ProcessCounterID: number = -1;
 var _TerminatedProcessQueue: TSOS.Queue;  // Completed Process Queue: Used to Store each PCB once it has been completed
 var _ReadyQueue: TSOS.ReadyQueue;             // Queue of all of the currently running processes
 var _ResidentList: TSOS.ResidentList;           // Stores a list of all loaded processes
-
 //********************************************************\\
 //             Device Driver Variables                    \\
 //********************************************************\\
@@ -239,10 +234,6 @@ var _TerminatedProcessTable: TSOS.TerminatedProcessTable;
 //Ready Queue UI
 var _ReadyQueueTableElement: HTMLTableElement;
 var _ReadyQueueTable: TSOS.ReadyQueueTable;
-
-// File System UI
-var _FileSystemTableElement: HTMLTableElement;
-var _FileSystemTable: TSOS.FileSystemTable;
 
 // Hard Disk UI
 var _HardDiskTableElement: HTMLTableElement;

@@ -1,4 +1,3 @@
-///<reference path="collections.ts" />
 ///<reference path="ProcessControlBlock.ts" />
 ///<reference path="../globals.ts" />
 ///<reference path="../utils.ts" />
@@ -27,7 +26,7 @@ module TSOS {
 			for(var i = 0; i < memoryPartitionArray.length; i++) {			
 				this.availableMemoryPartitions.enqueue(memoryPartitionArray[i]);
 			}
-			console.log("NUMBER OF MEMORY PARTITIONS AVAILABLE IS " + this.availableMemoryPartitions.getSize());
+			//console.log("NUMBER OF MEMORY PARTITIONS AVAILABLE IS " + this.availableMemoryPartitions.getSize());
 		}
 		/**
 		 * Returns the number of bytes in memory
@@ -56,7 +55,7 @@ module TSOS {
 
 				if(nextProcess.getProcessID() == processID) {
 					
-					console.log("The next process to run starts at address " +  nextProcess.getBaseReg() ) ;
+					//console.log("The next process to run starts at address " +  nextProcess.getBaseReg() ) ;
 					return <TSOS.ProcessControlBlock> nextProcess;
 				}
 			}
@@ -140,7 +139,7 @@ module TSOS {
 			 	}
 
 			}
-			console.log("The size of the resident list is ..." + _ResidentList.getSize());
+			//console.log("The size of the resident list is ..." + _ResidentList.getSize());
 
 			// Clear the memory blocks at those locations
 			for (var i = theMemoryPartition; i < theMemoryPartition + 256; i++){
@@ -217,17 +216,12 @@ module TSOS {
 				var otherTest = [];
 				var chunks = [];
 				var response1 = [];
-				console.log(userProgram + "  ppcpcpcpcpc");
+	
 	            // for each chunk of 60 write to the disk
 	       	for(var i:number = 0; i < loops; i++ ) {
-
-	       		console.log("asdfasdfasdfasd");
-	       		console.log(0 + i * 60);
-	       		console.log(60 + i * 60);
-	       		
 	       		chunks.push(userProgram.slice(0 + i * 60 , 60  + i * 60));
 	       	}
-	       	console.log(chunks);
+	     
 	       	for(var j = 0; j < loops; j++) {
 
                 otherTest[0] = "process";
@@ -236,12 +230,8 @@ module TSOS {
               
                 response1[0] = WRITE_FILE;
                 response1[1] = otherTest;
-                console.log(chunks[j] + "BOGGIE");
-                console.log(otherTest);
+               
                 _krnFileSystemDriver.writeFile(otherTest);
-               // _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, response1));
-
-
 	       	}
 				return newProcess.getProcessID();
 

@@ -2,9 +2,6 @@
 ///<reference path="../utils.ts" />
 ///<reference path="deviceDriver.ts" />
 ///<reference path="canvastext.ts" />
-///<reference path="File.ts" />
-///<reference path="FileDirectoryObject.ts" />
-///<reference path="FileSystemTable.ts" />
 /* ----------------------------------
    DeviceDriverFileSystem.ts
 
@@ -56,9 +53,6 @@ module TSOS {
           }
         }
       }
-      // Update the FIle System UI
-      _FileSystemTable.clearTable();
-
       // Update the hard disk table
       for (var i = 0; i < 378; i++) {
         // Update the UI Table 
@@ -141,9 +135,11 @@ module TSOS {
      * @Returns {Array} -  0[The I , J , K] 1[filedirectorydata] position 
      *
      */
-    public searchForFile(filename) {
+    public searchForFile(theFilename) {
+
     console.log("HERRE");
 
+     var filename:string = Utils.StringToHexString(theFilename + "");
       // Initalize the variables
       var nextFileDataString: string;
       var nextFileData = [];
@@ -374,9 +370,11 @@ module TSOS {
          * @Returns        <True>  - If the file is successfully created
                            <False> - If the file is not created
          */
-        public createFile(filename: string): boolean {
+        public createFile(theFilename: string): boolean {
 
-       
+            var filename: string = Utils.StringToHexString(theFilename + "");
+
+
             // Initalize variables
             var nextFreeDirectoryLocation;
             var nextFreeDataLocation;
@@ -434,9 +432,6 @@ module TSOS {
 
             _HardDiskTable.updateRow(parseInt(aString), this.createHeaderString("1", bSplit[0], bSplit[1], bSplit[2]), filename); // The Directory entry
             _HardDiskTable.updateRow(parseInt(bString), "1000", ""); // The Data block
-
-            // Update the FIle System UI
-            _FileSystemTable.addRow(filename + "", fileTableData[0] + "", fileTableData[1] + "", fileTableData[2] + "", "");
 
             // Advance the line in the console
             _Console.advanceLine();
@@ -512,7 +507,7 @@ module TSOS {
                 var fileDataArray = fileData.split(',');
 
                 // Using the starting location find the final block in the chain
-                var data = this.readDataFromAllBlocks(this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3]));
+                var data = Utils.HexStringToPeopleString(this.readDataFromAllBlocks(this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3])));
 
                 // Tell the user 
                 _StdOut.putText("DATA : " + data); 
@@ -577,7 +572,8 @@ module TSOS {
            
           // Split apart the data that is passed in for the write
           var filename = fileInfo[0];
-          var filedata = fileInfo[1];
+          var theFiledata = fileInfo[1];
+          var filedata = Utils.StringToHexString(theFiledata);
 
           // Search to see if the file name exists and the write is valid
           var response = this.searchForFile(filename);
@@ -703,9 +699,6 @@ module TSOS {
 
                 // Clear the Directory entry(Sets the in use bit to 0 T = -1 S = -1 B = -1 and a blank file name)
                 sessionStorage.setItem(this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + ""), this.createDirectoryFileDataString( 0, 0, 0, 0, ""));
-
-                // Update the File System UI
-                _FileSystemTable.removeFileByName(filename);
 
                 // Update the Hard Disk Table UI
                 var aSplit = this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + "").split(',');

@@ -73,7 +73,6 @@ var TSOS;
          * Used to handle the UI changes when the power is turned off
          */
         Utils.togglePowerOff = function () {
-            console.log("OFFFFFFFFFFF");
             _ProgramSpinner.style.color = "#FF0000";
             this.endProgramSpinner();
             $(function () {
@@ -148,6 +147,27 @@ var TSOS;
                 $("#btnStepOS").addClass("btn-unselectedMode");
             });
         };
+        Utils.StringToHexString = function (input) {
+            var nextChar;
+            var output = "";
+            for (var i = 0; i < input.length; i++) {
+                nextChar = input.charCodeAt(i);
+                output = output + nextChar.toString(16);
+            }
+            console.log(" The output iss  " + output);
+            return output;
+        };
+        Utils.HexStringToPeopleString = function (input) {
+            var nextChar;
+            var output = "";
+            for (var i = 0; i < input.length; i = i + 2) {
+                nextChar = input.charAt(i) + input.charAt(i + 1);
+                console.log("next char is   " + nextChar);
+                output = output + String.fromCharCode(parseInt(nextChar, 16));
+            }
+            console.log(" The output iss  " + output);
+            return output;
+        };
         /**
          * Used to convert a decimal string into a hex string
            @Params {String} - A decimal string
@@ -179,8 +199,6 @@ var TSOS;
             for (var i = 0; i < _ReadyQueue.getSize(); i++) {
                 // nextProcess = <TSOS.ProcessControlBlock>_ReadyQueue.elementAtIndex(i);
                 if (nextProcess.getProcessID() == processID) {
-                    console.log(nextProcess.getProcessID() + " 1");
-                    console.log(processID + " 2");
                     return true;
                 }
             }
@@ -205,7 +223,6 @@ var TSOS;
          */
         Utils.getTableRowPosition = function (address) {
             var rowNumber = Math.floor(address / 8);
-            console.log(rowNumber);
             return rowNumber;
         };
         /**
@@ -215,7 +232,6 @@ var TSOS;
         */
         Utils.getTableColumnPosition = function (address) {
             var columnNumber = address % 8;
-            console.log(columnNumber);
             return columnNumber;
         };
         /**
@@ -341,9 +357,7 @@ var TSOS;
             return answer;
         };
         Utils.hexToAscii = function (hexString) {
-            //  console.log("Hex Value is " + hexString);
             var test = String.fromCharCode(parseInt(hexString, 16));
-            //  console.log("Ascii Value is " + test);
             return test;
         };
         /*

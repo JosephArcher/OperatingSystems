@@ -64,8 +64,6 @@ var TSOS;
             _TerminatedProcessTableElement = document.getElementById("terminatedListTableElement");
             // Ready Queue
             _ReadyQueueTableElement = document.getElementById("readyQueueTableElement");
-            // File System
-            _FileSystemTableElement = document.getElementById("fileSystemTable");
             // Hard Disk
             _HardDiskTableElement = document.getElementById("hardDiskTable");
             // Check for our testing and enrichment core, which
@@ -129,14 +127,13 @@ var TSOS;
                 _MemoryInformationTable.fillRows();
                 _TerminatedProcessTable.clearTable();
                 _ReadyQueueTable.clearTable();
+                _HardDiskTable.clearTable();
                 TSOS.Utils.togglePowerOff(); // Handle what happens to the UI when the system turns off
                 // Call the halt button becuase that is really what this is supposed to be
                 this.hostBtnHaltOS_click(null);
             }
         };
         Control.hostBtnHaltOS_click = function (btn) {
-            console.log("HALT BUTTON");
-            Control.hostLog("Emergency halt", "host");
             Control.hostLog("Attempting Kernel shutdown.", "host");
             // Call the OS shutdown routine.
             _Kernel.krnShutdown();

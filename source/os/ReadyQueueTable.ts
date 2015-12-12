@@ -26,7 +26,7 @@ module TSOS {
 		}
 		public numberOfRows(): number {
 			var rows: number = this.table.rows.length;
-			console.log("number of rows: " + rows);
+			//console.log("number of rows: " + rows);
 			return rows;
 		}
 		private setCellData(row: number, cell: number, data: string): void {
@@ -64,7 +64,7 @@ module TSOS {
 
 			var output: number = parseInt(nextTablePID.innerHTML, 16);
 
-			console.log(output + " Joe this is the table output");
+			//console.log(output + " Joe this is the table output");
 
 			return output;
 		}
@@ -87,7 +87,7 @@ module TSOS {
 		// 	this.setZFlagValue("00");
 		// }
 		public addNewProcess(newProcess: TSOS.ProcessControlBlock): void {
-			console.log(this.table.rows.length + "ROWDSFSDFSDSF");
+		//	console.log(this.table.rows.length + "ROWDSFSDFSDSF");
 			this.addRow(newProcess);
 
 
@@ -146,7 +146,7 @@ module TSOS {
 
 					// Compare the ID of the row to the ID of the process that is ending
 					if (nextProcessRowID == theProcessID) {
-						console.log("The Process ID matches one in the current table! UPDATING RIGHT NOW BB");
+					//	console.log("The Process ID matches one in the current table! UPDATING RIGHT NOW BB");
 						// Get the row that matches in order to update its contents
 						row = <HTMLTableRowElement>this.table.rows.item(i);
 
@@ -195,14 +195,14 @@ module TSOS {
 
 					// Compare the ID of the row to the ID of the process that is ending
 					if (nextProcessRowID == theProcessID) {
-						console.log("THe Process ID matches one in the current table ! fuck yes");
+					//	console.log("THe Process ID matches one in the current table ! fuck yes");
 						// Remove the row that matches to show a process that is ending!
 						this.removeRow(i);
 					}
 				}
 			}
 			else{
-				console.log("topkek123");
+			//	console.log("topkek123");
 			}
 		}
 	}

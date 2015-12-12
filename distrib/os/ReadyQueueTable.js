@@ -13,7 +13,7 @@ var TSOS;
         }
         ReadyQueueTable.prototype.numberOfRows = function () {
             var rows = this.table.rows.length;
-            console.log("number of rows: " + rows);
+            //console.log("number of rows: " + rows);
             return rows;
         };
         ReadyQueueTable.prototype.setCellData = function (row, cell, data) {
@@ -44,7 +44,7 @@ var TSOS;
             var test = this.table.rows.item(row);
             var nextTablePID = test.cells.item(0);
             var output = parseInt(nextTablePID.innerHTML, 16);
-            console.log(output + " Joe this is the table output");
+            //console.log(output + " Joe this is the table output");
             return output;
         };
         // public updateTableContents(): void {
@@ -64,7 +64,7 @@ var TSOS;
         // 	this.setZFlagValue("00");
         // }
         ReadyQueueTable.prototype.addNewProcess = function (newProcess) {
-            console.log(this.table.rows.length + "ROWDSFSDFSDSF");
+            //	console.log(this.table.rows.length + "ROWDSFSDFSDSF");
             this.addRow(newProcess);
         };
         ReadyQueueTable.prototype.addRow = function (process) {
@@ -113,7 +113,7 @@ var TSOS;
                     nextProcessRowID = this.getProcessID(i);
                     // Compare the ID of the row to the ID of the process that is ending
                     if (nextProcessRowID == theProcessID) {
-                        console.log("The Process ID matches one in the current table! UPDATING RIGHT NOW BB");
+                        //	console.log("The Process ID matches one in the current table! UPDATING RIGHT NOW BB");
                         // Get the row that matches in order to update its contents
                         row = this.table.rows.item(i);
                         var cell0 = row.cells.item(0); // PID
@@ -154,14 +154,13 @@ var TSOS;
                     nextProcessRowID = this.getProcessID(i);
                     // Compare the ID of the row to the ID of the process that is ending
                     if (nextProcessRowID == theProcessID) {
-                        console.log("THe Process ID matches one in the current table ! fuck yes");
+                        //	console.log("THe Process ID matches one in the current table ! fuck yes");
                         // Remove the row that matches to show a process that is ending!
                         this.removeRow(i);
                     }
                 }
             }
             else {
-                console.log("topkek123");
             }
         };
         return ReadyQueueTable;

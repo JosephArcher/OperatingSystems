@@ -17,7 +17,7 @@ var TSOS;
         };
         HardDiskTable.prototype.clearTable = function () {
             for (var i = 0; i < 378; i++) {
-                this.addRow(i, "", "");
+                this.table.deleteRow(1);
             }
         };
         HardDiskTable.prototype.createTSBString = function (rowNumber) {
