@@ -31,8 +31,6 @@ module TSOS {
 
     export class Control {
 
-
-
         public static hostInit(): void {
             // This is called from index.html's onLoad event via the onDocumentLoad function pointer.
 
@@ -170,7 +168,7 @@ module TSOS {
                 _SystemIsOn = false; // Turn the system off
                 _SystemInformationInterface.systemOffMode();
                 _MemoryInformationTable.fillRows();
-                _TerminatedProcessTable.clearTable();
+              //  _TerminatedProcessTable.clearTable();
                 _ReadyQueueTable.clearTable();
                 Utils.togglePowerOff(); // Handle what happens to the UI when the system turns off
 

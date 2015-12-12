@@ -50,7 +50,7 @@ module TSOS {
 		  * Sets the current scheduling algorithm
 		  */
 		 public setSchedulingAlgorithm(newSchedulingAlgorithm: string){
-
+		 	
 			 this.SchedulingAlgorithm = newSchedulingAlgorithm;
 		 }
 		/**

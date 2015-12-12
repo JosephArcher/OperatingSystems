@@ -67,6 +67,29 @@ module TSOS {
 				}
 			}
 		}
+		public isFileWrittenToDisk(): boolean {
+
+			var size: number = _ResidentList.getSize();
+			var nextProcess: TSOS.ProcessControlBlock;
+			console.log("IS THE FILE WRITTEN " + size);
+			console.log(_ResidentList);
+			// Loop over the queue 
+			for (var i = 0; i < size; i++) {
+
+				nextProcess = <TSOS.ProcessControlBlock>_ResidentList.getElementAt(i);
+
+				console.log(nextProcess.location + "test for adis");
+				console.log(PROCESS_ON_DISK + "test for adis 3");
+				// Check the next process to see if the process is on the disk or in mem
+				if(nextProcess.location == PROCESS_ON_DISK){
+					return true;
+				}
+
+			}
+			// If no process is written to disk return false
+			return false;
+
+		}
 		public returnAllProcessIds() {
 
 			var nextProcessBlock;

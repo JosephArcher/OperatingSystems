@@ -89,47 +89,26 @@ module TSOS {
          * Used to handle the UI changes when the power is turned off
          */
         public static togglePowerOff(): void {
-
+      console.log("OFFFFFFFFFFF");
             _ProgramSpinner.style.color = "#FF0000";
             this.endProgramSpinner();
-
+  
             $(function() {
               $("#btnStartOS").removeClass("btn-navPowerOnBorder");
               $("#btnStartOS").addClass("btn-navPowerOffBorder");
 
-              // $("#face").addClass("happy");
-              // $("#face").removeClass("sad");
-
-              // $(".panel-collapse").collapse('hide');
-
-              // $("#systemInformationPanel").animate({ width: '45%' }, "slow");
-              // $("#systemInformationPanelCheck").fadeOut();
-
-              // $("#userProgramInputPanel").animate({ width: '45%' }, "slow");
-              // $("#userProgramInputPanelCheck").fadeOut();
-
-              // $("#residentListPanel").animate({ width: '45%' }, "slow");
-              // $("#residentListPanelCheck").fadeOut();
-
-              // $("#readyQueuePanel").animate({ width: '45%' }, "slow");
-              // $("#readyQueuePanelCheck").fadeOut();
-
-              // $("#cpuStatPanel").animate({ width: '45%' }, "slow");
-              // $("#cpuStatPanelCheck").fadeOut();
-
-              // $("#processControlBlockPanel").animate({ width: '45%' }, "slow");
-              // $("#processControlBlockPanelCheck").fadeOut();
-
-              // $("#mainMemoryPanel").animate({ width: '55%' }, "slow");
-              // $("#mainMemoryPanelCheck").fadeOut(); 
-
+              $("#mainMemoryPanelCheck").fadeOut();
+              $("#processPanelCheck").fadeOut(); 
+              $("#cpuStatPanelCheck").fadeOut(); 
+              $("#userProgramInputPanelCheck").fadeOut();
+              $("#fileSystemPanelCheck").fadeOut(); 
 
             });
 
             this.clearUserInput();
             this.clearCpuUI();
             _MemoryInformationTable.fillRows();
-            _TerminatedProcessTable.clearTable();
+           // _TerminatedProcessTable.clearTable();
             _ReadyQueueTable.clearTable();
             _Console.clearScreen();
 

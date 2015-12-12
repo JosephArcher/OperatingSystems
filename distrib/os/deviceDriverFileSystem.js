@@ -42,18 +42,25 @@ var TSOS;
             var tracks = 4;
             var sectors = 8;
             var blocks = 8;
-            var nextStorageLocation = "";
+            var nextRow;
             // Loop and initalize the session storage
-            // For every track
+            // For every track...
             for (var i = 0; i < tracks; i++) {
-                // For every sector
+                // For every sector...
                 for (var j = 0; j < sectors; j++) {
                     // A block is chilling out
                     for (var k = 0; k < blocks; k++) {
-                        // Initalize the session storage at location i , j , k  with the initial value of *
-                        sessionStorage.setItem(this.createFileLocationString(i + "", j + "", k + ""), this.createDirectoryFileDataString(0, i, j, k, NO_FILE_DATA));
+                        // Initalize the session storage at location i , j , k  with the initial value of -
+                        sessionStorage.setItem(this.createFileLocationString(i + "", j + "", k + ""), this.createDirectoryFileDataString(0, i, j, k, ""));
                     }
                 }
+            }
+            // Update the FIle System UI
+            _FileSystemTable.clearTable();
+            // Update the hard disk table
+            for (var i = 0; i < 378; i++) {
+                // Update the UI Table 
+                _HardDiskTable.updateRow(i, "----", "--------------------------------------------------------------");
             }
         };
         /**
@@ -68,6 +75,9 @@ var TSOS;
             var locationString = "";
             locationString = "" + track + "," + sector + "," + block + "";
             return locationString;
+        };
+        DeviceDriverFileSystem.prototype.createHeaderString = function (inuse, track, sector, block) {
+            return inuse + "," + track + "," + sector + "," + block;
         };
         /**
          * Used to create a well formated value for the hard drive
@@ -113,12 +123,14 @@ var TSOS;
          *
          */
         DeviceDriverFileSystem.prototype.searchForFile = function (filename) {
+            console.log("HERRE");
             // Initalize the variables
             var nextFileDataString;
             var nextFileData = [];
             var response = []; // The response array
             // First convert the filename to hex
             filename = filename + "";
+            console.log(filename);
             // Loop from 0 0 1 - > 0 7 7 and search each value for a matching file name
             for (var i = 0; i < 1; i++) {
                 for (var j = 0; j < 7; j++) {
@@ -132,6 +144,8 @@ var TSOS;
                             // compare the file name of the current index in the directory to the one that the user is searching for
                             if (nextFileData[4] == filename) {
                                 // Fill the array
+                                console.log(nextFileData[4]);
+                                console.log(filename);
                                 response[0] = this.createFileLocationString(i + "", j + "", k + "");
                                 response[1] = nextFileData.toString();
                                 return response;
@@ -142,6 +156,56 @@ var TSOS;
             }
             // If the code makes it to this section then the file does not exist and return null
             return null;
+        };
+        DeviceDriverFileSystem.prototype.hasNextBlockInChain = function (block) {
+            // Get item from session
+            var entireValue = sessionStorage.getItem(block);
+            // Split apart the block string by commas
+            var blockArray = entireValue.split(',');
+            // Concat the 1, 2, 3 elements of the block together
+            var nextLocation = blockArray[1] + blockArray[2] + blockArray[3];
+            console.log("next location is ... " + nextLocation);
+            if (nextLocation == "000") {
+                return false;
+            }
+            else {
+                return true;
+            }
+        };
+        DeviceDriverFileSystem.prototype.getNextBlock = function (block) {
+            var blockInMem = sessionStorage.getItem(block);
+            var blockArray = blockInMem.split(',');
+            var nextLocation = blockArray[1] + blockArray[2] + blockArray[3];
+            return this.createFileLocationString(blockArray[1], blockArray[2], blockArray[3]);
+        };
+        DeviceDriverFileSystem.prototype.getFinalBlockInChain = function (block) {
+            var finalBlock;
+            var currentBlock = block;
+            while (this.hasNextBlockInChain(currentBlock)) {
+                currentBlock = this.getNextBlock(currentBlock);
+            }
+            console.log("FINAL BLOCK IN CHAIN IS.....  " + currentBlock);
+            return currentBlock;
+        };
+        DeviceDriverFileSystem.prototype.readDataFromAllBlocks = function (block) {
+            console.log("Read test data");
+            var finalBlock;
+            var currentBlock = block;
+            var test = sessionStorage.getItem(currentBlock);
+            var testSplit = test.split(',');
+            var totalData = testSplit[4] + "";
+            var nextValue;
+            var nextArray;
+            console.log(testSplit);
+            while (this.hasNextBlockInChain(currentBlock)) {
+                currentBlock = this.getNextBlock(currentBlock);
+                nextValue = sessionStorage.getItem(currentBlock);
+                nextArray = nextValue.split(',');
+                totalData = totalData + nextArray[4];
+                console.log(totalData + "total Data TEST JOE ");
+            }
+            console.log("FINAL BLOCK IN CHAIN IS.....  " + currentBlock);
+            return totalData;
         };
         /**
          * Used to get the next open file directoy location
@@ -279,11 +343,19 @@ var TSOS;
                         // Create the directory entry for the new file
                         sessionStorage.setItem(nextFreeDirectoryLocation, this.createDirectoryFileDataString(1, fileTableData[0], fileTableData[1], fileTableData[2], filename));
                         // Create the table entry for the new file
-                        sessionStorage.setItem(nextFreeDataLocation, this.createDataFileString("1", "0", "0", "0", "IPSUM YOUSUM"));
+                        console.log("writing to location " + nextFreeDataLocation);
+                        sessionStorage.setItem(nextFreeDataLocation, this.createDataFileString("1", "0", "0", "0", ""));
                         // Report to the user that the creation was successful
                         _StdOut.putText("Success: The file was created");
-                        // Update the UI
-                        _FileSystemTable.addRow(filename + "", fileTableData[0] + "", fileTableData[1] + "", fileTableData[2] + "", "IPSUM YOUSUM");
+                        // Update the Hard Disk UI
+                        var aSplit = nextFreeDirectoryLocation.split(',');
+                        var aString = aSplit[0] + aSplit[1] + aSplit[2];
+                        var bSplit = nextFreeDataLocation.split(',');
+                        var bString = bSplit[0] + bSplit[1] + bSplit[2];
+                        _HardDiskTable.updateRow(parseInt(aString), this.createHeaderString("1", bSplit[0], bSplit[1], bSplit[2]), filename); // The Directory entry
+                        _HardDiskTable.updateRow(parseInt(bString), "1000", ""); // The Data block
+                        // Update the FIle System UI
+                        _FileSystemTable.addRow(filename + "", fileTableData[0] + "", fileTableData[1] + "", fileTableData[2] + "", "");
                         // Advance the line in the console
                         _Console.advanceLine();
                         // Place the prompt
@@ -328,7 +400,7 @@ var TSOS;
                             <False> - If the file is not read
          */
         DeviceDriverFileSystem.prototype.readFile = function (filename) {
-            // Search for the file 
+            // Search to see if the file name exists and the write is valid
             var response = this.searchForFile(filename);
             // If the file exists
             if (response != null) {
@@ -337,11 +409,10 @@ var TSOS;
                 var fileData = response[1];
                 // Split apart the index and get the track , sector, block from the index
                 var fileDataArray = fileData.split(',');
-                var Lookup = this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3]);
-                var value = sessionStorage.getItem(Lookup);
-                var test = value.split(',');
+                // Using the starting location find the final block in the chain
+                var data = this.readDataFromAllBlocks(this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3]));
                 // Tell the user 
-                _StdOut.putText("Data: " + test[4]);
+                _StdOut.putText("DATA : " + data);
                 // Advance the line
                 _Console.advanceLine();
                 // Place the prompt
@@ -359,19 +430,14 @@ var TSOS;
             }
         };
         /**
-         * Used to write <filedata> to a file with the given <Filename>
-         * @Params filename <String> - The name of the file to write to
-         *         filedata <String> - The data to write to the file
-         * @Returns         <True>   - If the file was successfully writen to
-                            <False>  - If the file is not writen to
-         */
-        DeviceDriverFileSystem.prototype.writeFile = function (fileInfo) {
-            // split the n   ame into two parts the real file name and the data to write
-            // Search for the file 
-            var filename = fileInfo[0];
-            var filedata = fileInfo[1];
+        * Used to read a file with the given file name
+        * @Params filename <String> - the name of the file tp read frp,
+        * @Returns         <True>  - If the file was successfully read
+                 <False> - If the file is not read
+        */
+        DeviceDriverFileSystem.prototype.readAndReturn = function (filename) {
+            // Search to see if the file name exists and the write is valid
             var response = this.searchForFile(filename);
-            // console.log("FILE INDEX IS : " + fileIndex);
             // If the file exists
             if (response != null) {
                 // Split apart the response array
@@ -379,28 +445,74 @@ var TSOS;
                 var fileData = response[1];
                 // Split apart the index and get the track , sector, block from the index
                 var fileDataArray = fileData.split(',');
-                var Lookup = this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3]);
-                var value = sessionStorage.getItem(Lookup);
-                var test = value.split(',');
-                var littleLessFun = test[4];
-                for (var i = 0; i < filedata.length - 2; i++) {
-                    console.log(i);
-                    if (i == filedata.length) {
-                    }
-                    else {
-                        littleLessFun = littleLessFun + filedata.charAt(i + 1);
-                    }
+                // Using the starting location find the final block in the chain
+                var data = this.readDataFromAllBlocks(this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3]));
+                return data;
+            }
+        };
+        /**
+         * Used to write <filedata> to a file with the given <Filename>
+         * @Params filename <String> - The name of the file to write to
+         *         filedata <String> - The data to write to the file
+         * @Returns         <True>   - If the file was successfully writen to
+                            <False>  - If the file is not writen to
+         */
+        DeviceDriverFileSystem.prototype.writeFile = function (fileInfo) {
+            // Split apart the data that is passed in for the write
+            var filename = fileInfo[0];
+            var filedata = fileInfo[1];
+            // Search to see if the file name exists and the write is valid
+            var response = this.searchForFile(filename);
+            // If the file exists
+            if (response != null) {
+                // Split apart the response array
+                var fileLocation = response[0];
+                var fileData = response[1];
+                // Split apart the index and get the track , sector, block from the index
+                var fileDataArray = fileData.split(',');
+                // Using the starting location find the final block in the chain
+                var finalBlock = this.getFinalBlockInChain(this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3]));
+                // Get the current data at the final block
+                var currentData = sessionStorage.getItem(finalBlock);
+                // Split the current data up
+                var cdArray = currentData.split(',');
+                // Concat the new data and the old data together
+                var concatData = cdArray[4] + filedata;
+                // Check the new length of the data
+                if (concatData.length > 60) {
+                    // Attempt to get another block
+                    var nextBlock = this.getNextFileDataLocation();
+                    var nextBlockArray = nextBlock.split(',');
+                    // Split the concatData into two sections
+                    // First 60
+                    var firstSixty = concatData.slice(0, 60);
+                    // Update original
+                    sessionStorage.setItem(finalBlock, this.createDataFileString("1", nextBlockArray[0], nextBlockArray[1], nextBlockArray[2], firstSixty));
+                    var aSplit = finalBlock.split(',');
+                    var aString = aSplit[0] + aSplit[1] + aSplit[2];
+                    _HardDiskTable.updateRow(parseInt(aString), this.createHeaderString("1", nextBlockArray[0], nextBlockArray[1], nextBlockArray[2]), firstSixty); // The Data block
+                    // Everything else
+                    var otherPart = concatData.slice(60, concatData.length);
+                    // Update the over flow stuff
+                    var bSplit = nextBlock.split(',');
+                    var bString = bSplit[0] + bSplit[1] + bSplit[2];
+                    _HardDiskTable.updateRow(parseInt(bString), this.createHeaderString("1", "0", "0", "0"), otherPart); // The Data block
+                    sessionStorage.setItem(nextBlock, this.createDataFileString("1", "0", "0", "0", otherPart));
                 }
-                var splits = Lookup.split(',');
-                sessionStorage.setItem(Lookup, this.createDataFileString("1", test[1], test[2], test[3], littleLessFun));
-                _FileSystemTable.updateFileByName(filename, littleLessFun);
+                else {
+                    // Update the final block with the new and old data
+                    sessionStorage.setItem(finalBlock, this.createDataFileString("1", "0", "0", "0", concatData));
+                    var aSplit = finalBlock.split(',');
+                    var aString = aSplit[0] + aSplit[1] + aSplit[2];
+                    // Update the Hard Disk UI
+                    _HardDiskTable.updateRow(parseInt(aString), this.createHeaderString("1", "0", "0", "0"), concatData); // The Data block
+                }
                 // Tell the user 
-                _StdOut.putText("File Write Success");
+                _StdOut.putText("File write successful");
                 // Advance the line
                 _Console.advanceLine();
                 // Place the prompt
                 _OsShell.putPrompt();
-                return false;
             }
             else {
                 // Tell the user 
@@ -436,7 +548,13 @@ var TSOS;
                 console.log("Deleting from index  item " + this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + ""));
                 // Clear the Directory entry(Sets the in use bit to 0 T = -1 S = -1 B = -1 and a blank file name)
                 sessionStorage.setItem(this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + ""), this.createDirectoryFileDataString(0, 0, 0, 0, ""));
+                // Update the File System UI
                 _FileSystemTable.removeFileByName(filename);
+                // Update the Hard Disk Table UI
+                var aSplit = this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + "").split(',');
+                var aString = aSplit[0] + aSplit[1] + aSplit[2];
+                // Delete the directory entry
+                _HardDiskTable.deleteRow(parseInt(aString));
                 // Next cascade delete from the table sooooooooooooooo.............
                 // Split apart the index and get the track , sector, block from the index
                 var fileDataArray = fileData.split(',');
@@ -444,24 +562,14 @@ var TSOS;
                 var sector = fileDataArray[2];
                 var block = fileDataArray[3];
                 // Recusively delete untill all blocks have been vaporized
-                if (this.cascadeDeleteFileBlocks(this.createFileLocationString(track + "", sector + "", block + "")) == true) {
-                    // Tell the user 
-                    _StdOut.putText("File Successfully Deleted");
-                    // Advance the line
-                    _Console.advanceLine();
-                    // Place the prompt
-                    _OsShell.putPrompt();
-                    return false;
-                }
-                else {
-                    // Tell the user 
-                    _StdOut.putText("Woops.... some shit happened");
-                    // Advance the line
-                    _Console.advanceLine();
-                    // Place the prompt
-                    _OsShell.putPrompt();
-                    return false;
-                }
+                this.cascadeDeleteFileBlocks(this.createFileLocationString(track + "", sector + "", block + ""));
+                // Tell the user 
+                _StdOut.putText("File Successfully Deleted");
+                // Advance the line
+                _Console.advanceLine();
+                // Place the prompt
+                _OsShell.putPrompt();
+                return false;
             }
             else {
                 // Tell the user 
@@ -492,6 +600,11 @@ var TSOS;
             var nextBlockLocation = "" + blockDataArray[1] + blockDataArray[2] + blockDataArray[3];
             // Delete the current block
             sessionStorage.setItem(startingLocation, this.createDataFileString("0", "0", "0", "0", ""));
+            // Update the Hard Disk Table UI
+            var aSplit = startingLocation.split(',');
+            var aString = aSplit[0] + aSplit[1] + aSplit[2];
+            // Delete the directory entry
+            _HardDiskTable.deleteRow(parseInt(aString));
             console.log(startingLocation + "was just deleted");
             // Check to see if recursion is needed
             if (nextBlockLocation == "000") {
@@ -561,6 +674,52 @@ var TSOS;
             // Find all the files in the File System and add them into the arrary
             // Return file list
             return fileList;
+        };
+        DeviceDriverFileSystem.prototype.rollOutProcess = function () {
+            //process.location = PROCESS_ON_DISK;
+            // Read the current data
+            var currentDiskData = _krnFileSystemDriver.readAndReturn("process");
+            var nextByte;
+            var nextChar = "";
+            var byteString = "";
+            console.log(_MemoryManager.memoryBlock);
+            // Get all the bytes stored at 0 - 255
+            for (var i = 0; i < 255; i++) {
+                nextByte = _MemoryManager.memoryBlock[i];
+                if (nextByte != null) {
+                    console.log(nextByte.getValue() + " VALSUDFILSDLFKJSKDLFJ");
+                    byteString = byteString + nextByte.getValue();
+                }
+            }
+            console.log("CURRENT BYTE STRING IS... " + byteString);
+            var nextByte;
+            var nextMemoryAddress = 0;
+            // Write the current Disk Data to mem block by block
+            for (var i = 0; i < currentDiskData.length; i = i + 2) {
+                nextChar = currentDiskData.charAt(i) + currentDiskData.charAt(i + 1);
+                _MemoryManager.memoryBlock[nextMemoryAddress] = new TSOS.Byte(nextMemoryAddress, nextChar);
+                console.log(nextMemoryAddress + "  the next memory address  " + nextChar + " nextChar");
+                _MemoryInformationTable.setCellData(nextMemoryAddress, nextChar);
+                nextMemoryAddress++;
+            }
+            console.log("About to delete file ");
+            // Delete current file on disk
+            _krnFileSystemDriver.deleteFile("process");
+            // Create file again
+            _krnFileSystemDriver.createFile("process");
+            // Write to the file
+            var loops = Math.ceil(byteString.length / 60);
+            var otherTest = [];
+            var chunks = [];
+            // for each chunk of 60 write to the disk
+            for (var j = 0; j < loops; j++) {
+                chunks.push(byteString.slice(0 + j * 60, 60 + j * 60));
+            }
+            for (var k = 0; k < loops; k++) {
+                otherTest[0] = "process";
+                otherTest[1] = chunks[k];
+                _krnFileSystemDriver.writeFile(otherTest);
+            }
         };
         return DeviceDriverFileSystem;
     })(TSOS.DeviceDriver);

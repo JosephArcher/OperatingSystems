@@ -1,3 +1,5 @@
+///<reference path="../globals.ts" />
+///<reference path="../utils.ts" />
 /**
  * This class is used to alter the Memory Information Display Table
 */
@@ -22,21 +24,22 @@ module TSOS {
 		public fillRows(): void {
 
 			for (var i = 0; i < 378; i++) {
-				this.addRow(i);
+				this.addRow(i, "", "");
 			}
 		}
 		public clearTable(): void {
-			for (var i = 0; i < 96; i++) {
-				this.addRow(i);
+			for (var i = 0; i < 378; i++) {
+				this.addRow(i, "", "");
 			}
 		}
+
 		public createTSBString(rowNumber: number):string {
 
-			var rowString = rowNumber + "";
+			var rowString = rowNumber +  "";
 
 			if(rowNumber < 10){
 
-				return "( 0 , 0 , " + rowNumber + " )";
+				return "( 0 , 0 , " + parseInt(rowString, 10)  + " )";
 			}
 
 			if(rowNumber < 100){
@@ -45,8 +48,14 @@ module TSOS {
 
 			return "(  " + rowString.charAt(0) + " , " + rowString.charAt(1) + " , " + rowString.charAt(2) + " )";
 		}
+		public setCellData(row: number, cell: number, data: string): void {
 
-		public addRow(rowNumber: number) {
+			var currentRow = <HTMLTableRowElement>this.table.rows.item(row);
+			var currentCell = <HTMLTableCellElement> currentRow.cells.item(cell);
+
+			currentCell.innerHTML = data;
+		}
+		public addRow(rowNumber: number, rowHeader:string, rowData:string) {
 
 			var row: HTMLTableRowElement = <HTMLTableRowElement>this.table.insertRow(rowNumber + 1);
 
@@ -56,21 +65,21 @@ module TSOS {
 
 
 			cell0.innerHTML = this.createTSBString(rowNumber);
-			cell1.innerHTML = "0000"
-			cell2.innerHTML = "0000000000000000000000000000000000000000000000000000000000000000";
+			cell1.innerHTML = rowHeader;
+			cell2.innerHTML = rowData;
 
 		}
-		/**
-		 * Sets the current cell at the given address to the given value
-		 * @Params Address {Number} - The address of the cell
-		 *         Data    {String} - The current data for the cell
-		*/
-		public setCellData(address: number, data: string): void {
+		public updateRow(rowNumber: number, rowHeader: string, rowData: string) {
 
-			this.currentRow = <HTMLTableRowElement>this.table.rows.item(this.getTableRowPosition(address));
-			this.currentCell = <HTMLTableCellElement>this.currentRow.cells.item(this.getTableColumnPosition(address));
+			this.setCellData(rowNumber + 1, 0, this.createTSBString(rowNumber));
+			this.setCellData(rowNumber + 1, 1,rowHeader);
+			this.setCellData(rowNumber + 1, 2, rowData);
+		}
+		public deleteRow(rowNumber:number){
 
-			this.currentCell.innerHTML = data;
+			this.setCellData(rowNumber + 1, 0, this.createTSBString(rowNumber));
+			this.setCellData(rowNumber + 1, 1, "----");
+			this.setCellData(rowNumber + 1, 2, "--------------------------------------------------------------");
 		}
 		/**
 		 * Get the current row position for the given address

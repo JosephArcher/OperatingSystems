@@ -17,7 +17,7 @@
 
 // Application Information
 const APP_NAME: string    = "Joe/S";   // Joe is Love Joe is Lyfe
-const APP_VERSION: string = "0.03";   // 
+const APP_VERSION: string = "0.04";   // 
 
 // System 
 const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 1000 = 1 second.
@@ -45,6 +45,11 @@ const PROCESS_STATE_RUNNING: string     = "RUNNING";       //   * Running
 const PROCESS_STATE_WAITING: string     = "WAITING";       //   * Waiting
 const PROCESS_STATE_READY: string       = "READY";         //   * Ready
 const PROCESS_STATE_TERMINATED: string  = "TERMINATED";    //   * Terminated
+
+// Process Location States
+const PROCESS_ON_DISK: string = "DISK";
+const PROCESS_IN_MEM:  string = "MEMORY";
+
 
 // TImer States		
 const TIMER_IS_SET: string = "SET";                       //  Set

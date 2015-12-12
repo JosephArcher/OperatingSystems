@@ -26,233 +26,316 @@ module TSOS {
     // Extends DeviceDriver
     export class DeviceDriverFileSystem extends DeviceDriver {
 
-       public  constructor() {
-           super(this.krnFSDriverEntry, this.krnFSOperationRespose);
-       }
-       /**
-        * Used to format the hard disk from 0 0 0 -> 3 3 7
-        *
-        */
-       public formatHardDisk() {
+    public constructor() {
+      super(this.krnFSDriverEntry, this.krnFSOperationRespose);
+    }
+    /**
+     * Used to format the hard disk from 0 0 0 -> 3 3 7
+     *
+     */
+    public formatHardDisk() {
 
-          _DiskIsFormated = true;
+      _DiskIsFormated = true;
 
-          var tracks: number = 4;
-          var sectors: number = 8;
-          var blocks: number = 8;
+      var tracks: number = 4;
+      var sectors: number = 8;
+      var blocks: number = 8;
+      var nextRow;
+      
+      // Loop and initalize the session storage
 
-          var nextStorageLocation = "";
-          // Loop and initalize the session storage
+      // For every track...
+      for (var i = 0; i < tracks; i++) {
+        // For every sector...
+        for (var j = 0; j < sectors; j++) {
+          // A block is chilling out
+          for (var k = 0; k < blocks; k++) {
 
-           // For every track
-          for (var i = 0; i < tracks; i++) {
-              // For every sector
-              for (var j = 0; j < sectors; j++) {
-                  // A block is chilling out
-                   for (var k = 0; k < blocks; k++) {
-                       // Initalize the session storage at location i , j , k  with the initial value of *
-                       sessionStorage.setItem(this.createFileLocationString(i + "", j + "", k + ""), this.createDirectoryFileDataString(0, i, j, k, NO_FILE_DATA));
-                   }
-               }
-           }
-       } 
-       /**
-        * Used to create a well formated key for the hard drive 
-        * @Params track {number} - The track of the location
-        *         sector {number} - The sector of the location
-        *         block {number}  - The block of the location
-        * @Returns {string} - A well formated key to be used for session storage or look-up
-        * 
-        */
-       public createFileLocationString(track:string, sector: string, block:string):string {
-           var locationString: string = "";
+            // Initalize the session storage at location i , j , k  with the initial value of -
+            sessionStorage.setItem(this.createFileLocationString(i + "", j + "", k + ""), this.createDirectoryFileDataString(0, i, j, k, ""));
+          }
+        }
+      }
+      // Update the FIle System UI
+      _FileSystemTable.clearTable();
 
-           locationString = "" + track + "," + sector + "," + block + "";
+      // Update the hard disk table
+      for (var i = 0; i < 378; i++) {
+        // Update the UI Table 
+        _HardDiskTable.updateRow(i, "----", "--------------------------------------------------------------");
+      }
+    } 
+    /**
+     * Used to create a well formated key for the hard drive 
+     * @Params track {number} - The track of the location
+     *         sector {number} - The sector of the location
+     *         block {number}  - The block of the location
+     * @Returns {string} - A well formated key to be used for session storage or look-up
+     * 
+     */
+    public createFileLocationString(track: string, sector: string, block: string): string {
+      var locationString: string = "";
 
-           return locationString;          
-       }
-       /**
-        * Used to create a well formated value for the hard drive
-        * @Params filename {string} - The name of the file to be created
-        * @Returns {string} - A well formated value to be used for session storage
-        */
-       public createDirectoryFileDataString(in_use: number, track: number, sector: number, block: number, filename: string): string {
+      locationString = "" + track + "," + sector + "," + block + "";
 
-           // Create the start of the File data string
-           var fileDataString = "";
+      return locationString;
+    }
+    public createHeaderString(inuse: string, track: string, sector: string, block: string): string {
 
-           // Add the in_use to the string
-           fileDataString = fileDataString + in_use + ",";
+      return inuse + "," + track + "," + sector + "," + block;
+    }
+    /**
+     * Used to create a well formated value for the hard drive
+     * @Params filename {string} - The name of the file to be created
+     * @Returns {string} - A well formated value to be used for session storage
+     */
+    public createDirectoryFileDataString(in_use: number, track: number, sector: number, block: number, filename: string): string {
 
-           // Add the track to the string
-           fileDataString = fileDataString + track + ",";
+      // Create the start of the File data string
+      var fileDataString = "";
 
-           // Add the sector to the string
-           fileDataString = fileDataString + sector + ",";
+      // Add the in_use to the string
+      fileDataString = fileDataString + in_use + ",";
 
-           // Add the block to the string
-           fileDataString = fileDataString + block + ",";
+      // Add the track to the string
+      fileDataString = fileDataString + track + ",";
 
-           // Add the name to the string
-           fileDataString = fileDataString + filename;
+      // Add the sector to the string
+      fileDataString = fileDataString + sector + ",";
+
+      // Add the block to the string
+      fileDataString = fileDataString + block + ",";
+
+      // Add the name to the string
+      fileDataString = fileDataString + filename;
  
-           // Return that shizz
-           return fileDataString;
-       }
-       public createDataFileString(in_use: string, track: string, sector: string, block: string, filedata: string): string {
+      // Return that shizz
+      return fileDataString;
+    }
+    public createDataFileString(in_use: string, track: string, sector: string, block: string, filedata: string): string {
 
-           // Create the start of the File data string
-           var fileDataString = "";
+      // Create the start of the File data string
+      var fileDataString = "";
 
-           // Add the in_use to the string
-           fileDataString = fileDataString + in_use + ",";
+      // Add the in_use to the string
+      fileDataString = fileDataString + in_use + ",";
 
-           // Add the track to the string
-           fileDataString = fileDataString + track + ",";
+      // Add the track to the string
+      fileDataString = fileDataString + track + ",";
 
-           // Add the sector to the string
-           fileDataString = fileDataString + sector + ",";
+      // Add the sector to the string
+      fileDataString = fileDataString + sector + ",";
 
-           // Add the block to the string
-           fileDataString = fileDataString + block + ",";
+      // Add the block to the string
+      fileDataString = fileDataString + block + ",";
 
-           // Add the name to the string
-           fileDataString = fileDataString + filedata;
+      // Add the name to the string
+      fileDataString = fileDataString + filedata;
 
-           // Return that shizz
-           return fileDataString;
-       }
-       /**
-        * Used to search the file directory to see if the file name exists 
-        * @Params filename {string} - The name of the file to search for
-        * @Returns {Array} -  0[The I , J , K] 1[filedirectorydata] position 
-        *
-        */
-       public searchForFile(filename) {
+      // Return that shizz
+      return fileDataString;
+    }
+    /**
+     * Used to search the file directory to see if the file name exists 
+     * @Params filename {string} - The name of the file to search for
+     * @Returns {Array} -  0[The I , J , K] 1[filedirectorydata] position 
+     *
+     */
+    public searchForFile(filename) {
+    console.log("HERRE");
 
-           // Initalize the variables
-           var nextFileDataString: string;
-           var nextFileData = [];
-           var response = []; // The response array
+      // Initalize the variables
+      var nextFileDataString: string;
+      var nextFileData = [];
+      var response = []; // The response array
 
-           // First convert the filename to hex
-           filename = filename + "";
+      // First convert the filename to hex
+      filename = filename + "";
 
-           // Loop from 0 0 1 - > 0 7 7 and search each value for a matching file name
-           for (var i = 0; i < 1; i++) {
-               for (var j = 0; j < 7; j++) {
-                   for (var k = 0; k < 7; k++) {
+      console.log(filename);
 
-                       // Get the next directory entry
-                       nextFileDataString = sessionStorage.getItem(this.createFileLocationString(i + "", j + "", k + ""));
+      // Loop from 0 0 1 - > 0 7 7 and search each value for a matching file name
+      for (var i = 0; i < 1; i++) {
+        for (var j = 0; j < 7; j++) {
+          for (var k = 0; k < 7; k++) {
 
-                       // Break up the string by the commas and add it to an array
-                       nextFileData = nextFileDataString.split(',');
+            // Get the next directory entry
+            nextFileDataString = sessionStorage.getItem(this.createFileLocationString(i + "", j + "", k + ""));
 
-                       // First check to see if the current index in the directory is being used
-                       if (nextFileData[0] == "1") { // If the directory is in use
+            // Break up the string by the commas and add it to an array
+            nextFileData = nextFileDataString.split(',');
 
-                           // compare the file name of the current index in the directory to the one that the user is searching for
-                           if (nextFileData[4] == filename) {
-                               // Fill the array
-                               response[0] = this.createFileLocationString(i + "" , j + "" , k + "");
-                               response[1] = nextFileData.toString();
+            // First check to see if the current index in the directory is being used
+            if (nextFileData[0] == "1") { // If the directory is in use
 
-                               return response;
-                           }
-                       }
-                   }
-               }
-           }
-           // If the code makes it to this section then the file does not exist and return null
-           return null;
-       }
+              // compare the file name of the current index in the directory to the one that the user is searching for
+              if (nextFileData[4] == filename) {
+                // Fill the array
+          console.log(nextFileData[4]);
+          console.log(filename);
+                response[0] = this.createFileLocationString(i + "", j + "", k + "");
+                response[1] = nextFileData.toString();
 
-       /**
-        * Used to get the next open file directoy location
-        * Possible location are | 0 0 1 -> 0 7 7  |
-        * 
-        */
-       public getNextFileDirectoryLocation(): string {
+                return response;
+              }
+            }
+          }
+        }
+      }
+      // If the code makes it to this section then the file does not exist and return null
+      return null;
+    }
+    public hasNextBlockInChain(block: string): boolean {
 
-           // Initalize the variables
-           var nextFileDataString: string;
-           var nextFileData = [];
+      // Get item from session
+      var entireValue = sessionStorage.getItem(block);
 
-           // Loop over the possible file directory locations and check for the first one that is not in use
-           for (var i = 0; i < 1; i++) {
-               for (var j = 0; j < 7; j++){
-                   for (var k = 1; k < 7; k++){
+      // Split apart the block string by commas
+      var blockArray = entireValue.split(',');
 
-                       // Get the next directory entry
-                       nextFileDataString = sessionStorage.getItem(this.createFileLocationString(i + "", j + "", k + ""));
+      // Concat the 1, 2, 3 elements of the block together
+      var nextLocation = blockArray[1] + blockArray[2] + blockArray[3];
 
-                       // Break up the string by the commas and add it to an array
-                       nextFileData = nextFileDataString.split(',');
+      console.log("next location is ... " + nextLocation);
+      if(nextLocation == "000"){
+        return false;
+      }
+      else {
+        return true;
+      }
+    }
+    public getNextBlock(block: string): string {
 
-                       // Check the in use byte
-                       if (nextFileData[0] == "0") {  // If the directory index is not currently in use
-                           console.log("The next free directory location is... " + i + j + k);
+      var blockInMem = sessionStorage.getItem(block);
+
+      var blockArray = blockInMem.split(',');
+
+      var nextLocation = blockArray[1] + blockArray[2] + blockArray[3];
+
+      return this.createFileLocationString(blockArray[1] , blockArray[2] , blockArray[3]);
+
+    }
+    public getFinalBlockInChain(block: string) {
+
+      var finalBlock;
+      var currentBlock = block;
+
+    
+      while(this.hasNextBlockInChain(currentBlock)){
+
+       currentBlock = this.getNextBlock(currentBlock);
+
+     }
+      console.log("FINAL BLOCK IN CHAIN IS.....  " + currentBlock);
+      return currentBlock;
+    }
+    public readDataFromAllBlocks(block: string) {
+      console.log("Read test data");
+      var finalBlock;
+      var currentBlock = block;
+      var test = sessionStorage.getItem(currentBlock);
+      var testSplit = test.split(',');
+
+      var totalData = testSplit[4] + "";
+      var nextValue;
+      var nextArray;
+      console.log(testSplit);
+      while(this.hasNextBlockInChain(currentBlock)){
+
+       currentBlock = this.getNextBlock(currentBlock);
+       nextValue = sessionStorage.getItem(currentBlock);
+       nextArray = nextValue.split(',');
+       totalData = totalData + nextArray[4];
+       console.log(totalData + "total Data TEST JOE ");
+     }
+      console.log("FINAL BLOCK IN CHAIN IS.....  " + currentBlock);
+      return totalData;
+    }
+    /**
+     * Used to get the next open file directoy location
+     * Possible location are | 0 0 1 -> 0 7 7  |
+     * 
+     */
+    public getNextFileDirectoryLocation(): string {
+
+      // Initalize the variables
+      var nextFileDataString: string;
+      var nextFileData = [];
+
+      // Loop over the possible file directory locations and check for the first one that is not in use
+      for (var i = 0; i < 1; i++) {
+        for (var j = 0; j < 7; j++) {
+          for (var k = 1; k < 7; k++) {
+
+            // Get the next directory entry
+            nextFileDataString = sessionStorage.getItem(this.createFileLocationString(i + "", j + "", k + ""));
+
+            // Break up the string by the commas and add it to an array
+            nextFileData = nextFileDataString.split(',');
+
+            // Check the in use byte
+            if (nextFileData[0] == "0") {  // If the directory index is not currently in use
+              console.log("The next free directory location is... " + i + j + k);
                             // return the key for the free index
-                           return this.createFileLocationString(i + "", j + "", k + "");
-                       }
-                   }
-               }
-           }
-           // If the code is unable to find a free directory location then return null
-           return null; // If not more space if left
-       }
-       /**
-        * USed to get the next open file data location
-        * Possible locations 1 0 0 - > 3 7 7 
-        */
-       public getNextFileDataLocation(): string {
+              return this.createFileLocationString(i + "", j + "", k + "");
+            }
+          }
+        }
+      }
+      // If the code is unable to find a free directory location then return null
+      return null; // If not more space if left
+    }
+    /**
+     * USed to get the next open file data location
+     * Possible locations 1 0 0 - > 3 7 7 
+     */
+    public getNextFileDataLocation(): string {
 
-           // Initalize the variables
-           var nextFileDataString: string;
-           var nextFileData = [];
+      // Initalize the variables
+      var nextFileDataString: string;
+      var nextFileData = [];
 
-           // Loop over the possible file data locations and check for the first one that is not in use
-           for (var i = 1; i < 3; i++) {
-               for (var j = 0; j < 7; j++) {
-                   for (var k = 0; k < 7; k++) {
+      // Loop over the possible file data locations and check for the first one that is not in use
+      for (var i = 1; i < 3; i++) {
+        for (var j = 0; j < 7; j++) {
+          for (var k = 0; k < 7; k++) {
 
-                       // Get the next directory entry
-                       nextFileDataString = sessionStorage.getItem(this.createFileLocationString(i + "", j + "", k + ""));
+            // Get the next directory entry
+            nextFileDataString = sessionStorage.getItem(this.createFileLocationString(i + "", j + "", k + ""));
 
-                       // Break up the string by the commas and add it to an array
-                       nextFileData = nextFileDataString.split(',');
+            // Break up the string by the commas and add it to an array
+            nextFileData = nextFileDataString.split(',');
 
-                       console.log("Index " + i + j + k + "is equal to" + nextFileData[0]);
+            console.log("Index " + i + j + k + "is equal to" + nextFileData[0]);
 
-                       // Check the in use byte
-                       if (nextFileData[0] == "0") {  // If the directory index is not currently in use
-                           console.log("The next free data location is... " + i + j + k);
-                           // return the key for the free index
-                           return this.createFileLocationString(i + "", j + "", k + "");
-                       }
-                   }
-               }
-           }
-           // If the code is unable to find a free directory location then return null
-           return null; // If not more space if left
-       }    
-       public krnFSDriverEntry() {
+            // Check the in use byte
+            if (nextFileData[0] == "0") {  // If the directory index is not currently in use
+              console.log("The next free data location is... " + i + j + k);
+              // return the key for the free index
+              return this.createFileLocationString(i + "", j + "", k + "");
+            }
+          }
+        }
+      }
+      // If the code is unable to find a free directory location then return null
+      return null; // If not more space if left
+    }
+    public krnFSDriverEntry() {
 
             // Initialization File System Device Driver.
-            this.status = "loaded";    
+            this.status = "loaded";
         }
         // Update the kernal with the status of File System Operations
         public krnFSOperationRespose(args) {
 
             var operation: string = args[0];
             var data1: string = args[1];
-                
+
 
             if (_DiskIsFormated == false && operation != FORMAT_DRIVE) {
 
                 // Tell the user the error
-                 _StdOut.putText("Error: Disk not formatted "); 
+              _StdOut.putText("Error: Disk not formatted "); 
 
                 // Advance the line
                 _Console.advanceLine();
@@ -264,25 +347,25 @@ module TSOS {
                 switch (operation) {
                     case CREATE_FILE:
                         this.createFile(data1);
-                            break;
-                        case READ_FILE:
-                            this.readFile(data1);
-                            break;
-                        case WRITE_FILE:
-                            this.writeFile(data1);
-                            break;
-                        case DELETE_FILE:
-                            this.deleteFile(data1);
-                            break;
-                        case LIST_FILES:
-                            this.listFiles();
-                            break;
-                        case FORMAT_DRIVE:
-                            this.formatHardDisk();
-                            break;
-                        default:
-                            break;
-                  }
+            break;
+          case READ_FILE:
+            this.readFile(data1);
+            break;
+          case WRITE_FILE:
+            this.writeFile(data1);
+            break;
+          case DELETE_FILE:
+            this.deleteFile(data1);
+            break;
+          case LIST_FILES:
+            this.listFiles();
+            break;
+          case FORMAT_DRIVE:
+            this.formatHardDisk();
+            break;
+          default:
+            break;
+        }
             }
         }
         /**
@@ -302,7 +385,7 @@ module TSOS {
 
 
             // Check to see if a file name was given and if not stop
-            if(filename == "") {
+            if (filename == "") {
 
                 // Report an error to the user
                 _StdOut.putText("Error: A file name must be given"); 
@@ -316,77 +399,87 @@ module TSOS {
                 return false;
             }
 
-           // Check to see if the file name already exists in the file system
-           if(this.searchForFile(filename) == null) { // If not file of that name exists then 
+      // Check to see if the file name already exists in the file system
+      if (this.searchForFile(filename) == null) { // If not file of that name exists then 
 
-               // Get the next free directory index
-               nextFreeDirectoryLocation = this.getNextFileDirectoryLocation();
-               fileDirectoryData = nextFreeDirectoryLocation.split(',');
+        // Get the next free directory index
+        nextFreeDirectoryLocation = this.getNextFileDirectoryLocation();
+        fileDirectoryData = nextFreeDirectoryLocation.split(',');
 
-               // If a free index exists 
-               if(nextFreeDirectoryLocation != null) {
+        // If a free index exists 
+        if (nextFreeDirectoryLocation != null) {
 
-                   // Get the next free data index
-                   nextFreeDataLocation = this.getNextFileDataLocation();
-                   fileTableData = nextFreeDataLocation.split(',');
-                   // Check to see if free space exists for the file data
-                   if(nextFreeDataLocation != null) { // If a free data index exists
+          // Get the next free data index
+          nextFreeDataLocation = this.getNextFileDataLocation();
+          fileTableData = nextFreeDataLocation.split(',');
+          // Check to see if free space exists for the file data
+          if (nextFreeDataLocation != null) { // If a free data index exists
 
-                    // Create the directory entry for the new file
-                    sessionStorage.setItem(nextFreeDirectoryLocation, this.createDirectoryFileDataString(1, fileTableData[0], fileTableData[1], fileTableData[2], filename));
+            // Create the directory entry for the new file
+            sessionStorage.setItem(nextFreeDirectoryLocation, this.createDirectoryFileDataString(1, fileTableData[0], fileTableData[1], fileTableData[2], filename));
 
-                    // Create the table entry for the new file
-                    sessionStorage.setItem(nextFreeDataLocation, this.createDataFileString("1", "0", "0", "0", "IPSUM YOUSUM" ));
+            // Create the table entry for the new file
+            console.log("writing to location " + nextFreeDataLocation);
+            sessionStorage.setItem(nextFreeDataLocation, this.createDataFileString("1", "0", "0", "0", ""));
+                   
+            // Report to the user that the creation was successful
+            _StdOut.putText("Success: The file was created"); 
 
-                    
-                    // Report to the user that the creation was successful
-                    _StdOut.putText("Success: The file was created"); 
+            // Update the Hard Disk UI
+            var aSplit = nextFreeDirectoryLocation.split(',');
+            var aString = aSplit[0] + aSplit[1] + aSplit[2];
 
-                    // Update the UI
-                    _FileSystemTable.addRow(filename + "", fileTableData[0] + "", fileTableData[1] + "", fileTableData[2] + "", "IPSUM YOUSUM");
+            var bSplit = nextFreeDataLocation.split(',');
+            var bString = bSplit[0] + bSplit[1] + bSplit[2];
 
-                    // Advance the line in the console
-                    _Console.advanceLine();
+            _HardDiskTable.updateRow(parseInt(aString), this.createHeaderString("1", bSplit[0], bSplit[1], bSplit[2]), filename); // The Directory entry
+            _HardDiskTable.updateRow(parseInt(bString), "1000", ""); // The Data block
 
-                    // Place the prompt
-                    _OsShell.putPrompt();
+            // Update the FIle System UI
+            _FileSystemTable.addRow(filename + "", fileTableData[0] + "", fileTableData[1] + "", fileTableData[2] + "", "");
 
-                    // IT WORKED !
-                    return true;
-                   }
-                   else { // If no file blocks are availble
-                       // Tell the user 
-                       _StdOut.putText("Error: No file table space"); 
+            // Advance the line in the console
+            _Console.advanceLine();
 
-                       // Advance the line
-                       _Console.advanceLine();
+            // Place the prompt
+            _OsShell.putPrompt();
 
-                       // Place the prompt
-                       _OsShell.putPrompt();
+            // IT WORKED !
+            return true;
+          }
+          else { // If no file blocks are availble
+            // Tell the user 
+            _StdOut.putText("Error: No file table space"); 
 
-                       return false;
-                   }
+            // Advance the line
+            _Console.advanceLine();
 
-               }
-               else { // If no free directory location exists
+            // Place the prompt
+            _OsShell.putPrompt();
 
-                   // Tell the user 
-                   _StdOut.putText("Error: No file directory index space"); 
+            return false;
+          }
 
-                   // Advance the line
-                   _Console.advanceLine();
+        }
+        else { // If no free directory location exists
 
-                   // Place the prompt
-                   _OsShell.putPrompt();
+          // Tell the user 
+          _StdOut.putText("Error: No file directory index space"); 
 
-                   return false;
-               }
+          // Advance the line
+          _Console.advanceLine();
 
-           }
-           else {  // If the file name is found
+          // Place the prompt
+          _OsShell.putPrompt();
 
-               // Tell the user 
-               _StdOut.putText("Error: The filename already exists "); 
+          return false;
+        }
+
+      }
+      else {  // If the file name is found
+
+        // Tell the user 
+        _StdOut.putText("Error: The filename already exists "); 
 
                 // Advance the line
                 _Console.advanceLine();
@@ -405,65 +498,9 @@ module TSOS {
          */
         public readFile(filename: string) {
 
-            // Search for the file 
+            // Search to see if the file name exists and the write is valid
             var response = this.searchForFile(filename);
 
-            // If the file exists
-            if(response != null) {
-
-                // Split apart the response array
-                var fileLocation = response[0];
-                var fileData = response[1]; 
-
-                // Split apart the index and get the track , sector, block from the index
-                var fileDataArray = fileData.split(',');
-                
-                var Lookup = this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3]);
-                var value = sessionStorage.getItem(Lookup);
-                var test = value.split(',');
-
-                // Tell the user 
-                _StdOut.putText("Data: " + test[4]); 
-
-
-                // Advance the line
-                _Console.advanceLine();
-
-                // Place the prompt
-                _OsShell.putPrompt();
-
-                return false;
-            }
-            else {
-
-                // Tell the user 
-                _StdOut.putText("Error: The filename does not exist"); 
-
-                // Advance the line
-                _Console.advanceLine();
-
-                // Place the prompt
-                _OsShell.putPrompt();
-
-                return false;
-            }
-        }
-        /**
-         * Used to write <filedata> to a file with the given <Filename>
-         * @Params filename <String> - The name of the file to write to 
-         *         filedata <String> - The data to write to the file
-         * @Returns         <True>   - If the file was successfully writen to
-                            <False>  - If the file is not writen to
-         */
-        public writeFile(fileInfo) {
-          
-            // split the n   ame into two parts the real file name and the data to write
-            // Search for the file 
-            var filename: string  = fileInfo[0];
-            var filedata = fileInfo[1];
-
-            var response = this.searchForFile(filename);
-           // console.log("FILE INDEX IS : " + fileIndex);
             // If the file exists
             if (response != null) {
 
@@ -474,41 +511,22 @@ module TSOS {
                 // Split apart the index and get the track , sector, block from the index
                 var fileDataArray = fileData.split(',');
 
-                var Lookup = this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3]);
-                var value = sessionStorage.getItem(Lookup);
-                var test = value.split(',');
-             
-                var littleLessFun = test[4];
+                // Using the starting location find the final block in the chain
+                var data = this.readDataFromAllBlocks(this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3]));
 
-                for(var i = 0; i < filedata.length - 2; i++){
+                // Tell the user 
+                _StdOut.putText("DATA : " + data); 
 
-                  console.log(i);
-                  if(i == filedata.length) {
-
-                  }
-                  else{
-                     littleLessFun = littleLessFun + filedata.charAt(i + 1);
-                  }
-                 
-                }
-               
-               var splits = Lookup.split(',');
-               
-               sessionStorage.setItem(Lookup, this.createDataFileString("1" , test[1] , test[2] , test[3]  , littleLessFun));
-
-               _FileSystemTable.updateFileByName(filename, littleLessFun);
-               // Tell the user 
-               _StdOut.putText("File Write Success"); 
-
-               // Advance the line
-               _Console.advanceLine();
+                // Advance the line
+                _Console.advanceLine();
 
                 // Place the prompt
                _OsShell.putPrompt();
 
                 return false;
-            }
-            else {
+              }
+              else {
+
                 // Tell the user 
                 _StdOut.putText("Error: The filename does not exist"); 
 
@@ -521,6 +539,138 @@ module TSOS {
                 return false;
             }
         }
+         /**
+         * Used to read a file with the given file name
+         * @Params filename <String> - the name of the file tp read frp,
+         * @Returns         <True>  - If the file was successfully read
+                  <False> - If the file is not read
+         */
+         public readAndReturn(filename: string) {
+
+                    // Search to see if the file name exists and the write is valid
+                    var response = this.searchForFile(filename);
+
+                    // If the file exists
+                    if (response != null) {
+
+                        // Split apart the response array
+                        var fileLocation = response[0];
+                        var fileData = response[1]; 
+
+                        // Split apart the index and get the track , sector, block from the index
+                        var fileDataArray = fileData.split(',');
+
+                        // Using the starting location find the final block in the chain
+                        var data = this.readDataFromAllBlocks(this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3]));
+
+                        return data;
+          }
+        } 
+        /**
+         * Used to write <filedata> to a file with the given <Filename>
+         * @Params filename <String> - The name of the file to write to 
+         *         filedata <String> - The data to write to the file
+         * @Returns         <True>   - If the file was successfully writen to
+                            <False>  - If the file is not writen to
+         */
+        public writeFile(fileInfo) {
+           
+          // Split apart the data that is passed in for the write
+          var filename = fileInfo[0];
+          var filedata = fileInfo[1];
+
+          // Search to see if the file name exists and the write is valid
+          var response = this.searchForFile(filename);
+            
+          // If the file exists
+          if (response != null) {
+
+            // Split apart the response array
+            var fileLocation = response[0];
+            var fileData = response[1]; 
+
+            // Split apart the index and get the track , sector, block from the index
+            var fileDataArray = fileData.split(',');
+
+            // Using the starting location find the final block in the chain
+            var finalBlock = this.getFinalBlockInChain(this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3]));
+
+            // Get the current data at the final block
+            var currentData = sessionStorage.getItem(finalBlock);
+                
+            // Split the current data up
+            var cdArray = currentData.split(',');
+
+            // Concat the new data and the old data together
+            var concatData = cdArray[4] + filedata;
+
+            // Check the new length of the data
+            if(concatData.length > 60) {
+
+              // Attempt to get another block
+              var nextBlock = this.getNextFileDataLocation();
+              var nextBlockArray = nextBlock.split(',');
+
+              // Split the concatData into two sections
+
+              // First 60
+               var firstSixty = concatData.slice(0, 60);
+       
+              // Update original
+              sessionStorage.setItem(finalBlock, this.createDataFileString("1" , nextBlockArray[0] , nextBlockArray[1] , nextBlockArray[2] , firstSixty));
+
+              var aSplit = finalBlock.split(',');
+              var aString = aSplit[0] + aSplit[1] + aSplit[2];
+              _HardDiskTable.updateRow(parseInt(aString), this.createHeaderString("1", nextBlockArray[0],nextBlockArray[1], nextBlockArray[2]), firstSixty); // The Data block
+
+              // Everything else
+              var otherPart = concatData.slice(60 , concatData.length);
+                   
+              // Update the over flow stuff
+
+              var bSplit = nextBlock.split(',');
+              var bString = bSplit[0] + bSplit[1] + bSplit[2];
+
+              _HardDiskTable.updateRow(parseInt(bString), this.createHeaderString("1" , "0" , "0" , "0"), otherPart); // The Data block
+              sessionStorage.setItem(nextBlock, this.createDataFileString("1" , "0" , "0" , "0" , otherPart));
+            }
+            else {
+
+              // Update the final block with the new and old data
+              sessionStorage.setItem(finalBlock, this.createDataFileString("1" , "0" , "0" , "0" , concatData));
+
+              var aSplit = finalBlock.split(',');
+              var aString = aSplit[0] + aSplit[1] + aSplit[2];
+
+              // Update the Hard Disk UI
+              _HardDiskTable.updateRow(parseInt(aString), this.createHeaderString("1", "0", "0", "0"), concatData); // The Data block
+            }
+
+            // Tell the user 
+            _StdOut.putText("File write successful"); 
+
+            // Advance the line
+            _Console.advanceLine();
+
+              // Place the prompt
+            _OsShell.putPrompt();
+
+          }
+          else {
+
+          // Tell the user 
+           _StdOut.putText("Error: The filename does not exist"); 
+
+           // Advance the line
+          _Console.advanceLine();
+
+          // Place the prompt
+          _OsShell.putPrompt();
+
+          return false;
+        }
+      }
+         
         /**
          * Used to delete a file with the given <Filename>
          * @Params filename <String> - the name of the file to delete
@@ -554,7 +704,15 @@ module TSOS {
                 // Clear the Directory entry(Sets the in use bit to 0 T = -1 S = -1 B = -1 and a blank file name)
                 sessionStorage.setItem(this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + ""), this.createDirectoryFileDataString( 0, 0, 0, 0, ""));
 
+                // Update the File System UI
                 _FileSystemTable.removeFileByName(filename);
+
+                // Update the Hard Disk Table UI
+                var aSplit = this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + "").split(',');
+                var aString = aSplit[0] + aSplit[1] + aSplit[2];
+
+                // Delete the directory entry
+                _HardDiskTable.deleteRow(parseInt(aString));
 
                  // Next cascade delete from the table sooooooooooooooo.............
                 
@@ -566,32 +724,46 @@ module TSOS {
                  var block = fileDataArray[3];
 
                  // Recusively delete untill all blocks have been vaporized
-                 if (this.cascadeDeleteFileBlocks(this.createFileLocationString(track + "", sector + "", block + "")) == true) {
 
-                     // Tell the user 
-                     _StdOut.putText("File Successfully Deleted"); 
+                 this.cascadeDeleteFileBlocks(this.createFileLocationString(track + "", sector + "", block + ""));
+                 // Tell the user 
+                 _StdOut.putText("File Successfully Deleted"); 
 
-                     // Advance the line
-                     _Console.advanceLine();
+                 // Advance the line
+                 _Console.advanceLine();
 
-                     // Place the prompt
-                     _OsShell.putPrompt();
+                 // Place the prompt
+                 _OsShell.putPrompt();
 
-                     return false;
-                 }
-                 else {
+                 return false;
 
-                     // Tell the user 
-                     _StdOut.putText("Woops.... some shit happened"); 
+                 // // Recusively delete untill all blocks have been vaporized
+                 // if (this.cascadeDeleteFileBlocks(this.createFileLocationString(track + "", sector + "", block + "")) == true) {
 
-                     // Advance the line
-                     _Console.advanceLine();
+                 //     // Tell the user 
+                 //     _StdOut.putText("File Successfully Deleted"); 
 
-                     // Place the prompt
-                     _OsShell.putPrompt();
+                 //     // Advance the line
+                 //     _Console.advanceLine();
 
-                     return false;
-                 }
+                 //     // Place the prompt
+                 //     _OsShell.putPrompt();
+
+                 //     return false;
+                 // }
+                 // else {
+
+                 //     // Tell the user 
+                 //     _StdOut.putText("File Successfully Deleted"); 
+
+                 //     // Advance the line
+                 //     _Console.advanceLine();
+
+                 //     // Place the prompt
+                 //     _OsShell.putPrompt();
+
+                 //     return false;
+                 // }
             }
             else {
 
@@ -634,6 +806,13 @@ module TSOS {
             // Delete the current block
             sessionStorage.setItem(startingLocation, this.createDataFileString("0" , "0" , "0" , "0" , ""));
 
+            // Update the Hard Disk Table UI
+            var aSplit = startingLocation.split(',');
+            var aString = aSplit[0] + aSplit[1] + aSplit[2];
+
+            // Delete the directory entry
+            _HardDiskTable.deleteRow(parseInt(aString));
+
             console.log(startingLocation + "was just deleted");
             // Check to see if recursion is needed
             if(nextBlockLocation == "000") {
@@ -647,8 +826,6 @@ module TSOS {
                 // If another location needs to be deleted then recurse 
                 this.cascadeDeleteFileBlocks(this.createFileLocationString(blockDataArray[1], blockDataArray[2], blockDataArray[3]));
             }
-
-
         }
         /**
          * Used to check if a file name exists in the file system
@@ -721,10 +898,69 @@ module TSOS {
 
             // Return file list
             return fileList;
+      }
+      public rollOutProcess(){
+
+        //process.location = PROCESS_ON_DISK;
+
+          // Read the current data
+        var currentDiskData = _krnFileSystemDriver.readAndReturn("process");
+        var nextByte;
+        var nextChar = "";
+        var byteString = "";
+        console.log(_MemoryManager.memoryBlock);
+        // Get all the bytes stored at 0 - 255
+        for (var i = 0; i < 255; i++) {
+
+          nextByte = _MemoryManager.memoryBlock[i];
+
+          if(nextByte != null) {
+            console.log(nextByte.getValue() + " VALSUDFILSDLFKJSKDLFJ");
+            byteString = byteString + nextByte.getValue();
+          }
         }
-       // public findNextAvailableMemoryBlock(): string {
 
-        //}
+        console.log("CURRENT BYTE STRING IS... " + byteString);
+       
+        var nextByte;
+        var nextMemoryAddress = 0;
+        // Write the current Disk Data to mem block by block
+        for (var i = 0; i < currentDiskData.length; i = i + 2) {
 
-    }
+
+
+        nextChar = currentDiskData.charAt(i) + currentDiskData.charAt(i + 1);
+
+        _MemoryManager.memoryBlock[nextMemoryAddress] = new Byte(nextMemoryAddress, nextChar);
+        console.log(nextMemoryAddress + "  the next memory address  " + nextChar + " nextChar");
+        _MemoryInformationTable.setCellData(nextMemoryAddress, nextChar);
+        nextMemoryAddress++;
+        
+        }
+
+        console.log("About to delete file ");
+        // Delete current file on disk
+        _krnFileSystemDriver.deleteFile("process");
+
+        // Create file again
+        _krnFileSystemDriver.createFile("process");
+
+        // Write to the file
+        var loops = Math.ceil(byteString.length / 60);
+        var otherTest = [];
+        var chunks = [];
+
+        // for each chunk of 60 write to the disk
+        for (var j: number = 0; j < loops; j++) {
+            chunks.push(byteString.slice(0 + j * 60, 60 + j * 60));
+        }
+        for (var k = 0; k < loops; k++) {
+
+          otherTest[0] = "process";
+          otherTest[1] = chunks[k];
+
+          _krnFileSystemDriver.writeFile(otherTest);
+        }
+      }
+   }
 }

@@ -1,0 +1,331 @@
+///<reference path="collections.ts" />
+///<reference path="ProcessControlBlock.ts" />
+///<reference path="../globals.ts" />
+///<reference path="../utils.ts" />
+///<reference path="../host/byte.ts" />
+///<reference path="../host/memory.ts" />
+/**
+ * This class is used to handle the memory and the operations that need to be performed on it
+*/
+var TSOS;
+(function (TSOS) {
+    var MemoryManager = (function () {
+        function MemoryManager(theMemoryBlock, memoryPartitionArray) {
+            this.memoryPartitionIndex = new Array(); // Array with each base address for the memory partitions
+            this.availableMemoryPartitions = new TSOS.Queue(); // A Queue used to determine the next memory partition to be used (This cycles between each one in the queue)
+            this.memoryBlock = theMemoryBlock; // The Array of bytes to be managed
+            this.memoryPartitionIndex = memoryPartitionArray; // The Array of all existing memory partitions
+            // On creation all memory partitions are available so add them to the the queue
+            for (var i = 0; i < memoryPartitionArray.length; i++) {
+                this.availableMemoryPartitions.enqueue(memoryPartitionArray[i]);
+            }
+            console.log("NUMBER OF MEMORY PARTITIONS AVAILABLE IS " + this.availableMemoryPartitions.getSize());
+        }
+        /**
+         * Returns the number of bytes in memory
+         */
+        MemoryManager.prototype.getTotalMemorySize = function () {
+            return this.memoryBlock.memoryBlock.length;
+        };
+        /**
+        * Used find the memory location of the process the user is trying to run
+        */
+        MemoryManager.prototype.findProcessInMemory = function (processID) {
+            // Initalize variables
+            var len = _ResidentList.getSize();
+            var nextProcess;
+            //console.log("The Process ID is " + processID );
+            if (len < 1) {
+                return null;
+            }
+            for (var i = 0; i < len; i++) {
+                nextProcess = _ResidentList.getElementAt(i);
+                if (nextProcess.getProcessID() == processID) {
+                    console.log("The next process to run starts at address " + nextProcess.getBaseReg());
+                    return nextProcess;
+                }
+            }
+            return null;
+        };
+        /**
+         * This method is used to check if the current address a process is trying to access is inside its valid memory bounds
+         * @Params  {Number}  requestedMemoryAddress - The memory location the process is attempting to access
+         *                                   process - The Process that is trying to access the memory
+         * @Returns {Boolean}                   True - If the process has access to the location
+         *                                     False - If the process does not have access to the location
+         */
+        MemoryManager.prototype.hasAccessToMemoryAddress = function (requestedMemoryAddress, process) {
+            // Initalize variables
+            var baseAddressValue = 0; // The first memory address location the process can access
+            var limitAddressValue = 0; // the last memory address location the process can access
+            // Get the base address of the current process
+            baseAddressValue = process.getBaseReg(); // Get the processes base address
+            limitAddressValue = process.getLimitReg(); // Get the processes limit address
+            // Check to see if the requested memory address is both...
+            // 1. More than the smallest possible address 
+            // 2. Less than the largest possible address
+            if ((requestedMemoryAddress <= limitAddressValue) && (function (requestedMemoryAddress) { return baseAddressValue; })) {
+                // Means the process can safely access the memory location and return true
+                return true;
+            }
+            // If either of the two bounds are passed and return false
+            return false;
+        };
+        /**
+         * Returns the next available memory partition in memory
+         * @Return memoryAddressOfNextFree {number} - The memory address of the next free memory partition
+         * If no free memory partition is currently available -1 will be returned
+         */
+        MemoryManager.prototype.getNextAvailableMemoryPartition = function () {
+            // Check to see if a free memory partition exisits
+            if (this.availableMemoryPartitions.getSize() > 0) {
+                // Get the next partition from the queue
+                var nextPartition = this.availableMemoryPartitions.dequeue();
+                // Return the base value for the next memory partition
+                return nextPartition;
+            }
+            else {
+                return -1;
+            }
+        };
+        /**
+         * "Clears" a single memory partition in memory and adds it back to the available partition queue
+         */
+        MemoryManager.prototype.clearMemoryPartition = function (process) {
+            // Get the base regisger of the process 
+            var processBaseRegister = process.getBaseReg();
+            // Get the length of the partition index
+            var length = this.memoryPartitionIndex.length;
+            // Get the length of the residentList
+            var listLength = _ResidentList.getSize();
+            // The partitionIndex
+            var theMemoryPartition;
+            // Loop over the partition index and find a matching base address
+            for (var i = 0; i < length; i++) {
+                // check the processBaseAddress with the base address in the index
+                if (processBaseRegister == this.memoryPartitionIndex[i]) {
+                    // If a match is found then save the answer to the variable for later user
+                    theMemoryPartition = this.memoryPartitionIndex[i];
+                }
+                else {
+                }
+            }
+            console.log("The size of the resident list is ..." + _ResidentList.getSize());
+            // Clear the memory blocks at those locations
+            for (var i = theMemoryPartition; i < theMemoryPartition + 256; i++) {
+                this.memoryBlock[i] = new TSOS.Byte(i, "00");
+                _MemoryInformationTable.setCellData(i, "00");
+            }
+            // Add the partition back into the available memory partitions
+            this.availableMemoryPartitions.enqueue(theMemoryPartition);
+        };
+        /**
+         * "Clears" all of the Memory Partitions in memory
+         */
+        MemoryManager.prototype.clearAllMemoryPartitions = function () {
+            // Set every byte in memory to 00
+            for (var i = 0; i < 768; i++) {
+                this.memoryBlock[i] = new TSOS.Byte(i, "00");
+            }
+            // Add the Memory Partitions back
+            this.availableMemoryPartitions = new TSOS.Queue();
+            // On creation all memory partitions are available so add them to the the queue
+            for (var i = 0; i < this.memoryPartitionIndex.length; i++) {
+                this.availableMemoryPartitions.enqueue(this.memoryPartitionIndex[i]);
+            }
+            // Clear the Ready Queue
+            _ReadyQueue = new TSOS.ReadyQueue();
+            // Clear the Resident List
+            _ResidentList = new TSOS.ReadyQueue();
+            // Clear the Memory UI Table
+            _MemoryInformationTable.clearTable();
+        };
+        MemoryManager.prototype.loadProgramOntoDisk = function (userProgram, priority) {
+            if (_DiskIsFormated == true) {
+                // Initalize needed variables
+                var firstHexNumber = "";
+                var secondHexNumber = "";
+                var nextByteValue = "";
+                var baseMemoryOffset = 0; // The offest to track each where each byte is being placed
+                var nextMemoryAddress = 0; // The value of the next memory address
+                // Create a new process
+                var newProcess = _Kernel.createProcess(-1);
+                // Update the priority
+                newProcess.setPriority(priority);
+                //set the locatin to disk!
+                newProcess.location = PROCESS_ON_DISK;
+                // Create the file
+                var fileName = "process";
+                var response = [];
+                response[0] = CREATE_FILE;
+                response[1] = fileName;
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, response));
+                // Write to the file
+                var loops = Math.ceil(userProgram.length / 60);
+                var len = userProgram.length;
+                var data;
+                var dataString;
+                var otherTest = [];
+                // for each chunk of 60 write to the disk
+                for (var i = 0; i < loops; i++) {
+                    console.log("INDEX 1: " + 0 + i * 60);
+                    console.log("INDEX 2: " + 60 + i * 60);
+                    data = userProgram.slice(0 + i * 60, 60 + i * 60);
+                    otherTest[0] = fileName;
+                    otherTest[1] = data;
+                    var response1 = [];
+                    response1[0] = WRITE_FILE;
+                    response1[1] = otherTest;
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(FILE_SYSTEM_IRQ, response1));
+                }
+                return newProcess.getProcessID();
+            }
+            else {
+                return null;
+            }
+        };
+        /**
+         * Used to load the user program into memory
+         * @Params userProgram {String} - The user program to be loaded into memory
+         * @Return processID {Number}   - The process ID of the newly created process
+         */
+        MemoryManager.prototype.loadProgramIntoMemory = function (userProgram, priority) {
+            // Initalize needed variables
+            var firstHexNumber = ""; // The first hex digit while looping
+            var secondHexNumber = ""; // The second hex digit while looping
+            var nextByteValue = ""; // The value of the next byte
+            var baseMemoryOffset = 0; // The offest to track each where each byte is being placed
+            var nextMemoryAddress = 0; // The value of the next memory address
+            // Get the next base address to write the user program
+            var nextBaseMemoryPartitionAddress = this.getNextAvailableMemoryPartition();
+            //loop over the length of the user program 
+            for (var i = 0; i < userProgram.length; i = i + 2) {
+                // Get the next two hex digits to form a byte
+                firstHexNumber = userProgram.charAt(i); // First Digit
+                secondHexNumber = userProgram.charAt(i + 1); // Second Digit
+                nextByteValue = firstHexNumber + secondHexNumber + "";
+                nextMemoryAddress = nextBaseMemoryPartitionAddress + baseMemoryOffset;
+                // Place the byte in memory
+                // The byte index will be the base memory partition being used + the offst
+                // The value if the combination of both the hex numbers;
+                _MemoryManager.memoryBlock[nextMemoryAddress] = new TSOS.Byte(nextMemoryAddress, nextByteValue);
+                _MemoryInformationTable.setCellData(nextMemoryAddress, nextByteValue);
+                // Increment the offset
+                baseMemoryOffset = baseMemoryOffset + 1;
+            }
+            // Create a new process control block
+            var newProcess = _Kernel.createProcess(nextBaseMemoryPartitionAddress);
+            // Set the priority of the new process
+            newProcess.setPriority(priority);
+            console.log(newProcess.getPriority() + " Loaded process with a priority off...");
+            // Return the newly created process ID 
+            return newProcess.getProcessID();
+        };
+        /**
+         * Used to convert the logical address of the program into the physical address
+         */
+        MemoryManager.prototype.convertLogicalToPhysicalAddress = function (logicalAddress) {
+            var physicalAddress = 0;
+            physicalAddress = logicalAddress + _CPUScheduler.getCurrentProcess().getBaseReg();
+            return physicalAddress;
+        };
+        /**
+         * Returns the byte at the given index in the memory
+         * @Params partitionIndex {Number} - The index of the partition in memory you want to access
+         * 		   byteIndex      {Number} - The index of the byte in the memory partion you want to access
+         * @Return respose        {Byte}   - The byte at the given location
+         */
+        MemoryManager.prototype.getByte = function (byteIndex) {
+            // Need to check to make sure that the index the current process is trying to access is within bounds
+            if (this.hasAccessToMemoryAddress(byteIndex, _CPUScheduler.getCurrentProcess()) == true) {
+                // Convert the logical address to the physical address
+                var physicalAddress = this.convertLogicalToPhysicalAddress(byteIndex);
+                // Get the location from the memory block using the physical address
+                var response = this.memoryBlock[physicalAddress];
+                //console.log(<Byte>response);
+                // Return the byte at the location
+                return response;
+            }
+            else {
+                // Create and Interrupt because the memory has execceded its bounds
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(MEMORY_OUT_OF_BOUNDS_IRQ, _CPUScheduler.getCurrentProcess())); // Memory Out Of Bounds Interrupt , The current Process Control Block 	
+            }
+        };
+        /**
+         * Returns the bytes at the given indexs in the memory
+         * @Params byteIndex1     {Number} - The index of the byte you want
+                   byteIndex2     {Number} - The index of the byte you want
+         * @Return respose        {Array}  - The byteArray of the bytes at the given location
+         */
+        MemoryManager.prototype.getTwoBytes = function (byteIndex1, byteIndex2) {
+            // Initalize variables
+            var byteArray = [];
+            // Need to check to make sure that the indexs the current process is trying to access is within bounds
+            if ((this.hasAccessToMemoryAddress(byteIndex1, _CPUScheduler.getCurrentProcess()) == true) && (this.hasAccessToMemoryAddress(byteIndex2, _CPUScheduler.getCurrentProcess()) == true)) {
+                var physicalAddress1 = this.convertLogicalToPhysicalAddress(byteIndex1);
+                var physicalAddress2 = this.convertLogicalToPhysicalAddress(byteIndex2);
+                var byte1 = this.memoryBlock[physicalAddress1];
+                var byte2 = this.memoryBlock[physicalAddress2];
+                byteArray[0] = byte1;
+                byteArray[1] = byte2;
+                return byteArray;
+            }
+            else {
+                // Create and Interrupt because the memory has execceded its bounds
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(MEMORY_OUT_OF_BOUNDS_IRQ, _CPUScheduler.getCurrentProcess())); // Memory Out Of Bounds Interrupt , The current Process Control Block 	
+            }
+        };
+        /**
+         * Sets the value of the byte in memory at the given index
+         * @Params  partitionIndex {Number} - The index of the partition in memory you want to access
+                    byteIndex      {Number} - The index of the byte you wish to change
+                    byteValue      {String} - The value to set the byte in memory to
+         *
+        */
+        MemoryManager.prototype.setByte = function (byteIndex, byteValue) {
+            // Need to check to make sure that the indexs the current process is trying to access is within bounds
+            if (this.hasAccessToMemoryAddress(byteIndex, _CPUScheduler.getCurrentProcess()) == true) {
+                var physicalAddress = this.convertLogicalToPhysicalAddress(byteIndex);
+                this.memoryBlock[physicalAddress] = new TSOS.Byte(physicalAddress, byteValue);
+                _MemoryInformationTable.setCellData(physicalAddress, byteValue);
+            }
+            else {
+                // Create and Interrupt because the memory has execceded its bounds
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(MEMORY_OUT_OF_BOUNDS_IRQ, _CPUScheduler.getCurrentProcess())); // Memory Out Of Bounds Interrupt , The current Process Control Block 	
+            }
+        };
+        //*********************************************//
+        //											   //	
+        //			Roll In and Roll Out			   //
+        //                                             //
+        //*********************************************//
+        /**
+         * USed to Roll Out a program a program from memory
+         *
+         */
+        MemoryManager.prototype.rollOutProgram = function (process) {
+            // Initalize variables
+            var byteArray = [];
+            var nextByte;
+            // First step is to get the location of the program in memory
+            var partitionStartingLocation = process.getBaseReg();
+            // Loop from the starting array 256 bytes and save them into the byte array
+            for (var i = partitionStartingLocation; i < partitionStartingLocation + 256; i++) {
+                // Get the byte at the next location
+                nextByte = this.getByte(i);
+                // Store the byte in the array
+                byteArray.push(nextByte);
+            }
+            // Create the File using a file name of process + PID
+            _Kernel;
+        };
+        /**
+         * Used to Roll In a program stored on the disk
+         *
+         */
+        MemoryManager.prototype.rollInProgram = function (process) {
+        };
+        return MemoryManager;
+    })();
+    TSOS.MemoryManager = MemoryManager;
+})(TSOS || (TSOS = {}));

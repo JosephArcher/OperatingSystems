@@ -266,18 +266,20 @@ var TSOS;
             // Clear the Process from the UI Ready queue
             _ReadyQueueTable.removeProcessById(process);
             // Add to the terminated UI Table
-            _TerminatedProcessTable.addRow(process);
+            // _TerminatedProcessTable.addRow(process);
             // Clear the current timer
             _Timer.clearTimer();
             // Set current process to null so signal the timer
             _CPUScheduler.setCurrentProcess(null);
             // check to see if you need to start another process 
             if (_ReadyQueue.getSize() > 0) {
+                console.log("ANOTHER PROCES EXISTS ! GETITING IT NOW HOMIE G");
                 // Start the next process
                 var nextProcess = _CPUScheduler.getNextProcess();
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(START_PROCESS_IRQ, nextProcess));
             }
             else {
+                console.log("NO PROCESS EXISTS SO STOP ");
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(END_CPU_IRQ, null));
             }
         };

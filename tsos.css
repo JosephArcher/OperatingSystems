@@ -1,21 +1,17 @@
 /* TSOS.css */
-
-
 .logDateTime {
-font-size: 1em;
-float:left;
+  font-size: 1em;
+  float:left;
 }
 .logSource {
-font-size: 1em;
-float:right;
-
+  font-size: 1em;
+  float:right;
 }
 .logCounter {
-background-color: green;
-font-size: 1.25em;
-float:right;
+  background-color: green;
+  font-size: 1.25em;
+  float:right;
 }
-
 #divMain{
   margin: 0 auto;
   width: 970px;

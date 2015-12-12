@@ -302,7 +302,7 @@ module TSOS {
         public krnBreakISR(process: TSOS.ProcessControlBlock) {
 
                  // Do not add the current process back to the ready queue and set the current process to null in order to signal the timer
-                
+
                 // Save the current CPU Register values into the process control block
                _CPUScheduler.runningProcess.setProgramCounter(_CPU.PC);
                _CPUScheduler.runningProcess.setAcc(_CPU.Acc);
@@ -324,7 +324,7 @@ module TSOS {
                _ReadyQueueTable.removeProcessById(process);
 
                // Add to the terminated UI Table
-               _TerminatedProcessTable.addRow(process);
+              // _TerminatedProcessTable.addRow(process);
 
                // Clear the current timer
                _Timer.clearTimer();
@@ -334,12 +334,16 @@ module TSOS {
 
                // check to see if you need to start another process 
                if(_ReadyQueue.getSize() > 0 ){
+
+           console.log("ANOTHER PROCES EXISTS ! GETITING IT NOW HOMIE G");
                    // Start the next process
                    var nextProcess: TSOS.ProcessControlBlock = _CPUScheduler.getNextProcess();
 
                    _KernelInterruptQueue.enqueue(new Interrupt(START_PROCESS_IRQ, nextProcess));
                }
                else{
+
+           console.log("NO PROCESS EXISTS SO STOP ");
                    _KernelInterruptQueue.enqueue(new Interrupt(END_CPU_IRQ, null));
                }
         }

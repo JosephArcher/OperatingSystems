@@ -14,7 +14,7 @@
 //********************************************************\\
 // Application Information
 var APP_NAME = "Joe/S"; // Joe is Love Joe is Lyfe
-var APP_VERSION = "0.03"; // 
+var APP_VERSION = "0.04"; // 
 // System 
 var CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 second.
 // Interrupts
@@ -39,6 +39,9 @@ var PROCESS_STATE_RUNNING = "RUNNING"; //   * Running
 var PROCESS_STATE_WAITING = "WAITING"; //   * Waiting
 var PROCESS_STATE_READY = "READY"; //   * Ready
 var PROCESS_STATE_TERMINATED = "TERMINATED"; //   * Terminated
+// Process Location States
+var PROCESS_ON_DISK = "DISK";
+var PROCESS_IN_MEM = "MEMORY";
 // TImer States		
 var TIMER_IS_SET = "SET"; //  Set
 var TIMER_IS_OFF = "OFF"; //  OFF

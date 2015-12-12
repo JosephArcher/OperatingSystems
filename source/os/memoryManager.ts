@@ -149,9 +149,7 @@ module TSOS {
 			}
 
 			// Add the partition back into the available memory partitions
-			this.availableMemoryPartitions.enqueue(theMemoryPartition);
-
-		 	
+			this.availableMemoryPartitions.enqueue(theMemoryPartition);	
 		}
 		/**
 		 * "Clears" all of the Memory Partitions in memory
@@ -179,6 +177,78 @@ module TSOS {
 
 			// Clear the Memory UI Table
 			_MemoryInformationTable.clearTable();
+		}
+		public loadProgramOntoDisk(userProgram: string, priority: string): number {
+
+			if(_DiskIsFormated == true){
+
+				// Initalize needed variables
+				var firstHexNumber: string = "";
+				var secondHexNumber: string = "";
+				var nextByteValue: string = "";
+				var baseMemoryOffset: number = 0;  // The offest to track each where each byte is being placed
+				var nextMemoryAddress: number = 0; // The value of the next memory address
+
+				// Create a new process
+				var newProcess: TSOS.ProcessControlBlock = _Kernel.createProcess(-1);
+
+				// Update the priority
+				newProcess.setPriority(priority);
+
+				//set the locatin to disk!
+				newProcess.location = PROCESS_ON_DISK;
+
+				// Create the file
+				var fileName = "process";
+
+				var response = [];
+
+	            response[0] = CREATE_FILE;
+	            response[1] = fileName;
+
+	            _krnFileSystemDriver.createFile(fileName);
+	            //_KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, response));
+
+	            // Write to the file
+	            var loops = Math.ceil(userProgram.length / 60);
+	          	var len = userProgram.length;
+	            var data = "";
+	            var dataString;
+				var otherTest = [];
+				var chunks = [];
+				var response1 = [];
+				console.log(userProgram + "  ppcpcpcpcpc");
+	            // for each chunk of 60 write to the disk
+	       	for(var i:number = 0; i < loops; i++ ) {
+
+	       		console.log("asdfasdfasdfasd");
+	       		console.log(0 + i * 60);
+	       		console.log(60 + i * 60);
+	       		
+	       		chunks.push(userProgram.slice(0 + i * 60 , 60  + i * 60));
+	       	}
+	       	console.log(chunks);
+	       	for(var j = 0; j < loops; j++) {
+
+                otherTest[0] = "process";
+                otherTest[1] = chunks[j];
+
+              
+                response1[0] = WRITE_FILE;
+                response1[1] = otherTest;
+                console.log(chunks[j] + "BOGGIE");
+                console.log(otherTest);
+                _krnFileSystemDriver.writeFile(otherTest);
+               // _KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, response1));
+
+
+	       	}
+				return newProcess.getProcessID();
+
+			}
+			else {
+				return null;
+			}
 		}
 		/**
 		 * Used to load the user program into memory
@@ -213,9 +283,7 @@ module TSOS {
 
 				// Increment the offset
 				baseMemoryOffset = baseMemoryOffset + 1;
-			}    
-
-		
+			}    		
 		     // Create a new process control block
 			var newProcess: TSOS.ProcessControlBlock = _Kernel.createProcess(nextBaseMemoryPartitionAddress);
 			
@@ -319,5 +387,52 @@ module TSOS {
 				_KernelInterruptQueue.enqueue(new Interrupt(MEMORY_OUT_OF_BOUNDS_IRQ, _CPUScheduler.getCurrentProcess()));	// Memory Out Of Bounds Interrupt , The current Process Control Block 	
 			}	
 		}
+
+		//*********************************************//
+		//											   //	
+		//			Roll In and Roll Out			   //
+		//                                             //
+		//*********************************************//
+
+
+		/**
+		 * USed to Roll Out a program a program from memory
+		 * 
+		 */
+		 public rollOutProgram(process: TSOS.ProcessControlBlock) {
+
+		 	 // Initalize variables
+			 var byteArray = [];
+			 var nextByte; 
+
+		 	// First step is to get the location of the program in memory
+			 var partitionStartingLocation = process.getBaseReg();
+
+			 // Loop from the starting array 256 bytes and save them into the byte array
+			 for (var i = partitionStartingLocation; i < partitionStartingLocation + 256; i++) {
+			 	// Get the byte at the next location
+				 nextByte = this.getByte(i);
+
+				 // Store the byte in the array
+				 byteArray.push(nextByte);
+
+			}
+
+			// Create the File using a file name of process + PID
+			_Kernel
+
+		}
+		 /**
+		  * Used to Roll In a program stored on the disk
+		  *
+		  */
+		  public rollInProgram(process: TSOS.ProcessControlBlock) {
+
+
+
+
+
+
+		  }
 	}
 }
