@@ -324,7 +324,7 @@ module TSOS {
                _ReadyQueueTable.removeProcessById(process);
 
                // Add to the terminated UI Table
-              // _TerminatedProcessTable.addRow(process);
+               _TerminatedProcessTable.addRow(process);
 
                // Clear the current timer
                _Timer.clearTimer();
@@ -532,7 +532,7 @@ module TSOS {
                 _ReadyQueueTable.removeProcessById(process);
 
                 // Add to the terminated UI Table
-               // _TerminatedProcessTable.addRow(process);   
+               _TerminatedProcessTable.addRow(process);   
         }
         /*
          * Used to set the _CPU.isExecuting Property to False

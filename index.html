@@ -235,7 +235,6 @@
 
       <ul class="nav nav-tabs">
         <li class="active"><a data-toggle="tab" href="#readyQueue">Ready Queue</a></li>
-          <li><a data-toggle="tab" href="#residentList">Resident List</a></li>
           <li><a data-toggle="tab" href="#terminatedList">Terminated List</a></li>
       </ul>
 
@@ -243,38 +242,17 @@
 
         <div id="readyQueue" class="tab-pane fade in active">
           <p class="sectionHeader">Current Active Processes </p>
-            <table class="table tableText" id="readyQueueTableElement" >
+            <table class="table tableText" id="readyQueueTableElement">
               <thead>
                 <tr>
+                  <th>PID </th>
+                  <th>Loc</th>
                   <th>State</th>
                   <th>PC</th>
                   <th>Acc</th>
                   <th>X</th>
                   <th>Y</th>
                   <th>Z</th>
-                  <th>PID </th>
-                  <th>Base</th>
-                  <th>Turn</th>
-                  <th>Wait</th>
-                </tr>
-              </thead>
-              <tbody>
-              </tbody>
-            </table>
-        </div>
-
-        <div id="residentList" class="tab-pane fade">
-          <p class="sectionHeader">Processes loaded in memory</p>
-          <table class="table tableText" id="residentListTableElement" >
-              <thead>
-                <tr>
-                  <th>State</th>
-                  <th>PC</th>
-                  <th>Acc</th>
-                  <th>X</th>
-                  <th>Y</th>
-                  <th>Z</th>
-                  <th>PID </th>
                   <th>Base</th>
                   <th>Turn</th>
                   <th>Wait</th>
@@ -287,16 +265,16 @@
 
         <div id="terminatedList" class="tab-pane fade">
             <p class="sectionHeader">Terminated Processes</p>
-          <table class="table tableText" id="terminatedListTableElement" >
+          <table class="table tableText" id="terminatedListTableElement">
               <thead>
                 <tr>
+                  <th>PID</th>
                   <th>State</th>
                   <th>PC</th>
                   <th>Acc</th>
                   <th>X</th>
                   <th>Y</th>
                   <th>Z</th>
-                  <th>PID </th>
                   <th>Base</th>
                   <th>Turn</th>
                   <th>Wait</th>
@@ -307,30 +285,6 @@
             </table>
         </div>
       </div>    
-    </div>
-  </div>
-
-  <div class="panel panel-primary" id = "fileSystemPanel">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" href="#fileSystemCollapse"><h4> File System Manager  <i id= "fileSystemPanelCheck" class="fa fa-check" style = "float: right; display: none;" ></i></h4> </a>
-      </h4>
-    </div>
-    <div id="fileSystemCollapse" class="panel-collapse collapse">
-       <table class="table tableText" id="fileSystemTable" >
-              <thead class="tableText">
-                <tr>
-                  <th>Name</th>
-                  <th>Track</th>
-                  <th>Sector</th>
-                  <th>Block</th>
-                  <th>Contents</th>
-                </tr>
-              </thead>
-              <tbody>
-               
-              </tbody>
-            </table>
     </div>
   </div>
 

@@ -76,7 +76,7 @@ module TSOS {
             _TimeSectionElement = <HTMLElement> document.getElementById("timeArea");
            
             // Resient List
-            _TerminatedProcessTableElement = <HTMLTableElement> document.getElementById("terminatedProcessTableElement");
+            _TerminatedProcessTableElement = <HTMLTableElement> document.getElementById("terminatedListTableElement");
 
             // Ready Queue
             _ReadyQueueTableElement = <HTMLTableElement> document.getElementById("readyQueueTableElement");
@@ -168,7 +168,7 @@ module TSOS {
                 _SystemIsOn = false; // Turn the system off
                 _SystemInformationInterface.systemOffMode();
                 _MemoryInformationTable.fillRows();
-              //  _TerminatedProcessTable.clearTable();
+                _TerminatedProcessTable.clearTable();
                 _ReadyQueueTable.clearTable();
                 Utils.togglePowerOff(); // Handle what happens to the UI when the system turns off
 

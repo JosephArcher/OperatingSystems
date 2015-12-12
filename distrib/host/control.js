@@ -61,7 +61,7 @@ var TSOS;
             // Time section
             _TimeSectionElement = document.getElementById("timeArea");
             // Resient List
-            _TerminatedProcessTableElement = document.getElementById("terminatedProcessTableElement");
+            _TerminatedProcessTableElement = document.getElementById("terminatedListTableElement");
             // Ready Queue
             _ReadyQueueTableElement = document.getElementById("readyQueueTableElement");
             // File System
@@ -127,7 +127,7 @@ var TSOS;
                 _SystemIsOn = false; // Turn the system off
                 _SystemInformationInterface.systemOffMode();
                 _MemoryInformationTable.fillRows();
-                //  _TerminatedProcessTable.clearTable();
+                _TerminatedProcessTable.clearTable();
                 _ReadyQueueTable.clearTable();
                 TSOS.Utils.togglePowerOff(); // Handle what happens to the UI when the system turns off
                 // Call the halt button becuase that is really what this is supposed to be

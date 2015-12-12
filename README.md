@@ -4,7 +4,6 @@ have partitions	for	in	memory.	Also, to make something	of which you are proud, t
 can	show people, and brag about, and talk about	in job interviews for years to come.
 
 Functional Requirements
-
 	Add	shell commands for the following disk operations:	
 
 		create <filename>         — Create the Gile "ilename and display a message denoting success or failure.
@@ -15,9 +14,7 @@ Functional Requirements
 		ls                        -	List the files currently stored on the disk
 		setschedule <Algrorithm>  - Allow the user to select a CPU	scheduling	algorithm
 		gettschedule              - Return the currently selected cpu scheduling algorithm.
-	
 Implementation	Requirements
-
 	- Implement a	File system	in HTML5 web storage as	discussed in class.
 	- Include	a File system viewer in	your OS	interface.	
 	- Develop	a File System Device Driver	(fsDD) for all of the functional requirements noted above.	

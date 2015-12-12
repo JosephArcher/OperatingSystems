@@ -266,7 +266,7 @@ var TSOS;
             // Clear the Process from the UI Ready queue
             _ReadyQueueTable.removeProcessById(process);
             // Add to the terminated UI Table
-            // _TerminatedProcessTable.addRow(process);
+            _TerminatedProcessTable.addRow(process);
             // Clear the current timer
             _Timer.clearTimer();
             // Set current process to null so signal the timer
@@ -420,7 +420,7 @@ var TSOS;
             // Clear the Process from the UI Ready queue
             _ReadyQueueTable.removeProcessById(process);
             // Add to the terminated UI Table
-            // _TerminatedProcessTable.addRow(process);   
+            _TerminatedProcessTable.addRow(process);
         };
         /*
          * Used to set the _CPU.isExecuting Property to False
