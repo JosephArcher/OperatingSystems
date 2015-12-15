@@ -135,13 +135,14 @@ module TSOS {
      * @Returns {Array} -  0[The I , J , K] 1[filedirectorydata] position 
      *
      */
-    public searchForFile(theFilename) {
+    public searchForFile(filename) {
 
-     var filename:string = Utils.StringToHexString(theFilename + "");
+   
       // Initalize the variables
       var nextFileDataString: string;
       var nextFileData = [];
       var response = []; // The response array
+      var nextFileName = "";
 
       // First convert the filename to hex
       filename = filename + "";
@@ -353,6 +354,7 @@ module TSOS {
         }
             }
         }
+
         /**
          * Used to create a new file with the given file name
          * @Params filename <String> - the name for the new file
@@ -361,68 +363,79 @@ module TSOS {
          */
         public createFile(theFilename: string, printMsg: boolean): boolean {
 
-            var filename: string = Utils.StringToHexString(theFilename + "");
+          var filename: string = Utils.StringToHexString(theFilename + "");
 
+          // Check to see if the file name is larger than 60
+          if (filename.length > 60) {
 
-            // Initalize variables
-            var nextFreeDirectoryLocation;
-            var nextFreeDataLocation;
-            var fileDirectoryData;
-            var fileTableData;
+            // Report an error to the user
+            _StdOut.putText("Error: File name too long"); 
 
+            // Advance the line
+            _Console.advanceLine();
 
-            // Check to see if a file name was given and if not stop
-            if (filename == "") {
+            // Place the prompt
+            _OsShell.putPrompt();
 
-               if(printMsg){
-                // Report an error to the user
-                _StdOut.putText("Error: A file name must be given"); 
+            return false;
+          }
 
-                // Advance the line
-                _Console.advanceLine();
+          // Initalize variables
+          var nextFreeDirectoryLocation;
+          var nextFreeDataLocation;
+          var fileDirectoryData;
+          var fileTableData;
 
-                // Place the prompt
-                _OsShell.putPrompt();
+          // Check to see if a file name was given and if not stop
+          if (filename == "") {
 
-                return false;
-              }
-               
-            }
+            if(printMsg) {
 
-      // Check to see if the file name already exists in the file system
-      if (this.searchForFile(filename) == null) { // If not file of that name exists then 
+              // Report an error to the user
+              _StdOut.putText("Error: A file name must be given"); 
 
-        // Get the next free directory index
-        nextFreeDirectoryLocation = this.getNextFileDirectoryLocation();
-        fileDirectoryData = nextFreeDirectoryLocation.split(',');
-
-        // If a free index exists 
-        if (nextFreeDirectoryLocation != null) {
-
-          // Get the next free data index
-          nextFreeDataLocation = this.getNextFileDataLocation();
-          fileTableData = nextFreeDataLocation.split(',');
-          // Check to see if free space exists for the file data
-          if (nextFreeDataLocation != null) { // If a free data index exists
-
-            // Create the directory entry for the new file
-            sessionStorage.setItem(nextFreeDirectoryLocation, this.createDirectoryFileDataString(1, fileTableData[0], fileTableData[1], fileTableData[2], filename));
-
-            // Create the data entry for the new file
-            sessionStorage.setItem(nextFreeDataLocation, this.createDataFileString("1", "0", "0", "0", ""));
-             
-            if(printMsg){
-              // Report to the user that the creation was successful
-              _StdOut.putText("Success: The file was created"); 
-
-              // Advance the line in the console
+              // Advance the line
               _Console.advanceLine();
 
               // Place the prompt
               _OsShell.putPrompt();
 
-              // IT WORKED !
-              return true;
+              return false;
+            }
+          }
+
+          // Check to see if the file name already exists in the file system
+          if (this.searchForFile(filename) == null) { // If not file of that name exists then 
+
+            // Get the next free directory index
+            nextFreeDirectoryLocation = this.getNextFileDirectoryLocation();
+            fileDirectoryData = nextFreeDirectoryLocation.split(',');
+
+            // If a free index exists 
+            if (nextFreeDirectoryLocation != null) {
+
+              // Get the next free data index
+              nextFreeDataLocation = this.getNextFileDataLocation();
+              fileTableData = nextFreeDataLocation.split(',');
+
+              // Check to see if free space exists for the file data
+              if (nextFreeDataLocation != null) { // If a free data index exists
+
+                // Create the directory entry for the new file
+                sessionStorage.setItem(nextFreeDirectoryLocation, this.createDirectoryFileDataString(1, fileTableData[0], fileTableData[1], fileTableData[2], filename));
+
+                // Create the data entry for the new file
+                sessionStorage.setItem(nextFreeDataLocation, this.createDataFileString("1", "0", "0", "0", ""));
+             
+                if(printMsg){
+                  // Report to the user that the creation was successful
+                  _StdOut.putText("Success: The file was created"); 
+
+                  // Advance the line in the console
+                  _Console.advanceLine();
+
+                  // Place the prompt
+                  _OsShell.putPrompt();
             }
 
             // Update the Hard Disk UI
@@ -434,10 +447,9 @@ module TSOS {
 
             _HardDiskTable.updateRow(parseInt(aString), this.createHeaderString("1", bSplit[0], bSplit[1], bSplit[2]), filename); // The Directory entry
             _HardDiskTable.updateRow(parseInt(bString), "1000", ""); // The Data block
-
-            
           }
           else { // If no file blocks are availble
+
             if(printMsg){
                // Tell the user 
               _StdOut.putText("Error: No file table space"); 
@@ -450,12 +462,11 @@ module TSOS {
 
               return false;
             }
-          
           }
-
         }
         else { // If no free directory location exists
-      if (printMsg) {
+
+          if (printMsg) {
             // Tell the user 
             _StdOut.putText("Error: No file directory index space"); 
 
@@ -467,11 +478,10 @@ module TSOS {
 
             return false;
           }
-         
         }
-
       }
       else {  // If the file name is found
+
           if (printMsg) {
             // Tell the user 
             _StdOut.putText("Error: The filename already exists "); 
@@ -483,19 +493,21 @@ module TSOS {
             _OsShell.putPrompt();
 
             return false;
-              }
-            }
-        }
+          }
+      }
+   }
         /**
          * Used to read a file with the given file name
          * @Params filename <String> - the name of the file tp read frp,
          * @Returns         <True>  - If the file was successfully read
                             <False> - If the file is not read
          */
-        public readFile(filename: string) {
+        public readFile(theFilename: string) {
 
-            // Search to see if the file name exists and the write is valid
-            var response = this.searchForFile(filename);
+          var filename: string = Utils.StringToHexString(theFilename + "");
+
+          // Search to see if the file name exists and the write is valid
+          var response = this.searchForFile(filename);
 
             // If the file exists
             if (response != null) {
@@ -541,8 +553,9 @@ module TSOS {
          * @Returns         <True>  - If the file was successfully read
                   <False> - If the file is not read
          */
-         public readAndReturn(filename: string) {
+         public readAndReturn(theFilename: string) {
 
+           var filename: string = Utils.StringToHexString(theFilename + "");
                     // Search to see if the file name exists and the write is valid
                     var response = this.searchForFile(filename);
 
@@ -570,9 +583,10 @@ module TSOS {
                             <False>  - If the file is not writen to
          */
         public writeFile(fileInfo, printMsg: boolean ) {
-           
+
           // Split apart the data that is passed in for the write
-          var filename = fileInfo[0];
+          var filename = Utils.StringToHexString(fileInfo[0]);
+
           var theFiledata = fileInfo[1];
           var filedata = Utils.StringToHexString(theFiledata);
 
@@ -671,14 +685,15 @@ module TSOS {
         
         }
       }
-         
         /**
          * Used to delete a file with the given <Filename>
          * @Params filename <String> - the name of the file to delete
          * @Returns         <True>  - If the file was successfully deleted
                             <False> - If the file is not deleted
          */
-        public deleteFile(filename: string, printMsg: boolean) {
+        public deleteFile(theFilename: string, printMsg: boolean) {
+
+          var filename: string = Utils.StringToHexString(theFilename + "");
 
             // Search for the file 
             var response = this.searchForFile(filename);
@@ -712,17 +727,14 @@ module TSOS {
                 // Delete the directory entry
                 _HardDiskTable.deleteRow(parseInt(aString));
 
-                 // Next cascade delete from the table sooooooooooooooo.............
-                
+               
                 // Split apart the index and get the track , sector, block from the index
-
                  var fileDataArray = fileData.split(',');
                  var track = fileDataArray[1];
                  var sector = fileDataArray[2];
                  var block = fileDataArray[3];
 
                  // Recusively delete untill all blocks have been vaporized
-
                  this.cascadeDeleteFileBlocks(this.createFileLocationString(track + "", sector + "", block + ""));
 
                  if(printMsg){
@@ -737,48 +749,20 @@ module TSOS {
 
                  return false;
                }
-
-                 // // Recusively delete untill all blocks have been vaporized
-                 // if (this.cascadeDeleteFileBlocks(this.createFileLocationString(track + "", sector + "", block + "")) == true) {
-
-                 //     // Tell the user 
-                 //     _StdOut.putText("File Successfully Deleted"); 
-
-                 //     // Advance the line
-                 //     _Console.advanceLine();
-
-                 //     // Place the prompt
-                 //     _OsShell.putPrompt();
-
-                 //     return false;
-                 // }
-                 // else {
-
-                 //     // Tell the user 
-                 //     _StdOut.putText("File Successfully Deleted"); 
-
-                 //     // Advance the line
-                 //     _Console.advanceLine();
-
-                 //     // Place the prompt
-                 //     _OsShell.putPrompt();
-
-                 //     return false;
-                 // }
             }
             else {
-        if (printMsg) {
-          // Tell the user 
-          _StdOut.putText("Error: The filename does not exist"); 
+                if (printMsg) {
+                  // Tell the user 
+                  _StdOut.putText("Error: The filename does not exist"); 
 
-          // Advance the line
-          _Console.advanceLine();
+                  // Advance the line
+                  _Console.advanceLine();
 
-          // Place the prompt
-          _OsShell.putPrompt();
+                  // Place the prompt
+                  _OsShell.putPrompt();
 
-          return false;
-        }
+                  return false;
+                }
             }
         }
         /**
@@ -899,30 +883,30 @@ module TSOS {
       }
       public rollOutProcess() {
 
-      var x : TSOS.ProcessControlBlock = _ReadyQueue.getProcessInFirstPartition();
 
-      if(x != null){
+        var x : TSOS.ProcessControlBlock = _ReadyQueue.getProcessInFirstPartition();
+
+        if(x != null){
           x.setLocation(PROCESS_ON_DISK);
-      }
-     
-      // Initalize Variables
-      var nextByte;
-      var nextChar = "";
-      var byteString = "";
-     
-      // Read the current data
-      var currentDiskData = _krnFileSystemDriver.readAndReturn("process");
-        
-      // Get all the bytes stored at 0 - 255
-      for (var i = 0; i < 255; i++) {
-
-        nextByte = _MemoryManager.memoryBlock[i];
-
-        if(nextByte != null) {
-          byteString = byteString + nextByte.getValue();
         }
+     
+        // Initalize Variables
+        var nextByte;
+        var nextChar = "";
+        var byteString = "";
+     
+        // Read the current data
+        var currentDiskData = _krnFileSystemDriver.readAndReturn("process");
+        
+        // Get all the bytes stored at 0 - 255
+        for (var i = 0; i < 255; i++) {
 
-      }
+          nextByte = _MemoryManager.memoryBlock[i];
+
+          if(nextByte != null) {
+          byteString = byteString + nextByte.getValue();
+          }
+        }
    
         var nextByte;
         var nextMemoryAddress = 0;
@@ -930,13 +914,11 @@ module TSOS {
         // Write the current Disk Data to mem block by block
         for (var i = 0; i < currentDiskData.length; i = i + 2) {
 
-        nextChar = currentDiskData.charAt(i) + currentDiskData.charAt(i + 1);
-        console.log(nextChar);
-        _MemoryManager.memoryBlock[nextMemoryAddress] = new Byte(nextMemoryAddress, nextChar);
-        
-        _MemoryInformationTable.setCellData(nextMemoryAddress, nextChar);
-        nextMemoryAddress++;
-        
+          nextChar = currentDiskData.charAt(i) + currentDiskData.charAt(i + 1);
+         
+          _MemoryManager.memoryBlock[nextMemoryAddress] = new Byte(nextMemoryAddress, nextChar);
+          _MemoryInformationTable.setCellData(nextMemoryAddress, nextChar);
+          nextMemoryAddress++;
         }
     
         // Delete current file on disk

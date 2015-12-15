@@ -295,6 +295,14 @@ module TSOS {
          *  Used to handle the break interrupt
          */
         public krnBreakISR(process: TSOS.ProcessControlBlock) {
+      console.log(process);
+
+              // When a break is called on a location
+              if(process.location == PROCESS_ON_DISK){
+                console.log("BREAK AND THE PROCESS IS ON THE DISK");
+                _krnFileSystemDriver.deleteFile("process", false);
+
+              }
 
                  // Do not add the current process back to the ready queue and set the current process to null in order to signal the timer
 
@@ -464,7 +472,7 @@ module TSOS {
             if(process.location == PROCESS_ON_DISK){
                 console.log("terminating process on the disk");
                 // delete the proces from the disk
-                _krnFileSystemDriver.deleteFile("process");
+                _krnFileSystemDriver.deleteFile("process", false);
             }
            // console.log("Teminating process " + process.getProcessID() );
 

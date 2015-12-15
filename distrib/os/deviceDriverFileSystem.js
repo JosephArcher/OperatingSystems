@@ -117,12 +117,12 @@ var TSOS;
          * @Returns {Array} -  0[The I , J , K] 1[filedirectorydata] position
          *
          */
-        DeviceDriverFileSystem.prototype.searchForFile = function (theFilename) {
-            var filename = TSOS.Utils.StringToHexString(theFilename + "");
+        DeviceDriverFileSystem.prototype.searchForFile = function (filename) {
             // Initalize the variables
             var nextFileDataString;
             var nextFileData = [];
             var response = []; // The response array
+            var nextFileName = "";
             // First convert the filename to hex
             filename = filename + "";
             // Loop from 0 0 1 - > 0 7 7 and search each value for a matching file name
@@ -297,6 +297,16 @@ var TSOS;
          */
         DeviceDriverFileSystem.prototype.createFile = function (theFilename, printMsg) {
             var filename = TSOS.Utils.StringToHexString(theFilename + "");
+            // Check to see if the file name is larger than 60
+            if (filename.length > 60) {
+                // Report an error to the user
+                _StdOut.putText("Error: File name too long");
+                // Advance the line
+                _Console.advanceLine();
+                // Place the prompt
+                _OsShell.putPrompt();
+                return false;
+            }
             // Initalize variables
             var nextFreeDirectoryLocation;
             var nextFreeDataLocation;
@@ -337,8 +347,6 @@ var TSOS;
                             _Console.advanceLine();
                             // Place the prompt
                             _OsShell.putPrompt();
-                            // IT WORKED !
-                            return true;
                         }
                         // Update the Hard Disk UI
                         var aSplit = nextFreeDirectoryLocation.split(',');
@@ -390,7 +398,8 @@ var TSOS;
          * @Returns         <True>  - If the file was successfully read
                             <False> - If the file is not read
          */
-        DeviceDriverFileSystem.prototype.readFile = function (filename) {
+        DeviceDriverFileSystem.prototype.readFile = function (theFilename) {
+            var filename = TSOS.Utils.StringToHexString(theFilename + "");
             // Search to see if the file name exists and the write is valid
             var response = this.searchForFile(filename);
             // If the file exists
@@ -426,7 +435,8 @@ var TSOS;
         * @Returns         <True>  - If the file was successfully read
                  <False> - If the file is not read
         */
-        DeviceDriverFileSystem.prototype.readAndReturn = function (filename) {
+        DeviceDriverFileSystem.prototype.readAndReturn = function (theFilename) {
+            var filename = TSOS.Utils.StringToHexString(theFilename + "");
             // Search to see if the file name exists and the write is valid
             var response = this.searchForFile(filename);
             // If the file exists
@@ -450,7 +460,7 @@ var TSOS;
          */
         DeviceDriverFileSystem.prototype.writeFile = function (fileInfo, printMsg) {
             // Split apart the data that is passed in for the write
-            var filename = fileInfo[0];
+            var filename = TSOS.Utils.StringToHexString(fileInfo[0]);
             var theFiledata = fileInfo[1];
             var filedata = TSOS.Utils.StringToHexString(theFiledata);
             // Search to see if the file name exists and the write is valid
@@ -526,7 +536,8 @@ var TSOS;
          * @Returns         <True>  - If the file was successfully deleted
                             <False> - If the file is not deleted
          */
-        DeviceDriverFileSystem.prototype.deleteFile = function (filename, printMsg) {
+        DeviceDriverFileSystem.prototype.deleteFile = function (theFilename, printMsg) {
+            var filename = TSOS.Utils.StringToHexString(theFilename + "");
             // Search for the file 
             var response = this.searchForFile(filename);
             // If the file exists
@@ -549,7 +560,6 @@ var TSOS;
                 var aString = aSplit[0] + aSplit[1] + aSplit[2];
                 // Delete the directory entry
                 _HardDiskTable.deleteRow(parseInt(aString));
-                // Next cascade delete from the table sooooooooooooooo.............
                 // Split apart the index and get the track , sector, block from the index
                 var fileDataArray = fileData.split(',');
                 var track = fileDataArray[1];
@@ -694,7 +704,6 @@ var TSOS;
             // Write the current Disk Data to mem block by block
             for (var i = 0; i < currentDiskData.length; i = i + 2) {
                 nextChar = currentDiskData.charAt(i) + currentDiskData.charAt(i + 1);
-                console.log(nextChar);
                 _MemoryManager.memoryBlock[nextMemoryAddress] = new TSOS.Byte(nextMemoryAddress, nextChar);
                 _MemoryInformationTable.setCellData(nextMemoryAddress, nextChar);
                 nextMemoryAddress++;
