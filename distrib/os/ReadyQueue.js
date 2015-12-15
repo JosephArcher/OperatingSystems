@@ -44,6 +44,49 @@ var TSOS;
                 return tempQueue;
             }
         };
+        ReadyQueue.prototype.getProcessInFirstPartition = function () {
+            var size = this.q.length;
+            var nextProcess;
+            console.log("READY QUEUE");
+            console.log(_ReadyQueue);
+            console.log(_CPUScheduler.getCurrentProcess());
+            // Loop over the queue 
+            for (var i = 0; i < size; i++) {
+                nextProcess = _ReadyQueue.getElementAt(i);
+                console.log("JOE THE BASE REG IS   " + nextProcess.getBaseReg());
+                // Compare the given process ID and the one at the position in the queue
+                if (nextProcess.getBaseReg() == MEMORY_PARTITION_0_BASE_ADDRESS && nextProcess.location != PROCESS_ON_DISK) {
+                    console.log("TOP");
+                    console.log(nextProcess);
+                    return nextProcess;
+                }
+            }
+            // If process does not exists return null
+            return null;
+        };
+        ReadyQueue.prototype.getProcessOnDisk = function () {
+            var size = this.q.length;
+            var nextProcess;
+            console.log("THE SIZE IS " + size);
+            // Loop over the queue 
+            for (var i = 0; i < size; i++) {
+                nextProcess = _ReadyQueue.getElementAt(i);
+                console.log("JOE THE location of the process is   " + nextProcess.location);
+                // Compare the given process ID and the one at the position in the queue
+                if (nextProcess.location == PROCESS_ON_DISK) {
+                    console.log("JOE the disk process was found   " + nextProcess.location);
+                    return nextProcess;
+                }
+            }
+            console.log("The current process is  " + _CPUScheduler.getCurrentProcess().location);
+            if (_CPUScheduler.getCurrentProcess().location == PROCESS_ON_DISK) {
+                console.log("JOE THE FRINGE CASE IS HERE");
+                _ReadyQueue.enqueue(_CPUScheduler.getCurrentProcess());
+                return _CPUScheduler.getCurrentProcess();
+            }
+            // If process does not exists return null
+            return null;
+        };
         ReadyQueue.prototype.getElementIndexByProccessId = function (process) {
             var theProcessId = process.getProcessID();
             var nextProcess;

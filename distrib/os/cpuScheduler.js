@@ -86,6 +86,19 @@ var TSOS;
                     // Just get next one 	
                     nextProcess = _ReadyQueue.dequeue(); // Get the next process from  the ready queue
                 }
+                // Check to see if the next process is located on the disk or not
+                if (nextProcess.location == PROCESS_ON_DISK) {
+                    var test = _ReadyQueue.getProcessInFirstPartition();
+                    console.log("testing stuff");
+                    console.log(test);
+                    _krnFileSystemDriver.rollOutProcess();
+                    nextProcess.setBaseReg(0);
+                    nextProcess.setLimitReg(256);
+                    nextProcess.location = PROCESS_IN_MEM;
+                    if (test != null) {
+                        test.location == PROCESS_ON_DISK;
+                    }
+                }
             }
             // Set the current process
             this.setCurrentProcess(nextProcess);

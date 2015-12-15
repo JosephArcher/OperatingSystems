@@ -106,7 +106,7 @@ module TSOS {
 				return nextPartition;		
 			}
 			else {
-				return -1;
+				return null;
 			}			
 		}
 		/**
@@ -179,7 +179,7 @@ module TSOS {
 		}
 		public loadProgramOntoDisk(userProgram: string, priority: string): number {
 
-			if(_DiskIsFormated == true){
+			if(_DiskIsFormated == true) {
 
 				// Initalize needed variables
 				var firstHexNumber: string = "";
@@ -188,14 +188,14 @@ module TSOS {
 				var baseMemoryOffset: number = 0;  // The offest to track each where each byte is being placed
 				var nextMemoryAddress: number = 0; // The value of the next memory address
 
-				// Create a new process
-				var newProcess: TSOS.ProcessControlBlock = _Kernel.createProcess(-1);
+				var newProcess = _Kernel.createProcess(0);
+
 
 				// Update the priority
 				newProcess.setPriority(priority);
 
-				//set the locatin to disk!
-				newProcess.location = PROCESS_ON_DISK;
+				//set the location to disk!
+				newProcess.setLocation(PROCESS_ON_DISK);
 
 				// Create the file
 				var fileName = "process";
@@ -207,18 +207,18 @@ module TSOS {
 
 	            _krnFileSystemDriver.createFile(fileName);
 	            //_KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, response));
-
+				var realLen = Utils.StringToHexString(userProgram).length;
 	            // Write to the file
-	            var loops = Math.ceil(userProgram.length / 60);
+				var loops = Math.ceil(realLen / 60);
 	          	var len = userProgram.length;
 	            var data = "";
 	            var dataString;
 				var otherTest = [];
 				var chunks = [];
 				var response1 = [];
-	
+				console.log("LOOPS NEEDED  " + loops);
 	            // for each chunk of 60 write to the disk
-	       	for(var i:number = 0; i < loops; i++ ) {
+	       	for(var i = 0; i < loops; i++ ) {
 	       		chunks.push(userProgram.slice(0 + i * 60 , 60  + i * 60));
 	       	}
 	     
@@ -233,6 +233,7 @@ module TSOS {
                
                 _krnFileSystemDriver.writeFile(otherTest);
 	       	}
+	       	// Add the newly created process to the end of the resident list
 				return newProcess.getProcessID();
 
 			}
@@ -257,6 +258,7 @@ module TSOS {
 			// Get the next base address to write the user program
 			var nextBaseMemoryPartitionAddress: number = this.getNextAvailableMemoryPartition();
 
+
 			//loop over the length of the user program 
 			for (var i = 0; i < userProgram.length; i = i + 2) { // Grab two hex numbers each loop cycle to form the bytes
 
@@ -273,14 +275,24 @@ module TSOS {
 
 				// Increment the offset
 				baseMemoryOffset = baseMemoryOffset + 1;
-			}    		
+			}
+			console.log("THe length of the base mem offset  is...  " + baseMemoryOffset);
+
+			if(baseMemoryOffset < 255){
+				for(var i = baseMemoryOffset; i < 255; i++)
+					//console.log("fillin it in");
+					_MemoryManager.memoryBlock[nextBaseMemoryPartitionAddress + i] = new Byte(nextBaseMemoryPartitionAddress + i, "00");
+			}	
 		     // Create a new process control block
 			var newProcess: TSOS.ProcessControlBlock = _Kernel.createProcess(nextBaseMemoryPartitionAddress);
 			
 			// Set the priority of the new process
 			newProcess.setPriority(priority);
 
-			console.log(newProcess.getPriority() + " Loaded process with a priority off...");
+			// Set the location to memory
+			newProcess.location = PROCESS_IN_MEM;
+
+			console.log(newProcess + " Loaded process with a priority off...");
             // Return the newly created process ID 
             return newProcess.getProcessID();
 		}
@@ -378,51 +390,5 @@ module TSOS {
 			}	
 		}
 
-		//*********************************************//
-		//											   //	
-		//			Roll In and Roll Out			   //
-		//                                             //
-		//*********************************************//
-
-
-		/**
-		 * USed to Roll Out a program a program from memory
-		 * 
-		 */
-		 public rollOutProgram(process: TSOS.ProcessControlBlock) {
-
-		 	 // Initalize variables
-			 var byteArray = [];
-			 var nextByte; 
-
-		 	// First step is to get the location of the program in memory
-			 var partitionStartingLocation = process.getBaseReg();
-
-			 // Loop from the starting array 256 bytes and save them into the byte array
-			 for (var i = partitionStartingLocation; i < partitionStartingLocation + 256; i++) {
-			 	// Get the byte at the next location
-				 nextByte = this.getByte(i);
-
-				 // Store the byte in the array
-				 byteArray.push(nextByte);
-
-			}
-
-			// Create the File using a file name of process + PID
-			_Kernel
-
-		}
-		 /**
-		  * Used to Roll In a program stored on the disk
-		  *
-		  */
-		  public rollInProgram(process: TSOS.ProcessControlBlock) {
-
-
-
-
-
-
-		  }
 	}
 }

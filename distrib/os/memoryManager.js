@@ -84,7 +84,7 @@ var TSOS;
                 return nextPartition;
             }
             else {
-                return -1;
+                return null;
             }
         };
         /**
@@ -147,12 +147,11 @@ var TSOS;
                 var nextByteValue = "";
                 var baseMemoryOffset = 0; // The offest to track each where each byte is being placed
                 var nextMemoryAddress = 0; // The value of the next memory address
-                // Create a new process
-                var newProcess = _Kernel.createProcess(-1);
+                var newProcess = _Kernel.createProcess(0);
                 // Update the priority
                 newProcess.setPriority(priority);
-                //set the locatin to disk!
-                newProcess.location = PROCESS_ON_DISK;
+                //set the location to disk!
+                newProcess.setLocation(PROCESS_ON_DISK);
                 // Create the file
                 var fileName = "process";
                 var response = [];
@@ -160,14 +159,16 @@ var TSOS;
                 response[1] = fileName;
                 _krnFileSystemDriver.createFile(fileName);
                 //_KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, response));
+                var realLen = TSOS.Utils.StringToHexString(userProgram).length;
                 // Write to the file
-                var loops = Math.ceil(userProgram.length / 60);
+                var loops = Math.ceil(realLen / 60);
                 var len = userProgram.length;
                 var data = "";
                 var dataString;
                 var otherTest = [];
                 var chunks = [];
                 var response1 = [];
+                console.log("LOOPS NEEDED  " + loops);
                 // for each chunk of 60 write to the disk
                 for (var i = 0; i < loops; i++) {
                     chunks.push(userProgram.slice(0 + i * 60, 60 + i * 60));
@@ -179,6 +180,7 @@ var TSOS;
                     response1[1] = otherTest;
                     _krnFileSystemDriver.writeFile(otherTest);
                 }
+                // Add the newly created process to the end of the resident list
                 return newProcess.getProcessID();
             }
             else {
@@ -214,11 +216,19 @@ var TSOS;
                 // Increment the offset
                 baseMemoryOffset = baseMemoryOffset + 1;
             }
+            console.log("THe length of the base mem offset  is...  " + baseMemoryOffset);
+            if (baseMemoryOffset < 255) {
+                for (var i = baseMemoryOffset; i < 255; i++)
+                    //console.log("fillin it in");
+                    _MemoryManager.memoryBlock[nextBaseMemoryPartitionAddress + i] = new TSOS.Byte(nextBaseMemoryPartitionAddress + i, "00");
+            }
             // Create a new process control block
             var newProcess = _Kernel.createProcess(nextBaseMemoryPartitionAddress);
             // Set the priority of the new process
             newProcess.setPriority(priority);
-            console.log(newProcess.getPriority() + " Loaded process with a priority off...");
+            // Set the location to memory
+            newProcess.location = PROCESS_IN_MEM;
+            console.log(newProcess + " Loaded process with a priority off...");
             // Return the newly created process ID 
             return newProcess.getProcessID();
         };
@@ -294,37 +304,6 @@ var TSOS;
                 // Create and Interrupt because the memory has execceded its bounds
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(MEMORY_OUT_OF_BOUNDS_IRQ, _CPUScheduler.getCurrentProcess())); // Memory Out Of Bounds Interrupt , The current Process Control Block 	
             }
-        };
-        //*********************************************//
-        //											   //	
-        //			Roll In and Roll Out			   //
-        //                                             //
-        //*********************************************//
-        /**
-         * USed to Roll Out a program a program from memory
-         *
-         */
-        MemoryManager.prototype.rollOutProgram = function (process) {
-            // Initalize variables
-            var byteArray = [];
-            var nextByte;
-            // First step is to get the location of the program in memory
-            var partitionStartingLocation = process.getBaseReg();
-            // Loop from the starting array 256 bytes and save them into the byte array
-            for (var i = partitionStartingLocation; i < partitionStartingLocation + 256; i++) {
-                // Get the byte at the next location
-                nextByte = this.getByte(i);
-                // Store the byte in the array
-                byteArray.push(nextByte);
-            }
-            // Create the File using a file name of process + PID
-            _Kernel;
-        };
-        /**
-         * Used to Roll In a program stored on the disk
-         *
-         */
-        MemoryManager.prototype.rollInProgram = function (process) {
         };
         return MemoryManager;
     })();

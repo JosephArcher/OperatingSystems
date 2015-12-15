@@ -46,7 +46,12 @@ var TSOS;
          * @params {string} value - The value to be set
         */
         Byte.prototype.setValue = function (value) {
-            this.value = value;
+            if (value.length < 2 && value.length > 0) {
+                this.value = "0" + value;
+            }
+            else {
+                this.value = value;
+            }
         };
         /**
          * sets the value of the first nibble of the byte in memory

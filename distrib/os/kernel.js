@@ -367,6 +367,12 @@ var TSOS;
          * used to terminate a currenlty running process and remove it fromt he ready qyeye
          */
         Kernel.prototype.terminateProcess = function (process) {
+            // Check to see if the process is on the disk or not
+            if (process.location == PROCESS_ON_DISK) {
+                console.log("terminating process on the disk");
+                // delete the proces from the disk
+                _krnFileSystemDriver.deleteFile("process");
+            }
             // console.log("Teminating process " + process.getProcessID() );
             // Check to see if the process is currently running
             if (process.getProcessID() == _CPUScheduler.getCurrentProcess().getProcessID()) {

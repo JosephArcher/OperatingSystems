@@ -234,6 +234,9 @@ var TSOS;
         ProcessControlBlock.prototype.setPriority = function (priority) {
             this.priority = priority;
         };
+        ProcessControlBlock.prototype.setLocation = function (str) {
+            this.location = str;
+        };
         return ProcessControlBlock;
     })();
     TSOS.ProcessControlBlock = ProcessControlBlock;

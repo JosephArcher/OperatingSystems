@@ -244,6 +244,9 @@ module TSOS {
 		public setPriority(priority: string) {
 			this.priority = priority;
 		}
+		public setLocation(str: string): void {
+			this.location = str;
+		}
 
 	}
 }

@@ -53,8 +53,12 @@ module TSOS {
 		 * @params {string} value - The value to be set
 		*/	
 		public setValue(value: string): void{
-			this.value = value;
-
+			if(value.length < 2 && value.length > 0){
+				this.value = "0" + value;
+			}
+			else{
+				this.value = value;
+			}
 		}
 		/**
 		 * sets the value of the first nibble of the byte in memory

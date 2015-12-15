@@ -459,7 +459,12 @@ module TSOS {
          */
         public terminateProcess(process: TSOS.ProcessControlBlock) {
 
-
+            // Check to see if the process is on the disk or not
+            if(process.location == PROCESS_ON_DISK){
+                console.log("terminating process on the disk");
+                // delete the proces from the disk
+                _krnFileSystemDriver.deleteFile("process");
+            }
            // console.log("Teminating process " + process.getProcessID() );
 
              // Check to see if the process is currently running

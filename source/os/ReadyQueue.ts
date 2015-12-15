@@ -42,6 +42,60 @@
 				return tempQueue;
 			}
 		}
+		public getProcessInFirstPartition(): TSOS.ProcessControlBlock {
+
+
+			var size: number = this.q.length;
+			var nextProcess: TSOS.ProcessControlBlock;
+
+			console.log("READY QUEUE");
+			console.log(_ReadyQueue);
+			console.log(_CPUScheduler.getCurrentProcess());
+			// Loop over the queue 
+			for (var i = 0; i < size; i++) {
+
+				nextProcess = <TSOS.ProcessControlBlock>_ReadyQueue.getElementAt(i);
+				console.log("JOE THE BASE REG IS   " + nextProcess.getBaseReg());
+				// Compare the given process ID and the one at the position in the queue
+				if (nextProcess.getBaseReg() == MEMORY_PARTITION_0_BASE_ADDRESS && nextProcess.location != PROCESS_ON_DISK) {
+					console.log("TOP");
+					console.log(nextProcess);
+					return <TSOS.ProcessControlBlock>nextProcess;
+				}
+			}
+			
+			// If process does not exists return null
+			return null;
+		}
+		public getProcessOnDisk() {
+
+			var size: number = this.q.length;
+			var nextProcess: TSOS.ProcessControlBlock;
+			console.log("THE SIZE IS " + size);
+			// Loop over the queue 
+			for (var i = 0; i < size; i++) {
+
+				nextProcess = <TSOS.ProcessControlBlock>_ReadyQueue.getElementAt(i);
+				console.log("JOE THE location of the process is   " + nextProcess.location);
+				// Compare the given process ID and the one at the position in the queue
+				if (nextProcess.location == PROCESS_ON_DISK) {
+					console.log("JOE the disk process was found   " + nextProcess.location);
+					return <TSOS.ProcessControlBlock>nextProcess;
+				}
+			}
+
+			console.log("The current process is  " + _CPUScheduler.getCurrentProcess().location);
+
+			if (_CPUScheduler.getCurrentProcess().location == PROCESS_ON_DISK){
+				console.log("JOE THE FRINGE CASE IS HERE");
+				_ReadyQueue.enqueue(_CPUScheduler.getCurrentProcess());
+				return <TSOS.ProcessControlBlock>_CPUScheduler.getCurrentProcess();
+			}
+
+			// If process does not exists return null
+			return null;
+
+		}
 		public getElementIndexByProccessId(process: TSOS.ProcessControlBlock):number {
 
 			var theProcessId:number = process.getProcessID();

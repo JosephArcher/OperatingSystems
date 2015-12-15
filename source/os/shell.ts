@@ -424,11 +424,13 @@ module TSOS {
             // Check to see if there is room in memory
             if (_MemoryManager.availableMemoryPartitions.getSize() < 1) {
 
+                console.log("CREATING DISK SHIT");
                   // console.log(_ResidentList.isFileWrittenToDisk() + "joe is calasdf");
                 // Next check to see if a file is written to the disk yet
                 if(_ResidentList.isFileWrittenToDisk() == false){
 
                     var nextId = _MemoryManager.loadProgramOntoDisk(userInput.replace(/ /g, ''), priority); // Load the program onto the disk and save its process ID to be printed out to user
+
                     if(nextId != null){
                         _StdOut.putText("Program loaded onto disk and assigned a Process ID of " + nextId); // Tell the user the process ID 
                     }
@@ -448,6 +450,7 @@ module TSOS {
              
             } else {
 
+                console.log("Loading into mem stuff");
                  // Load the program into memory and clean up the whitespace
                  var processID = _MemoryManager.loadProgramIntoMemory(userInput.replace(/ /g, ''), priority); // Load the program into memory and save its process ID to be printed out to user
                  _StdOut.putText("Program loaded in memory and assigned a Process ID of " + processID); // Tell the user the process ID 
@@ -518,14 +521,14 @@ module TSOS {
         public runAll(args) {
 
             // Check to see if any programs are currently loaded in memory
+            var dasSize = _ResidentList.getSize();
 
+            console.log(_ResidentList);
             // If at least one process exists
-            if (_ResidentList.getSize() > 0) { 
-                // Tell the user
-                _StdOut.putText("Running All Processes size = " + _ResidentList.getSize());
+            if (dasSize > 0) { 
 
                 // Loop over the resident list and add each process in order to the ready queue
-                for (var i = 0; i < _ResidentList.getSize(); i++) {
+                for (var i = 0; i < dasSize; i++) {
 
                     // Instead of starting process just add to the ready queue then call something
                     _ReadyQueue.enqueue(_ResidentList.getElementAt(i));
@@ -534,6 +537,7 @@ module TSOS {
                     _ReadyQueueTable.addRow(_ResidentList.getElementAt(i));
 
                 }
+                console.log(_ReadyQueue);
                 // Start the next process
                 _KernelInterruptQueue.enqueue(new Interrupt(START_PROCESS_IRQ, _CPUScheduler.getNextProcess()));
 

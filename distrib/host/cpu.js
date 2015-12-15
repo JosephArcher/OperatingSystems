@@ -123,10 +123,16 @@ var TSOS;
             // Get the next two bytes from memory
             var nextTwoBytes = _MemoryManager.getTwoBytes(_CPU.PC + 1, _CPU.PC + 2);
             var loadLocation = _CPU.findLoadLocation(nextTwoBytes);
+            var holder = _CPU.Acc.toString(16);
+            if (holder.length < 2) {
+                console.log("testing");
+                holder = "0" + holder;
+            }
+            console.log(holder);
             // Change the value in the memory 
-            _MemoryManager.setByte(loadLocation, _CPU.Acc.toString(16));
+            _MemoryManager.setByte(loadLocation, holder);
             // Update the memory UI Table
-            _MemoryInformationTable.setCellData(loadLocation, _CPU.Acc.toString(16));
+            _MemoryInformationTable.setCellData(loadLocation, holder);
         };
         //  /**
         //   * Add with carry - Adds the contents of an address to the contents of the accumulator and keeps the result in the accumulator
@@ -200,7 +206,7 @@ var TSOS;
          *  Break (Which really is a system call)
         */
         Cpu.prototype.breakOperation = function () {
-            //console.log("The break operation "); 
+            console.log("The break operation ");
             _Kernel.createAndQueueInterrupt(BREAK_IRQ, _CPUScheduler.getCurrentProcess());
         };
         //  /**
@@ -259,8 +265,14 @@ var TSOS;
             var nextTwoBytes = _MemoryManager.getTwoBytes(_CPU.PC + 1, _CPU.PC + 2);
             var loadLocation = _CPU.findLoadLocation(nextTwoBytes);
             var testByte = _MemoryManager.getByte(loadLocation);
-            var valueOfByte = parseInt(testByte.getValue(), 16) + 1;
-            _MemoryManager.setByte(loadLocation, valueOfByte.toString(16) + "");
+            var asdf = parseInt(testByte.getValue(), 16);
+            console.log(testByte.getValue() + ' test Byte g');
+            var valueOfByte = parseInt(asdf + "") + 1;
+            var holder = valueOfByte + "";
+            if (holder.length < 2) {
+                holder = "0" + holder;
+            }
+            _MemoryManager.setByte(loadLocation, holder);
             // Need to update the memory table here
         };
         // /**
@@ -284,6 +296,7 @@ var TSOS;
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_STRING_IRQ, _CPU.Yreg));
             }
             else {
+                console.log("BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADS");
                 // Create an interrupt and add it to the queue
                 _Kernel.createAndQueueInterrupt(INVALID_OPCODE_USE_IRQ, "Error xReg value not valid syscall value 0 or 1 only");
             }

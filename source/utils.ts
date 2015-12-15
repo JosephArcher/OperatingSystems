@@ -198,7 +198,6 @@ module TSOS {
              nextChar = input.charCodeAt(i);
              output = output + nextChar.toString(16);
          }
-         console.log(" The output iss  " + output);
           return output;  
         }
 
@@ -212,12 +211,9 @@ module TSOS {
 
 
               nextChar = input.charAt(i) + input.charAt(i + 1);
-        console.log("next char is   " + nextChar);
               output = output + String.fromCharCode(parseInt(nextChar, 16));
 
             }
-
-            console.log(" The output iss  " + output);
             return output;
         }
         

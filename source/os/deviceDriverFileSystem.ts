@@ -137,7 +137,7 @@ module TSOS {
      */
     public searchForFile(theFilename) {
 
-    console.log("HERRE");
+   // console.log("HERRE");
 
      var filename:string = Utils.StringToHexString(theFilename + "");
       // Initalize the variables
@@ -148,7 +148,7 @@ module TSOS {
       // First convert the filename to hex
       filename = filename + "";
 
-      console.log(filename);
+   //   console.log(filename);
 
       // Loop from 0 0 1 - > 0 7 7 and search each value for a matching file name
       for (var i = 0; i < 1; i++) {
@@ -167,8 +167,8 @@ module TSOS {
               // compare the file name of the current index in the directory to the one that the user is searching for
               if (nextFileData[4] == filename) {
                 // Fill the array
-          console.log(nextFileData[4]);
-          console.log(filename);
+      //    console.log(nextFileData[4]);
+     //     console.log(filename);
                 response[0] = this.createFileLocationString(i + "", j + "", k + "");
                 response[1] = nextFileData.toString();
 
@@ -192,7 +192,7 @@ module TSOS {
       // Concat the 1, 2, 3 elements of the block together
       var nextLocation = blockArray[1] + blockArray[2] + blockArray[3];
 
-      console.log("next location is ... " + nextLocation);
+   //   console.log("next location is ... " + nextLocation);
       if(nextLocation == "000"){
         return false;
       }
@@ -222,11 +222,11 @@ module TSOS {
        currentBlock = this.getNextBlock(currentBlock);
 
      }
-      console.log("FINAL BLOCK IN CHAIN IS.....  " + currentBlock);
+   //   console.log("FINAL BLOCK IN CHAIN IS.....  " + currentBlock);
       return currentBlock;
     }
     public readDataFromAllBlocks(block: string) {
-      console.log("Read test data");
+    //  console.log("Read test data");
       var finalBlock;
       var currentBlock = block;
       var test = sessionStorage.getItem(currentBlock);
@@ -235,16 +235,16 @@ module TSOS {
       var totalData = testSplit[4] + "";
       var nextValue;
       var nextArray;
-      console.log(testSplit);
+    //  console.log(testSplit);
       while(this.hasNextBlockInChain(currentBlock)){
 
        currentBlock = this.getNextBlock(currentBlock);
        nextValue = sessionStorage.getItem(currentBlock);
        nextArray = nextValue.split(',');
        totalData = totalData + nextArray[4];
-       console.log(totalData + "total Data TEST JOE ");
+      // console.log(totalData + "total Data TEST JOE ");
      }
-      console.log("FINAL BLOCK IN CHAIN IS.....  " + currentBlock);
+     // console.log("FINAL BLOCK IN CHAIN IS.....  " + currentBlock);
       return totalData;
     }
     /**
@@ -271,7 +271,7 @@ module TSOS {
 
             // Check the in use byte
             if (nextFileData[0] == "0") {  // If the directory index is not currently in use
-              console.log("The next free directory location is... " + i + j + k);
+              //console.log("The next free directory location is... " + i + j + k);
                             // return the key for the free index
               return this.createFileLocationString(i + "", j + "", k + "");
             }
@@ -302,11 +302,11 @@ module TSOS {
             // Break up the string by the commas and add it to an array
             nextFileData = nextFileDataString.split(',');
 
-            console.log("Index " + i + j + k + "is equal to" + nextFileData[0]);
+           // console.log("Index " + i + j + k + "is equal to" + nextFileData[0]);
 
             // Check the in use byte
             if (nextFileData[0] == "0") {  // If the directory index is not currently in use
-              console.log("The next free data location is... " + i + j + k);
+             // console.log("The next free data location is... " + i + j + k);
               // return the key for the free index
               return this.createFileLocationString(i + "", j + "", k + "");
             }
@@ -342,16 +342,16 @@ module TSOS {
             else {
                 switch (operation) {
                     case CREATE_FILE:
-                        this.createFile(data1);
+                        this.createFile(data1, true);
             break;
           case READ_FILE:
             this.readFile(data1);
             break;
           case WRITE_FILE:
-            this.writeFile(data1);
+            this.writeFile(data1, true);
             break;
           case DELETE_FILE:
-            this.deleteFile(data1);
+            this.deleteFile(data1, true);
             break;
           case LIST_FILES:
             this.listFiles();
@@ -370,7 +370,7 @@ module TSOS {
          * @Returns        <True>  - If the file is successfully created
                            <False> - If the file is not created
          */
-        public createFile(theFilename: string): boolean {
+        public createFile(theFilename: string, printMsg: boolean): boolean {
 
             var filename: string = Utils.StringToHexString(theFilename + "");
 
@@ -385,6 +385,7 @@ module TSOS {
             // Check to see if a file name was given and if not stop
             if (filename == "") {
 
+               if(printMsg){
                 // Report an error to the user
                 _StdOut.putText("Error: A file name must be given"); 
 
@@ -395,6 +396,8 @@ module TSOS {
                 _OsShell.putPrompt();
 
                 return false;
+              }
+               
             }
 
       // Check to see if the file name already exists in the file system
@@ -419,9 +422,11 @@ module TSOS {
             // Create the table entry for the new file
             console.log("writing to location " + nextFreeDataLocation);
             sessionStorage.setItem(nextFreeDataLocation, this.createDataFileString("1", "0", "0", "0", ""));
-                   
-            // Report to the user that the creation was successful
-            _StdOut.putText("Success: The file was created"); 
+             
+            if(printMsg){
+              // Report to the user that the creation was successful
+              _StdOut.putText("Success: The file was created"); 
+            }
 
             // Update the Hard Disk UI
             var aSplit = nextFreeDirectoryLocation.split(',');
@@ -443,8 +448,26 @@ module TSOS {
             return true;
           }
           else { // If no file blocks are availble
+            if(printMsg){
+               // Tell the user 
+              _StdOut.putText("Error: No file table space"); 
+
+              // Advance the line
+              _Console.advanceLine();
+
+              // Place the prompt
+              _OsShell.putPrompt();
+
+              return false;
+            }
+          
+          }
+
+        }
+        else { // If no free directory location exists
+      if (printMsg) {
             // Tell the user 
-            _StdOut.putText("Error: No file table space"); 
+            _StdOut.putText("Error: No file directory index space"); 
 
             // Advance the line
             _Console.advanceLine();
@@ -454,35 +477,23 @@ module TSOS {
 
             return false;
           }
-
-        }
-        else { // If no free directory location exists
-
-          // Tell the user 
-          _StdOut.putText("Error: No file directory index space"); 
-
-          // Advance the line
-          _Console.advanceLine();
-
-          // Place the prompt
-          _OsShell.putPrompt();
-
-          return false;
+         
         }
 
       }
       else {  // If the file name is found
+          if (printMsg) {
+            // Tell the user 
+            _StdOut.putText("Error: The filename already exists "); 
 
-        // Tell the user 
-        _StdOut.putText("Error: The filename already exists "); 
+            // Advance the line
+            _Console.advanceLine();
 
-                // Advance the line
-                _Console.advanceLine();
+            // Place the prompt
+            _OsShell.putPrompt();
 
-                // Place the prompt
-                _OsShell.putPrompt();
-
-                return false;
+            return false;
+              }
             }
         }
         /**
@@ -556,8 +567,8 @@ module TSOS {
                         var fileDataArray = fileData.split(',');
 
                         // Using the starting location find the final block in the chain
-                        var data = this.readDataFromAllBlocks(this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3]));
-
+                        var data = Utils.HexStringToPeopleString(this.readDataFromAllBlocks(this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3])));
+                       
                         return data;
           }
         } 
@@ -568,7 +579,7 @@ module TSOS {
          * @Returns         <True>   - If the file was successfully writen to
                             <False>  - If the file is not writen to
          */
-        public writeFile(fileInfo) {
+        public writeFile(fileInfo, printMsg: boolean ) {
            
           // Split apart the data that is passed in for the write
           var filename = fileInfo[0];
@@ -642,28 +653,32 @@ module TSOS {
               _HardDiskTable.updateRow(parseInt(aString), this.createHeaderString("1", "0", "0", "0"), concatData); // The Data block
             }
 
-            // Tell the user 
-            _StdOut.putText("File write successful"); 
+            if(printMsg){
+              // Tell the user 
+              _StdOut.putText("File write successful"); 
 
-            // Advance the line
-            _Console.advanceLine();
+              // Advance the line
+              _Console.advanceLine();
 
               // Place the prompt
-            _OsShell.putPrompt();
+              _OsShell.putPrompt();
+            }
+           
 
           }
           else {
-
+          if(printMsg){
           // Tell the user 
            _StdOut.putText("Error: The filename does not exist"); 
-
            // Advance the line
-          _Console.advanceLine();
+           _Console.advanceLine();
 
-          // Place the prompt
-          _OsShell.putPrompt();
+           // Place the prompt
+           _OsShell.putPrompt();
 
-          return false;
+           return false;
+         }
+        
         }
       }
          
@@ -673,7 +688,7 @@ module TSOS {
          * @Returns         <True>  - If the file was successfully deleted
                             <False> - If the file is not deleted
          */
-        public deleteFile(filename: string) {
+        public deleteFile(filename: string, printMsg: boolean) {
 
             // Search for the file 
             var response = this.searchForFile(filename);
@@ -695,7 +710,7 @@ module TSOS {
 
                 var value = sessionStorage.getItem(this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + ""));
 
-                console.log("Deleting from index  item " + this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + ""));
+                //console.log("Deleting from index  item " + this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + ""));
 
                 // Clear the Directory entry(Sets the in use bit to 0 T = -1 S = -1 B = -1 and a blank file name)
                 sessionStorage.setItem(this.createFileLocationString(orgTrack + "", orgSector + "", orgBlock + ""), this.createDirectoryFileDataString( 0, 0, 0, 0, ""));
@@ -719,6 +734,8 @@ module TSOS {
                  // Recusively delete untill all blocks have been vaporized
 
                  this.cascadeDeleteFileBlocks(this.createFileLocationString(track + "", sector + "", block + ""));
+
+                 if(printMsg){
                  // Tell the user 
                  _StdOut.putText("File Successfully Deleted"); 
 
@@ -729,6 +746,7 @@ module TSOS {
                  _OsShell.putPrompt();
 
                  return false;
+               }
 
                  // // Recusively delete untill all blocks have been vaporized
                  // if (this.cascadeDeleteFileBlocks(this.createFileLocationString(track + "", sector + "", block + "")) == true) {
@@ -759,17 +777,18 @@ module TSOS {
                  // }
             }
             else {
+        if (printMsg) {
+          // Tell the user 
+          _StdOut.putText("Error: The filename does not exist"); 
 
-                // Tell the user 
-                _StdOut.putText("Error: The filename does not exist"); 
+          // Advance the line
+          _Console.advanceLine();
 
-                // Advance the line
-                _Console.advanceLine();
+          // Place the prompt
+          _OsShell.putPrompt();
 
-                // Place the prompt
-                _OsShell.putPrompt();
-
-                return false;
+          return false;
+        }
             }
         }
         /**
@@ -781,17 +800,13 @@ module TSOS {
          */
         public cascadeDeleteFileBlocks(startingLocation: string) { 
 
-            console.log("Starting the cascading delete at... " + startingLocation);
+            //console.log("Starting the cascading delete at... " + startingLocation);
 
             // First get the Item at the location
             var block = sessionStorage.getItem(startingLocation);
 
-            console.log(block + " THIS IS THE NEXT ITEM");
-
             // Split next item data into an array
             var blockDataArray = block.split(',');
-
-            console.log(" THIS IS ANOTHER TEST   " + blockDataArray[0] + blockDataArray[1] + blockDataArray[2] + blockDataArray[3] + blockDataArray[4]);
 
             // Build a string with the next block location for late use to determine if recursion is needed
             var nextBlockLocation = "" + blockDataArray[1] + blockDataArray[2] + blockDataArray[3];
@@ -806,16 +821,12 @@ module TSOS {
             // Delete the directory entry
             _HardDiskTable.deleteRow(parseInt(aString));
 
-            console.log(startingLocation + "was just deleted");
             // Check to see if recursion is needed
             if(nextBlockLocation == "000") {
                 // STOP RECURSION
-                console.log("RECURSION STOPING");
                 return true;
             }
             else{
-
-                console.log("RECURSION IS HAPPENING !!!");
                 // If another location needs to be deleted then recurse 
                 this.cascadeDeleteFileBlocks(this.createFileLocationString(blockDataArray[1], blockDataArray[2], blockDataArray[3]));
             }
@@ -892,51 +903,53 @@ module TSOS {
             // Return file list
             return fileList;
       }
-      public rollOutProcess(){
+      public rollOutProcess() {
 
-        //process.location = PROCESS_ON_DISK;
+      var x : TSOS.ProcessControlBlock = _ReadyQueue.getProcessInFirstPartition();
 
-          // Read the current data
-        var currentDiskData = _krnFileSystemDriver.readAndReturn("process");
-        var nextByte;
-        var nextChar = "";
-        var byteString = "";
-        console.log(_MemoryManager.memoryBlock);
-        // Get all the bytes stored at 0 - 255
-        for (var i = 0; i < 255; i++) {
+      if(x != null){
+          x.setLocation(PROCESS_ON_DISK);
+      }
+     
+      // Initalize Variables
+      var nextByte;
+      var nextChar = "";
+      var byteString = "";
+     
+      // Read the current data
+      var currentDiskData = _krnFileSystemDriver.readAndReturn("process");
+        
+      // Get all the bytes stored at 0 - 255
+      for (var i = 0; i < 255; i++) {
 
-          nextByte = _MemoryManager.memoryBlock[i];
+        nextByte = _MemoryManager.memoryBlock[i];
 
-          if(nextByte != null) {
-            console.log(nextByte.getValue() + " VALSUDFILSDLFKJSKDLFJ");
-            byteString = byteString + nextByte.getValue();
-          }
+        if(nextByte != null) {
+          byteString = byteString + nextByte.getValue();
         }
 
-        console.log("CURRENT BYTE STRING IS... " + byteString);
-       
+      }
+   
         var nextByte;
         var nextMemoryAddress = 0;
+
         // Write the current Disk Data to mem block by block
         for (var i = 0; i < currentDiskData.length; i = i + 2) {
 
-
-
         nextChar = currentDiskData.charAt(i) + currentDiskData.charAt(i + 1);
-
+        console.log(nextChar);
         _MemoryManager.memoryBlock[nextMemoryAddress] = new Byte(nextMemoryAddress, nextChar);
-        console.log(nextMemoryAddress + "  the next memory address  " + nextChar + " nextChar");
+        
         _MemoryInformationTable.setCellData(nextMemoryAddress, nextChar);
         nextMemoryAddress++;
         
         }
-
-        console.log("About to delete file ");
+    
         // Delete current file on disk
-        _krnFileSystemDriver.deleteFile("process");
+        _krnFileSystemDriver.deleteFile("process", false);
 
         // Create file again
-        _krnFileSystemDriver.createFile("process");
+        _krnFileSystemDriver.createFile("process",false);
 
         // Write to the file
         var loops = Math.ceil(byteString.length / 60);
@@ -951,8 +964,8 @@ module TSOS {
 
           otherTest[0] = "process";
           otherTest[1] = chunks[k];
-
-          _krnFileSystemDriver.writeFile(otherTest);
+          
+          _krnFileSystemDriver.writeFile(otherTest, false);
         }
       }
    }

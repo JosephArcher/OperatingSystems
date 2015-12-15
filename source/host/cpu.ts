@@ -200,11 +200,18 @@ module TSOS {
 
             var loadLocation = _CPU.findLoadLocation(nextTwoBytes);
 
+            var holder = _CPU.Acc.toString(16);
+
+            if(holder.length < 2){
+        console.log("testing");
+                holder = "0" + holder;
+            }
+      console.log(holder);
             // Change the value in the memory 
-            _MemoryManager.setByte(loadLocation, _CPU.Acc.toString(16) );
+            _MemoryManager.setByte(loadLocation, holder );
 
             // Update the memory UI Table
-            _MemoryInformationTable.setCellData(loadLocation, _CPU.Acc.toString(16));
+            _MemoryInformationTable.setCellData(loadLocation, holder);
         }
        //  /**
        //   * Add with carry - Adds the contents of an address to the contents of the accumulator and keeps the result in the accumulator
@@ -303,7 +310,7 @@ module TSOS {
          *  Break (Which really is a system call)
         */
         public breakOperation(): void {
-            //console.log("The break operation "); 
+             console.log("The break operation "); 
             _Kernel.createAndQueueInterrupt(BREAK_IRQ, _CPUScheduler.getCurrentProcess());
         }
        //  /**
@@ -383,9 +390,19 @@ module TSOS {
  
           var testByte = <Byte>_MemoryManager.getByte(loadLocation);
 
-          var valueOfByte:number = parseInt(testByte.getValue(), 16) + 1;
+          var asdf: number = parseInt(testByte.getValue(), 16);
 
-          _MemoryManager.setByte(loadLocation, valueOfByte.toString(16) + "");
+          console.log(testByte.getValue() + ' test Byte g');
+
+          var valueOfByte:number = parseInt(asdf + "") + 1;
+
+          var holder = valueOfByte + "";
+
+         if(holder.length < 2){
+           holder = "0" + holder;
+         }
+
+          _MemoryManager.setByte(loadLocation, holder);
 
           // Need to update the memory table here
         }
@@ -397,7 +414,7 @@ module TSOS {
         public systemCall(): void {
 
           //console.log("System Call operation");
-            
+     
           // #$01 in X reg = print the integer stored in the Y register.
           if (_CPU.Xreg == 1) {
           //  console.log("Pringing an int");
@@ -416,6 +433,7 @@ module TSOS {
            }
            // This is what happens if a 1 or 0 is not in the x reg when this instruction is called
            else {
+              console.log("BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADS");
                  // Create an interrupt and add it to the queue
                  _Kernel.createAndQueueInterrupt(INVALID_OPCODE_USE_IRQ, "Error xReg value not valid syscall value 0 or 1 only");
              }            
@@ -437,7 +455,7 @@ module TSOS {
 
             // Decode the instruction
             var nextInstruction: TSOS.Instruction = this.decodeInstruction(nextInstructionFromMemory);
-             
+
             // Execute the instruction
             this.executeInstruction(nextInstruction);
 
