@@ -28,6 +28,12 @@ module TSOS {
 			}
 			//console.log("NUMBER OF MEMORY PARTITIONS AVAILABLE IS " + this.availableMemoryPartitions.getSize());
 		}
+		public fixMemArray(){
+			this.availableMemoryPartitions = new Queue();
+			this.availableMemoryPartitions.enqueue(MEMORY_PARTITION_0_BASE_ADDRESS);
+			this.availableMemoryPartitions.enqueue(MEMORY_PARTITION_1_BASE_ADDRESS);
+			this.availableMemoryPartitions.enqueue(MEMORY_PARTITION_2_BASE_ADDRESS);
+		}
 		/**
 		 * Returns the number of bytes in memory
 		 */

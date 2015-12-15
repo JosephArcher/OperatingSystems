@@ -20,6 +20,12 @@ var TSOS;
             }
             //console.log("NUMBER OF MEMORY PARTITIONS AVAILABLE IS " + this.availableMemoryPartitions.getSize());
         }
+        MemoryManager.prototype.fixMemArray = function () {
+            this.availableMemoryPartitions = new TSOS.Queue();
+            this.availableMemoryPartitions.enqueue(MEMORY_PARTITION_0_BASE_ADDRESS);
+            this.availableMemoryPartitions.enqueue(MEMORY_PARTITION_1_BASE_ADDRESS);
+            this.availableMemoryPartitions.enqueue(MEMORY_PARTITION_2_BASE_ADDRESS);
+        };
         /**
          * Returns the number of bytes in memory
          */

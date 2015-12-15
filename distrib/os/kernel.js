@@ -440,6 +440,7 @@ var TSOS;
         Kernel.prototype.stopCpuExecution = function () {
             // When the CPU stops delete the process file cause it breaks stuff 
             _krnFileSystemDriver.deleteFile("process", false);
+            _MemoryManager.fixMemArray();
             // Stop the Cpu from executing
             _CPU.isExecuting = false;
             _CPUScheduler.runningProcess = null;

@@ -557,6 +557,7 @@ module TSOS {
         public stopCpuExecution(): void {
           // When the CPU stops delete the process file cause it breaks stuff 
          _krnFileSystemDriver.deleteFile("process", false);
+         _MemoryManager.fixMemArray();
          
           // Stop the Cpu from executing
           _CPU.isExecuting = false;
