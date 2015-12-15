@@ -1,4 +1,3 @@
-///<reference path="os/collections.ts" />
 /// <reference path="jquery.d.ts" />
 ///<reference path="os/ReadyQueue.ts" />
 
@@ -17,26 +16,27 @@
 
 // Application Information
 const APP_NAME: string    = "Joe/S";   // Joe is Love Joe is Lyfe
-const APP_VERSION: string = "0.03";   // 
+const APP_VERSION: string = "0.04";   // Final Project BB
 
 // System 
 const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 1000 = 1 second.
 
 // Interrupts
-const TIMER_IRQ: number = 0;                  // Timer         
-const KEYBOARD_IRQ: number = 1;               // Keyboard 
-const BSOD_IRQ: number = 2;                   // Blue Screen of Death
-const PRINT_INTEGER_IRQ: number = 3;          // Print Integer
-const PRINT_STRING_IRQ: number = 4;           // Print String
-const BREAK_IRQ: number = 5;                  // Break
-const INVALID_OPCODE_IRQ: number = 6;         // Invalid Op Code
-const INVALID_OPCODE_USE_IRQ: number = 7;     // Invalid Op Code Usage
-const MEMORY_OUT_OF_BOUNDS_IRQ: number = 8;   // Memory Out of Bounds
-const CREATE_PROCESSS_IRQ: number = 9;        // Create a new process
-const START_PROCESS_IRQ: number = 10; 		  // Start a new  process
-const TERMINATE_PROCESS_IRQ: number = 11;     // Terminate a  process
-const CONTEXT_SWITCH_IRQ: number = 12;        // Context Swtich Between Processes
-const END_CPU_IRQ: number = 13;                // Stop the CPU from executing 
+const TIMER_IRQ:number = 0;                  // Timer         
+const KEYBOARD_IRQ:number = 1;               // Keyboard 
+const FILE_SYSTEM_IRQ: number = 2;            // File System
+const BSOD_IRQ:number = 3;                    // Blue Screen of Death
+const PRINT_INTEGER_IRQ:number = 4;          // Print Integer
+const PRINT_STRING_IRQ: number = 5;           // Print String
+const BREAK_IRQ: number = 6;                 // Break
+const INVALID_OPCODE_IRQ:number = 7;         // Invalid Op Code
+const INVALID_OPCODE_USE_IRQ:number = 8;     // Invalid Op Code Usage
+const MEMORY_OUT_OF_BOUNDS_IRQ:number = 9;   // Memory Out of Bounds
+const CREATE_PROCESSS_IRQ:number = 10;        // Create a new process
+const START_PROCESS_IRQ:number = 11; 		 // Start a new  process
+const TERMINATE_PROCESS_IRQ:number = 12;     // Terminate a  process
+const CONTEXT_SWITCH_IRQ:number = 13;        // Context Swtich Between Processes
+const END_CPU_IRQ:number = 14;               // Stop the CPU from executing 
 
 // Process States as consts for the Process Control Blocks // Process States \\   
 const PROCESS_STATE_NEW: string         = "NEW";           //   * New
@@ -45,11 +45,17 @@ const PROCESS_STATE_WAITING: string     = "WAITING";       //   * Waiting
 const PROCESS_STATE_READY: string       = "READY";         //   * Ready
 const PROCESS_STATE_TERMINATED: string  = "TERMINATED";    //   * Terminated
 
+// Process Location States
+const PROCESS_ON_DISK: string = "DISK";
+const PROCESS_IN_MEM:  string = "MEMORY";
+
+
 // TImer States		
 const TIMER_IS_SET: string = "SET";                       //  Set
 const TIMER_IS_OFF: string = "OFF";                       //  OFF
 const TIMER_NOT_FINISHED: string = "TIMER_NOT_FINISHED";  // Timer not finished yet
 const TIMER_FINISHED: string = "TIMER_FINISHED";          // Timer is finished
+const TIMER_INDEF: string = "TIMER_GOT_NO_BRAKES";
 
 // Not Really Sure What to Call These Yet
 const TIMER_ENDED_PROCESS: string = "TIMER";              // * The timer has been called and ended the user process
@@ -62,7 +68,24 @@ const MEMORY_PARTITION_1_BASE_ADDRESS: number = 256;   // Partition 2
 const MEMORY_PARTITION_2_BASE_ADDRESS: number = 512;   // Partition 3 
 
 // CPU Scheduling Algorithms
-const ROUND_ROBIN: string = "Round Robin";  // Round Robin
+const ROUND_ROBIN:string = "rr";                   // Round Robin
+const FIRST_COME_FIRST_SERVE:string = "fcfs";      // First Come First Serve
+const NON_PREEMPTIVE_PRIORITY:string = "priority"; // Non Preemptive Priority
+
+// File System Operations
+const CREATE_FILE: string = "OPEN";    // Open File
+const DELETE_FILE: string = "DELETE";  // Delete File
+const READ_FILE: string = "READ";      // Read File
+const WRITE_FILE: string = "WRITE";    // Write File
+const LIST_FILES: string = "LIST";     // List Files
+const FORMAT_DRIVE: string = "FORMAT"; // Format Drive
+
+// HardDisk Block States
+const BLOCK_IN_USE: string = "BLOCK_IN_USE";
+const BLOCK_FREE: string = "BLOCK_FREE";
+
+const NO_FILE_DATA: string = "#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#";
+
 
 //********************************************************\\
 //                 Global Variables                       \\
@@ -92,7 +115,7 @@ var _StdOut;    // Output
 
 // The Super Slick Scheduler
 var _CPUScheduler: TSOS.CpuScheduler;
-console.log(_CPUScheduler + " SDFKLJSDKLFJSLKDFJLKSDJFKLSJDFKLSDF");
+
 // The Sharp Shell
 var _OsShell: TSOS.Shell;
 
@@ -104,6 +127,9 @@ var _MemoryManager: TSOS.MemoryManager;
 
 // The Mysterious Mode
 var _Mode: number = 0;  // 0 = Kernel Mode |  1 = User Mode
+
+// The Dank Disk
+var _DiskIsFormated = false;
 
 // The Hardy Hardware Clock
 var _hardwareClockID: number = null;
@@ -162,7 +188,6 @@ var _ProcessCounterID: number = -1;
 var _TerminatedProcessQueue: TSOS.Queue;  // Completed Process Queue: Used to Store each PCB once it has been completed
 var _ReadyQueue: TSOS.ReadyQueue;             // Queue of all of the currently running processes
 var _ResidentList: TSOS.ResidentList;           // Stores a list of all loaded processes
-
 //********************************************************\\
 //             Device Driver Variables                    \\
 //********************************************************\\
@@ -170,6 +195,7 @@ var _ResidentList: TSOS.ResidentList;           // Stores a list of all loaded p
 // Global Device Driver Objects - page 12
 var _krnKeyboardDriver; //  = null;
 
+var _krnFileSystemDriver; // = null
 //********************************************************\\
 //                  UI Variables                          \\
 //********************************************************\\
@@ -208,6 +234,15 @@ var _TerminatedProcessTable: TSOS.TerminatedProcessTable;
 //Ready Queue UI
 var _ReadyQueueTableElement: HTMLTableElement;
 var _ReadyQueueTable: TSOS.ReadyQueueTable;
+
+// Hard Disk UI
+var _HardDiskTableElement: HTMLTableElement;
+var _HardDiskTable: TSOS.HardDiskTable;
+
+
+// Host Log UI Tracker
+var lastUIMessage: string = "";
+var hostCounter: number = 0;
 
 // Create an image global for the blue screen of death
 var BSOD_IMAGE = new Image();

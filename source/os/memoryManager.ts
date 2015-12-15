@@ -1,4 +1,3 @@
-///<reference path="collections.ts" />
 ///<reference path="ProcessControlBlock.ts" />
 ///<reference path="../globals.ts" />
 ///<reference path="../utils.ts" />
@@ -27,7 +26,13 @@ module TSOS {
 			for(var i = 0; i < memoryPartitionArray.length; i++) {			
 				this.availableMemoryPartitions.enqueue(memoryPartitionArray[i]);
 			}
-			console.log("NUMBER OF MEMORY PARTITIONS AVAILABLE IS " + this.availableMemoryPartitions.getSize());
+			//console.log("NUMBER OF MEMORY PARTITIONS AVAILABLE IS " + this.availableMemoryPartitions.getSize());
+		}
+		public fixMemArray(){
+			this.availableMemoryPartitions = new Queue();
+			this.availableMemoryPartitions.enqueue(MEMORY_PARTITION_0_BASE_ADDRESS);
+			this.availableMemoryPartitions.enqueue(MEMORY_PARTITION_1_BASE_ADDRESS);
+			this.availableMemoryPartitions.enqueue(MEMORY_PARTITION_2_BASE_ADDRESS);
 		}
 		/**
 		 * Returns the number of bytes in memory
@@ -56,7 +61,7 @@ module TSOS {
 
 				if(nextProcess.getProcessID() == processID) {
 					
-					console.log("The next process to run starts at address " +  nextProcess.getBaseReg() ) ;
+					//console.log("The next process to run starts at address " +  nextProcess.getBaseReg() ) ;
 					return <TSOS.ProcessControlBlock> nextProcess;
 				}
 			}
@@ -107,13 +112,15 @@ module TSOS {
 				return nextPartition;		
 			}
 			else {
-				return -1;
+				return null;
 			}			
 		}
 		/**
 		 * "Clears" a single memory partition in memory and adds it back to the available partition queue
 		 */
 		 public clearMemoryPartition(process: TSOS.ProcessControlBlock): void  {
+
+		 	if(process.location != PROCESS_ON_DISK) {
 
 		 	// Get the base regisger of the process 
 			var processBaseRegister = process.getBaseReg();
@@ -140,18 +147,17 @@ module TSOS {
 			 	}
 
 			}
-			console.log("The size of the resident list is ..." + _ResidentList.getSize());
 
 			// Clear the memory blocks at those locations
 			for (var i = theMemoryPartition; i < theMemoryPartition + 256; i++){
 				this.memoryBlock[i] = new Byte(i, "00");
 				_MemoryInformationTable.setCellData(i, "00");
 			}
-
 			// Add the partition back into the available memory partitions
-			this.availableMemoryPartitions.enqueue(theMemoryPartition);
+			this.availableMemoryPartitions.enqueue(theMemoryPartition);	
 
-		 	
+			}
+			
 		}
 		/**
 		 * "Clears" all of the Memory Partitions in memory
@@ -180,12 +186,76 @@ module TSOS {
 			// Clear the Memory UI Table
 			_MemoryInformationTable.clearTable();
 		}
+		public loadProgramOntoDisk(userProgram: string, priority: string): number {
+
+			if(_DiskIsFormated == true) {
+
+				// Initalize needed variables
+				var firstHexNumber: string = "";
+				var secondHexNumber: string = "";
+				var nextByteValue: string = "";
+				var baseMemoryOffset: number = 0;  // The offest to track each where each byte is being placed
+				var nextMemoryAddress: number = 0; // The value of the next memory address
+
+				var newProcess = _Kernel.createProcess(0);
+
+
+				// Update the priority
+				newProcess.setPriority(priority);
+
+				//set the location to disk!
+				newProcess.setLocation(PROCESS_ON_DISK);
+
+				// Create the file
+				var fileName = "process";
+
+				var response = [];
+
+	            response[0] = CREATE_FILE;
+	            response[1] = fileName;
+
+	            _krnFileSystemDriver.createFile(fileName);
+	            //_KernelInterruptQueue.enqueue(new Interrupt(FILE_SYSTEM_IRQ, response));
+				var realLen = Utils.StringToHexString(userProgram).length;
+	            // Write to the file
+				var loops = Math.ceil(realLen / 60);
+	          	var len = userProgram.length;
+	            var data = "";
+	            var dataString;
+				var otherTest = [];
+				var chunks = [];
+				var response1 = [];
+				console.log("LOOPS NEEDED  " + loops);
+	            // for each chunk of 60 write to the disk
+	       	for(var i = 0; i < loops; i++ ) {
+	       		chunks.push(userProgram.slice(0 + i * 60 , 60  + i * 60));
+	       	}
+	     
+	       	for(var j = 0; j < loops; j++) {
+
+                otherTest[0] = "process";
+                otherTest[1] = chunks[j];
+
+              
+                response1[0] = WRITE_FILE;
+                response1[1] = otherTest;
+               
+                _krnFileSystemDriver.writeFile(otherTest);
+	       	}
+	       	// Add the newly created process to the end of the resident list
+				return newProcess.getProcessID();
+
+			}
+			else {
+				return null;
+			}
+		}
 		/**
 		 * Used to load the user program into memory
 		 * @Params userProgram {String} - The user program to be loaded into memory
 		 * @Return processID {Number}   - The process ID of the newly created process
 		 */
-		public loadProgramIntoMemory(userProgram: string): number {
+		public loadProgramIntoMemory(userProgram: string , priority: string): number {
 
 			// Initalize needed variables
 			var firstHexNumber: string = "";   // The first hex digit while looping
@@ -193,9 +263,10 @@ module TSOS {
 			var nextByteValue: string = "";	   // The value of the next byte
 			var baseMemoryOffset: number = 0;  // The offest to track each where each byte is being placed
 			var nextMemoryAddress: number = 0; // The value of the next memory address
-
+		
 			// Get the next base address to write the user program
 			var nextBaseMemoryPartitionAddress: number = this.getNextAvailableMemoryPartition();
+
 
 			//loop over the length of the user program 
 			for (var i = 0; i < userProgram.length; i = i + 2) { // Grab two hex numbers each loop cycle to form the bytes
@@ -213,12 +284,24 @@ module TSOS {
 
 				// Increment the offset
 				baseMemoryOffset = baseMemoryOffset + 1;
-			}    
+			}
+			console.log("THe length of the base mem offset  is...  " + baseMemoryOffset);
 
-		
+			if(baseMemoryOffset < 255){
+				for(var i = baseMemoryOffset; i < 255; i++)
+					//console.log("fillin it in");
+					_MemoryManager.memoryBlock[nextBaseMemoryPartitionAddress + i] = new Byte(nextBaseMemoryPartitionAddress + i, "00");
+			}	
 		     // Create a new process control block
 			var newProcess: TSOS.ProcessControlBlock = _Kernel.createProcess(nextBaseMemoryPartitionAddress);
-				
+			
+			// Set the priority of the new process
+			newProcess.setPriority(priority);
+
+			// Set the location to memory
+			newProcess.location = PROCESS_IN_MEM;
+
+			console.log(newProcess + " Loaded process with a priority off...");
             // Return the newly created process ID 
             return newProcess.getProcessID();
 		}
@@ -315,5 +398,6 @@ module TSOS {
 				_KernelInterruptQueue.enqueue(new Interrupt(MEMORY_OUT_OF_BOUNDS_IRQ, _CPUScheduler.getCurrentProcess()));	// Memory Out Of Bounds Interrupt , The current Process Control Block 	
 			}	
 		}
+
 	}
 }

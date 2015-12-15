@@ -148,10 +148,8 @@ var TSOS;
                     nextCharacter = text.charAt(i) + "";
                     //Check to make sure that the character is able to be drawn on the current line
                     if (this.canFitOnLine(nextCharacter) === false) {
-                        console.log("we need to line wrap here");
                         //before we do this we need to save the space left to allow the backspace to find the last x pos on the previous line 
                         this.xPositionHistoy.push(this.currentXPosition);
-                        console.log("The x pos for the previous line should be ...  " + this.currentXPosition);
                         this.advanceLine();
                     }
                     // Draw the text at the current X and Y coordinates.

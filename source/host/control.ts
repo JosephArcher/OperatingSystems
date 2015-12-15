@@ -76,35 +76,55 @@ module TSOS {
             _TimeSectionElement = <HTMLElement> document.getElementById("timeArea");
            
             // Resient List
-            _TerminatedProcessTableElement = <HTMLTableElement> document.getElementById("terminatedProcessTableElement");
+            _TerminatedProcessTableElement = <HTMLTableElement> document.getElementById("terminatedListTableElement");
 
             // Ready Queue
             _ReadyQueueTableElement = <HTMLTableElement> document.getElementById("readyQueueTableElement");
+
+            // Hard Disk
+            _HardDiskTableElement = <HTMLTableElement>document.getElementById("hardDiskTable");
+
+
            
             // Check for our testing and enrichment core, which
             // may be referenced here (from index.html) as function Glados().
             if (typeof Glados === "function") {
                 // function Glados() is here, so instantiate Her into
                 // the global (and properly capitalized) _GLaDOS variable.
+
                 _GLaDOS = new Glados();
                 _GLaDOS.init();
             }
         }
         public static hostLog(msg: string, source: string = "?"): void {
+
+                 // Check to see if the new message is equal to the previous one
+                 if(msg == lastUIMessage){
+                     // If they are equal
+
+                     // Increase the global repeat ui counter
+                     hostCounter = hostCounter + 1;
+
+                     // Update the UI
+                  
+                     $("#taHostLog li:first-child").replaceWith('<li class="hostLogListItem" style="height:75px;"> <p class="" >' + msg + '<span class="label logCounter">' + hostCounter + '</span> </p> <span class="logDateTime">' + Utils.getTime() + ' </span > <span class="logSource" >' + source + '</span> </li>');
+                 }
+                 else{
+                    // If they are not equal
+
+                     hostCounter = 1;
+
+                     $("#taHostLog").prepend('<li class="hostLogListItem" style="height:75px;"> <p class="" >' + msg + '<span class="label logCounter">' + hostCounter + '</span> </p> <span class="logDateTime">' + Utils.getTime() + ' </span > <span class="logSource" >' + source + '</span> </li>');
+                     // Reset the counter to one
+                     
+                     // Update the last UI message
+                     lastUIMessage = msg;
+                 }
+
+
             // Note the OS CLOCK.
             var clock: number = _OSclock;
-
-            // Note the REAL clock in milliseconds since January 1, 1970.
-            var now: number = new Date().getTime();
-
-            // Build the log string.
-            var str: string = "({ clock:" + clock + ", source:" + source + ", msg:" + msg + ", now:" + now  + " })"  + "\n";
-          
-            // Update the log console.
-            var taLog = <HTMLInputElement> document.getElementById("taHostLog");
-            taLog.value = str + taLog.value;
-
-            // TODO in the future: Optionally update a log database or some streaming service.
+            
         }
         //
         // Host Events
@@ -147,16 +167,14 @@ module TSOS {
                 _MemoryInformationTable.fillRows();
                 _TerminatedProcessTable.clearTable();
                 _ReadyQueueTable.clearTable();
+                _HardDiskTable.clearTable();
                 Utils.togglePowerOff(); // Handle what happens to the UI when the system turns off
 
                 // Call the halt button becuase that is really what this is supposed to be
                 this.hostBtnHaltOS_click(null);
             }          
         }
-
         public static hostBtnHaltOS_click(btn): void {
-            console.log("HALT BUTTON");
-            Control.hostLog("Emergency halt", "host");
             Control.hostLog("Attempting Kernel shutdown.", "host");
             // Call the OS shutdown routine.
             _Kernel.krnShutdown();
@@ -173,6 +191,7 @@ module TSOS {
 
                    _SingleStepMode = true; // Turn on single step moode
                    Utils.toggleStepModeOn(); // Handle the UI for single step mode
+                   $("#taHostLog").append('<li class="list-group-item">Dapibus ac facilisis in <span class="badge">3</span> </li>');
         }
         /**
          * What happens when the user is in single step mode and wants to step forward

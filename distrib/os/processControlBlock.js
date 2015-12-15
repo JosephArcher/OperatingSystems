@@ -17,9 +17,11 @@ var TSOS;
             this.limitReg = 256; // Limit Register
             this.turnAroundTime = 0; // Turnaround Time
             this.waitTime = 0; // Wait Time
+            this.priority = "0"; // Process Priority
+            this.location = ""; // Process Location 
             this.processID = this.assignNextProcessID();
             this.processState = PROCESS_STATE_NEW;
-            console.log("Creating new PCB");
+            //console.log("Creating new PCB");
         }
         /**
          * Used to auto increment the Process ID for a ProcessControlBlock on creation
@@ -215,6 +217,25 @@ var TSOS;
                 // Increment
                 this.incrementWaitTime();
             }
+        };
+        /**
+        * Returns the priority of the process
+        * @Return {String} - The priority of the process
+        *
+        */
+        ProcessControlBlock.prototype.getPriority = function () {
+            return this.priority;
+        };
+        /**
+        * Sets the priority of the process
+        * @Params {String} - The priority to be set
+        *
+        */
+        ProcessControlBlock.prototype.setPriority = function (priority) {
+            this.priority = priority;
+        };
+        ProcessControlBlock.prototype.setLocation = function (str) {
+            this.location = str;
         };
         return ProcessControlBlock;
     })();

@@ -17,12 +17,14 @@ module TSOS {
 		public limitReg: number = 256;         // Limit Register
 		public turnAroundTime: number = 0;     // Turnaround Time
 		public waitTime: number = 0;           // Wait Time
+		public priority: string = "0";           // Process Priority
+		public location: string = "";          // Process Location 
 			
 		public constructor() {
 			
 			this.processID = this.assignNextProcessID();
 			this.processState = PROCESS_STATE_NEW;
-			console.log("Creating new PCB");
+			//console.log("Creating new PCB");
  		}
  		/**
  		 * Used to auto increment the Process ID for a ProcessControlBlock on creation
@@ -226,5 +228,25 @@ module TSOS {
 				this.incrementWaitTime();
 			}
 		}
+		/**
+ 		* Returns the priority of the process
+ 		* @Return {String} - The priority of the process
+ 		* 
+		*/
+		public getPriority(): string {
+			return this.priority;
+		}
+		/**
+		* Sets the priority of the process
+		* @Params {String} - The priority to be set
+		* 
+		*/
+		public setPriority(priority: string) {
+			this.priority = priority;
+		}
+		public setLocation(str: string): void {
+			this.location = str;
+		}
+
 	}
 }

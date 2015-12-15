@@ -1,6 +1,5 @@
 ///<reference path="../globals.ts" />
 ///<reference path="../utils.ts" />
-///<reference path="collections.ts" />
 ///<reference path="queue.ts" />
 ///<reference path="console.ts" />
 ///<reference path="memoryManager.ts" />
@@ -12,6 +11,7 @@
 ///<reference path="ReadyQueueTable.ts" />
 ///<reference path="cpuScheduler.ts" />
 ///<reference path="timer.ts" />
+
 
 /* ------------
      Kernel.ts
@@ -46,7 +46,7 @@ module TSOS {
             _KernelBuffers = new Array();          // Buffers... for the kernel.
             _KernelInputQueue = new Queue();       // Where device input lands before being processed out somewhere.   
 
-            _ReadyQueue = new ReadyQueue();        // Initialize the Ready Queue             
+            _ReadyQueue = new ReadyQueue();        // Initialize the Ready Queue    
             _ResidentList = new ResidentList();    // Initialize the Resident Queue 
             _TerminatedProcessQueue = new Queue(); // Initalize the Terminated Process Queue
             
@@ -63,9 +63,22 @@ module TSOS {
 
             // Load the Keyboard Device Driver
             this.krnTrace("Loading the keyboard device driver.");
-            _krnKeyboardDriver = new DeviceDriverKeyboard();    // Construct it.
+
+            _krnKeyboardDriver = new DeviceDriverKeyboard();     // Construct it.
             _krnKeyboardDriver.driverEntry();                    // Call the driverEntry() initialization routine.
+
             this.krnTrace(_krnKeyboardDriver.status);
+
+
+            // Load the File System Device Driver
+            this.krnTrace("Loading the File System.");
+
+
+            _krnFileSystemDriver = new DeviceDriverFileSystem(); // Construct it.
+            _krnFileSystemDriver.driverEntry();                  // Call the driverEntry() initalization routine.
+
+            this.krnTrace(_krnFileSystemDriver.status);
+
 
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
             this.krnTrace("Enabling the interrupts.");
@@ -85,7 +98,10 @@ module TSOS {
 
             //Initalize the Terminated Process List
             _TerminatedProcessTable = new TerminatedProcessTable(_TerminatedProcessTableElement);
- 
+
+            // Initalize the Hard Disk Table
+            _HardDiskTable = new HardDiskTable(_HardDiskTableElement);
+
             // Initalize the timer
             _Timer = new Timer();
 
@@ -98,6 +114,7 @@ module TSOS {
             //Initalize the shell
             _OsShell = new Shell();
             _OsShell.init();
+
 
             // Finally, initiate student testing protocol.
             if (_GLaDOS) {
@@ -150,14 +167,20 @@ module TSOS {
                         _ReadyQueue.incrementWaitTime();
                         _ReadyQueue.incrementTurnAroundTime();
 
-                       // Decrement the timer by one and check to see if it is finished
-                       if (_Timer.decreaseTimerByOne() == TIMER_FINISHED) {
+                        // Before any timer stuff is done check for FCFS
+                        if(_CPUScheduler.getSchedulingAlgorithm() == ROUND_ROBIN) {
 
-                             _KernelInterruptQueue.enqueue(new Interrupt(TIMER_IRQ, _CPUScheduler.getCurrentProcess() ));
+                            // If the CPU is not 
 
-                        } else {
-                           // If the timer is not finished then do nothing
-                       }
+                           // Decrement the timer by one and check to see if it is finished
+                            if (_Timer.decreaseTimerByOne() == TIMER_FINISHED) {
+
+                                 _KernelInterruptQueue.enqueue(new Interrupt(TIMER_IRQ, _CPUScheduler.getCurrentProcess() ));
+
+                            } else {
+                               // If the timer is not finished then do nothing
+                            }
+                        }// If not using round robin then do nothing with the timer
                     }
             } 
             else {// If there are no interrupts and there is nothing being executed then just be idle. :(
@@ -197,6 +220,9 @@ module TSOS {
                 case KEYBOARD_IRQ:
                     _krnKeyboardDriver.isr(params);     // Kernel mode device driver
                     _StdIn.handleInput();
+                    break;
+                case  FILE_SYSTEM_IRQ:                  // File System Device Driver
+                    _krnFileSystemDriver.isr(params);
                     break;
                 case PRINT_INTEGER_IRQ:                 // Integer Console Output
                     this.writeIntegerConsole(params);
@@ -269,9 +295,18 @@ module TSOS {
          *  Used to handle the break interrupt
          */
         public krnBreakISR(process: TSOS.ProcessControlBlock) {
+            
+            console.log(process);
+
+              // When a break is called on a location
+              if(process.location == PROCESS_ON_DISK){
+                console.log("BREAK AND THE PROCESS IS ON THE DISK");
+                _krnFileSystemDriver.deleteFile("process", false);
+
+              }
 
                  // Do not add the current process back to the ready queue and set the current process to null in order to signal the timer
-                
+
                 // Save the current CPU Register values into the process control block
                _CPUScheduler.runningProcess.setProgramCounter(_CPU.PC);
                _CPUScheduler.runningProcess.setAcc(_CPU.Acc);
@@ -280,8 +315,12 @@ module TSOS {
                _CPUScheduler.runningProcess.setZFlag(_CPU.Zflag);
                _CPUScheduler.runningProcess.setProcessState(PROCESS_STATE_TERMINATED);
 
-               // Remove the process from memory and update the UI Table
-               _MemoryManager.clearMemoryPartition(process);
+               if(process.location != PROCESS_ON_DISK){
+           console.log("TESTING TESTING TESTING");
+                 // Remove the process from memory and update the UI Table
+                 _MemoryManager.clearMemoryPartition(process);
+               }
+             
 
                // Get the index of the process in the Resident List
                var indexOfProcess: number = _ResidentList.getElementIndexByProccessId(process); 
@@ -303,12 +342,16 @@ module TSOS {
 
                // check to see if you need to start another process 
                if(_ReadyQueue.getSize() > 0 ){
+
+          // console.log("ANOTHER PROCES EXISTS ! GETITING IT NOW HOMIE G");
                    // Start the next process
                    var nextProcess: TSOS.ProcessControlBlock = _CPUScheduler.getNextProcess();
 
                    _KernelInterruptQueue.enqueue(new Interrupt(START_PROCESS_IRQ, nextProcess));
                }
                else{
+
+          // console.log("NO PROCESS EXISTS SO STOP ");
                    _KernelInterruptQueue.enqueue(new Interrupt(END_CPU_IRQ, null));
                }
         }
@@ -393,7 +436,7 @@ module TSOS {
                 // Check for a timing error
                 if(_CPUScheduler.getCurrentProcess().getProcessID() == process.getProcessID()) {
 
-                console.log("THE TIMER HAS ENDED RING RING RING");
+              //  console.log("THE TIMER HAS ENDED RING RING RING");
 
                 // Clear the timer and turn it off
                 _Timer.clearTimer();  
@@ -421,22 +464,27 @@ module TSOS {
                 }
                 else{
                     // dont switch this was just handled in timing error
-                    console.log("ERROR FIXED");
+                   
                 }
             }
         }
         /**
-         * used to terminate a currenlty running process and remove it fromt he ready qyeye
+         * used to terminate a currenlty running process and remove it from the ready queye
          */
         public terminateProcess(process: TSOS.ProcessControlBlock) {
 
-
-            console.log("Teminating process " + process.getProcessID() );
+            // Check to see if the process is on the disk or not
+            if(process.location == PROCESS_ON_DISK){
+                console.log("terminating process on the disk");
+                // delete the proces from the disk
+                _krnFileSystemDriver.deleteFile("process", false);
+            }
+           // console.log("Teminating process " + process.getProcessID() );
 
              // Check to see if the process is currently running
             if ( process.getProcessID() == _CPUScheduler.getCurrentProcess().getProcessID() ) {   // The process to terminate is running
                   
-                console.log("Terminating the current process");
+               // console.log("Terminating the current process");
 
                 // Save the current CPU Register values into the process control block
                 _CPUScheduler.runningProcess.setProgramCounter(_CPU.PC);
@@ -455,7 +503,7 @@ module TSOS {
                 // Check to see if another process wants to run
                 if (_ReadyQueue.getSize() > 0) {
 
-                    console.log("starting process after termination");
+                   // console.log("starting process after termination");
 
                     // Get the next process
                     var nextProcess: TSOS.ProcessControlBlock = _CPUScheduler.getNextProcess();
@@ -471,7 +519,7 @@ module TSOS {
                 }
             } else {
 
-                console.log("the current process is not being terminated");
+              //  console.log("the current process is not being terminated");
 
                 // The process to terminate is not running and chilling in the Ready Queue
 
@@ -483,10 +531,13 @@ module TSOS {
                 // Destroy
                 _ReadyQueue = _ReadyQueue.removeElementAtIndex(indexInReadyQueue);
             }
-            
-                // Remove the process from memory and update the UI Table
-                _MemoryManager.clearMemoryPartition(process);
-
+                
+                // Check to see if the process was in memory or disk, if disk do not clear Mem partition
+                if(process.location != PROCESS_ON_DISK){
+                  // Remove the process from memory and update the UI Table
+                  _MemoryManager.clearMemoryPartition(process);
+                }
+                
                 // Get the index of the process in the Resident List
                 var indexOfProcess: number = _ResidentList.getElementIndexByProccessId(process); 
 
@@ -497,22 +548,24 @@ module TSOS {
                 _ReadyQueueTable.removeProcessById(process);
 
                 // Add to the terminated UI Table
-                _TerminatedProcessTable.addRow(process);   
+               _TerminatedProcessTable.addRow(process);   
         }
         /*
          * Used to set the _CPU.isExecuting Property to False
          * This also calls the UI stuff that should happen when the CPU stops executing user programs
          */
         public stopCpuExecution(): void {
-
-            console.log("Stopping the CPU execution becuase no processes are currently active");
-            // Stop the Cpu from executing
-            _CPU.isExecuting = false;
-            _CPUScheduler.runningProcess = null;
-            // Handle the UI from having no programs execuing
-            Utils.endProgramSpinner();
-            _Console.advanceLine();
-            _OsShell.putPrompt(); 
+          // When the CPU stops delete the process file cause it breaks stuff 
+         _krnFileSystemDriver.deleteFile("process", false);
+         _MemoryManager.fixMemArray();
+         
+          // Stop the Cpu from executing
+          _CPU.isExecuting = false;
+          _CPUScheduler.runningProcess = null;
+          // Handle the UI from having no programs execuing
+          Utils.endProgramSpinner();
+          _Console.advanceLine();
+          _OsShell.putPrompt(); 
         
         }
 

@@ -48,7 +48,7 @@ module TSOS {
         }
 
         public static hostDisableKeyboardInterrupt(): void {
-            console.log("DISABLED THIS ");
+           // console.log("DISABLED THIS ");
             document.removeEventListener("keydown", Devices.hostOnKeypress, false);
         }
 

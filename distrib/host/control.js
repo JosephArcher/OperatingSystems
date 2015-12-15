@@ -61,9 +61,11 @@ var TSOS;
             // Time section
             _TimeSectionElement = document.getElementById("timeArea");
             // Resient List
-            _TerminatedProcessTableElement = document.getElementById("terminatedProcessTableElement");
+            _TerminatedProcessTableElement = document.getElementById("terminatedListTableElement");
             // Ready Queue
             _ReadyQueueTableElement = document.getElementById("readyQueueTableElement");
+            // Hard Disk
+            _HardDiskTableElement = document.getElementById("hardDiskTable");
             // Check for our testing and enrichment core, which
             // may be referenced here (from index.html) as function Glados().
             if (typeof Glados === "function") {
@@ -75,16 +77,24 @@ var TSOS;
         };
         Control.hostLog = function (msg, source) {
             if (source === void 0) { source = "?"; }
+            // Check to see if the new message is equal to the previous one
+            if (msg == lastUIMessage) {
+                // If they are equal
+                // Increase the global repeat ui counter
+                hostCounter = hostCounter + 1;
+                // Update the UI
+                $("#taHostLog li:first-child").replaceWith('<li class="hostLogListItem" style="height:75px;"> <p class="" >' + msg + '<span class="label logCounter">' + hostCounter + '</span> </p> <span class="logDateTime">' + TSOS.Utils.getTime() + ' </span > <span class="logSource" >' + source + '</span> </li>');
+            }
+            else {
+                // If they are not equal
+                hostCounter = 1;
+                $("#taHostLog").prepend('<li class="hostLogListItem" style="height:75px;"> <p class="" >' + msg + '<span class="label logCounter">' + hostCounter + '</span> </p> <span class="logDateTime">' + TSOS.Utils.getTime() + ' </span > <span class="logSource" >' + source + '</span> </li>');
+                // Reset the counter to one
+                // Update the last UI message
+                lastUIMessage = msg;
+            }
             // Note the OS CLOCK.
             var clock = _OSclock;
-            // Note the REAL clock in milliseconds since January 1, 1970.
-            var now = new Date().getTime();
-            // Build the log string.
-            var str = "({ clock:" + clock + ", source:" + source + ", msg:" + msg + ", now:" + now + " })" + "\n";
-            // Update the log console.
-            var taLog = document.getElementById("taHostLog");
-            taLog.value = str + taLog.value;
-            // TODO in the future: Optionally update a log database or some streaming service.
         };
         //
         // Host Events
@@ -117,14 +127,13 @@ var TSOS;
                 _MemoryInformationTable.fillRows();
                 _TerminatedProcessTable.clearTable();
                 _ReadyQueueTable.clearTable();
+                _HardDiskTable.clearTable();
                 TSOS.Utils.togglePowerOff(); // Handle what happens to the UI when the system turns off
                 // Call the halt button becuase that is really what this is supposed to be
                 this.hostBtnHaltOS_click(null);
             }
         };
         Control.hostBtnHaltOS_click = function (btn) {
-            console.log("HALT BUTTON");
-            Control.hostLog("Emergency halt", "host");
             Control.hostLog("Attempting Kernel shutdown.", "host");
             // Call the OS shutdown routine.
             _Kernel.krnShutdown();
@@ -139,6 +148,7 @@ var TSOS;
         Control.hostBtnStepOS_click = function (btn) {
             _SingleStepMode = true; // Turn on single step moode
             TSOS.Utils.toggleStepModeOn(); // Handle the UI for single step mode
+            $("#taHostLog").append('<li class="list-group-item">Dapibus ac facilisis in <span class="badge">3</span> </li>');
         };
         /**
          * What happens when the user is in single step mode and wants to step forward

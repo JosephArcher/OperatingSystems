@@ -1,4 +1,4 @@
-///<reference path="queue.ts" />
+//<reference path="queue.ts" />
 ///<reference path="processControlBlock.ts" />
 
 /**
@@ -66,6 +66,28 @@ module TSOS {
 					return i;
 				}
 			}
+		}
+		public isFileWrittenToDisk(): boolean {
+
+			var size: number = _ResidentList.getSize();
+			var nextProcess: TSOS.ProcessControlBlock;
+
+			// Loop over the queue 
+			for (var i = 0; i < size; i++) {
+
+				nextProcess = <TSOS.ProcessControlBlock>_ResidentList.getElementAt(i);
+
+				console.log(nextProcess.location + "test for adis");
+				
+				// Check the next process to see if the process is on the disk or in mem
+				if(nextProcess.location == PROCESS_ON_DISK){
+					return true;
+				}
+
+			}
+			// If no process is written to disk return false
+			return false;
+
 		}
 		public returnAllProcessIds() {
 

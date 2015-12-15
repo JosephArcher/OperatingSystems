@@ -1,6 +1,5 @@
 ///<reference path="../globals.ts" />
 ///<reference path="../utils.ts" />
-///<reference path="collections.ts" />
 ///<reference path="queue.ts" />
 ///<reference path="console.ts" />
 ///<reference path="memoryManager.ts" />
@@ -42,7 +41,7 @@ var TSOS;
             _KernelInterruptQueue = new TSOS.Queue(); // A (currently) non-priority queue for interrupt requests (IRQs).
             _KernelBuffers = new Array(); // Buffers... for the kernel.
             _KernelInputQueue = new TSOS.Queue(); // Where device input lands before being processed out somewhere.   
-            _ReadyQueue = new TSOS.ReadyQueue(); // Initialize the Ready Queue             
+            _ReadyQueue = new TSOS.ReadyQueue(); // Initialize the Ready Queue    
             _ResidentList = new TSOS.ResidentList(); // Initialize the Resident Queue 
             _TerminatedProcessQueue = new TSOS.Queue(); // Initalize the Terminated Process Queue
             // Initialize the console.
@@ -58,6 +57,11 @@ var TSOS;
             _krnKeyboardDriver = new TSOS.DeviceDriverKeyboard(); // Construct it.
             _krnKeyboardDriver.driverEntry(); // Call the driverEntry() initialization routine.
             this.krnTrace(_krnKeyboardDriver.status);
+            // Load the File System Device Driver
+            this.krnTrace("Loading the File System.");
+            _krnFileSystemDriver = new TSOS.DeviceDriverFileSystem(); // Construct it.
+            _krnFileSystemDriver.driverEntry(); // Call the driverEntry() initalization routine.
+            this.krnTrace(_krnFileSystemDriver.status);
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
             this.krnTrace("Enabling the interrupts.");
             this.krnEnableInterrupts();
@@ -71,6 +75,8 @@ var TSOS;
             _ReadyQueueTable = new TSOS.ReadyQueueTable(_ReadyQueueTableElement);
             //Initalize the Terminated Process List
             _TerminatedProcessTable = new TSOS.TerminatedProcessTable(_TerminatedProcessTableElement);
+            // Initalize the Hard Disk Table
+            _HardDiskTable = new TSOS.HardDiskTable(_HardDiskTableElement);
             // Initalize the timer
             _Timer = new TSOS.Timer();
             // Initalize the CPU Scheduler
@@ -124,12 +130,16 @@ var TSOS;
                     // Update the UI 
                     _ReadyQueue.incrementWaitTime();
                     _ReadyQueue.incrementTurnAroundTime();
-                    // Decrement the timer by one and check to see if it is finished
-                    if (_Timer.decreaseTimerByOne() == TIMER_FINISHED) {
-                        _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TIMER_IRQ, _CPUScheduler.getCurrentProcess()));
-                    }
-                    else {
-                    }
+                    // Before any timer stuff is done check for FCFS
+                    if (_CPUScheduler.getSchedulingAlgorithm() == ROUND_ROBIN) {
+                        // If the CPU is not 
+                        // Decrement the timer by one and check to see if it is finished
+                        if (_Timer.decreaseTimerByOne() == TIMER_FINISHED) {
+                            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TIMER_IRQ, _CPUScheduler.getCurrentProcess()));
+                        }
+                        else {
+                        }
+                    } // If not using round robin then do nothing with the timer
                 }
             }
             else {
@@ -167,6 +177,9 @@ var TSOS;
                 case KEYBOARD_IRQ:
                     _krnKeyboardDriver.isr(params); // Kernel mode device driver
                     _StdIn.handleInput();
+                    break;
+                case FILE_SYSTEM_IRQ:
+                    _krnFileSystemDriver.isr(params);
                     break;
                 case PRINT_INTEGER_IRQ:
                     this.writeIntegerConsole(params);
@@ -231,6 +244,12 @@ var TSOS;
          *  Used to handle the break interrupt
          */
         Kernel.prototype.krnBreakISR = function (process) {
+            console.log(process);
+            // When a break is called on a location
+            if (process.location == PROCESS_ON_DISK) {
+                console.log("BREAK AND THE PROCESS IS ON THE DISK");
+                _krnFileSystemDriver.deleteFile("process", false);
+            }
             // Do not add the current process back to the ready queue and set the current process to null in order to signal the timer
             // Save the current CPU Register values into the process control block
             _CPUScheduler.runningProcess.setProgramCounter(_CPU.PC);
@@ -239,8 +258,11 @@ var TSOS;
             _CPUScheduler.runningProcess.setYReg(_CPU.Yreg);
             _CPUScheduler.runningProcess.setZFlag(_CPU.Zflag);
             _CPUScheduler.runningProcess.setProcessState(PROCESS_STATE_TERMINATED);
-            // Remove the process from memory and update the UI Table
-            _MemoryManager.clearMemoryPartition(process);
+            if (process.location != PROCESS_ON_DISK) {
+                console.log("TESTING TESTING TESTING");
+                // Remove the process from memory and update the UI Table
+                _MemoryManager.clearMemoryPartition(process);
+            }
             // Get the index of the process in the Resident List
             var indexOfProcess = _ResidentList.getElementIndexByProccessId(process);
             // Remove the process from the residentList
@@ -255,11 +277,13 @@ var TSOS;
             _CPUScheduler.setCurrentProcess(null);
             // check to see if you need to start another process 
             if (_ReadyQueue.getSize() > 0) {
+                // console.log("ANOTHER PROCES EXISTS ! GETITING IT NOW HOMIE G");
                 // Start the next process
                 var nextProcess = _CPUScheduler.getNextProcess();
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(START_PROCESS_IRQ, nextProcess));
             }
             else {
+                // console.log("NO PROCESS EXISTS SO STOP ");
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(END_CPU_IRQ, null));
             }
         };
@@ -325,7 +349,7 @@ var TSOS;
             if (_CPU.isExecuting == true && _CPUScheduler.getCurrentProcess() != null) {
                 // Check for a timing error
                 if (_CPUScheduler.getCurrentProcess().getProcessID() == process.getProcessID()) {
-                    console.log("THE TIMER HAS ENDED RING RING RING");
+                    //  console.log("THE TIMER HAS ENDED RING RING RING");
                     // Clear the timer and turn it off
                     _Timer.clearTimer();
                     // Save the current CPU Register values into the process control block
@@ -345,19 +369,23 @@ var TSOS;
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(START_PROCESS_IRQ, nextProcess));
                 }
                 else {
-                    // dont switch this was just handled in timing error
-                    console.log("ERROR FIXED");
                 }
             }
         };
         /**
-         * used to terminate a currenlty running process and remove it fromt he ready qyeye
+         * used to terminate a currenlty running process and remove it from the ready queye
          */
         Kernel.prototype.terminateProcess = function (process) {
-            console.log("Teminating process " + process.getProcessID());
+            // Check to see if the process is on the disk or not
+            if (process.location == PROCESS_ON_DISK) {
+                console.log("terminating process on the disk");
+                // delete the proces from the disk
+                _krnFileSystemDriver.deleteFile("process", false);
+            }
+            // console.log("Teminating process " + process.getProcessID() );
             // Check to see if the process is currently running
             if (process.getProcessID() == _CPUScheduler.getCurrentProcess().getProcessID()) {
-                console.log("Terminating the current process");
+                // console.log("Terminating the current process");
                 // Save the current CPU Register values into the process control block
                 _CPUScheduler.runningProcess.setProgramCounter(_CPU.PC);
                 _CPUScheduler.runningProcess.setAcc(_CPU.Acc);
@@ -371,7 +399,7 @@ var TSOS;
                 _CPUScheduler.setCurrentProcess(null);
                 // Check to see if another process wants to run
                 if (_ReadyQueue.getSize() > 0) {
-                    console.log("starting process after termination");
+                    // console.log("starting process after termination");
                     // Get the next process
                     var nextProcess = _CPUScheduler.getNextProcess();
                     //Start the next process
@@ -383,7 +411,7 @@ var TSOS;
                 }
             }
             else {
-                console.log("the current process is not being terminated");
+                //  console.log("the current process is not being terminated");
                 // The process to terminate is not running and chilling in the Ready Queue
                 // Search
                 var indexInReadyQueue = _ReadyQueue.getElementIndexByProccessId(process);
@@ -391,8 +419,11 @@ var TSOS;
                 // Destroy
                 _ReadyQueue = _ReadyQueue.removeElementAtIndex(indexInReadyQueue);
             }
-            // Remove the process from memory and update the UI Table
-            _MemoryManager.clearMemoryPartition(process);
+            // Check to see if the process was in memory or disk, if disk do not clear Mem partition
+            if (process.location != PROCESS_ON_DISK) {
+                // Remove the process from memory and update the UI Table
+                _MemoryManager.clearMemoryPartition(process);
+            }
             // Get the index of the process in the Resident List
             var indexOfProcess = _ResidentList.getElementIndexByProccessId(process);
             // Remove the process from the residentList
@@ -407,7 +438,9 @@ var TSOS;
          * This also calls the UI stuff that should happen when the CPU stops executing user programs
          */
         Kernel.prototype.stopCpuExecution = function () {
-            console.log("Stopping the CPU execution becuase no processes are currently active");
+            // When the CPU stops delete the process file cause it breaks stuff 
+            _krnFileSystemDriver.deleteFile("process", false);
+            _MemoryManager.fixMemArray();
             // Stop the Cpu from executing
             _CPU.isExecuting = false;
             _CPUScheduler.runningProcess = null;

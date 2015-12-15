@@ -46,7 +46,12 @@ var TSOS;
          * @params {string} value - The value to be set
         */
         Byte.prototype.setValue = function (value) {
-            this.value = value;
+            if (value.length < 2 && value.length > 0) {
+                this.value = "0" + value;
+            }
+            else {
+                this.value = value;
+            }
         };
         /**
          * sets the value of the first nibble of the byte in memory
@@ -55,7 +60,6 @@ var TSOS;
         Byte.prototype.setFirstNibble = function (value) {
             var newValue;
             if (value.length > 1) {
-                console.log("ERROR: user string to long");
                 return;
             }
             else if (value.length == 1) {
@@ -70,7 +74,6 @@ var TSOS;
                 return;
             }
             else {
-                console.log("This should never happen");
                 return;
             }
         };
@@ -81,7 +84,6 @@ var TSOS;
         Byte.prototype.setSecondNibble = function (value) {
             var newValue;
             if (value.length > 1) {
-                console.log("ERROR: user string to long");
                 return;
             }
             else if (value.length == 1) {
@@ -96,7 +98,6 @@ var TSOS;
                 return;
             }
             else {
-                console.log("This should never happen");
                 return;
             }
         };

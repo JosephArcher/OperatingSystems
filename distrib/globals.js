@@ -1,4 +1,3 @@
-///<reference path="os/collections.ts" />
 /// <reference path="jquery.d.ts" />
 ///<reference path="os/ReadyQueue.ts" />
 /* ------------
@@ -14,35 +13,40 @@
 //********************************************************\\
 // Application Information
 var APP_NAME = "Joe/S"; // Joe is Love Joe is Lyfe
-var APP_VERSION = "0.03"; // 
+var APP_VERSION = "0.04"; // Final Project BB
 // System 
 var CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 second.
 // Interrupts
 var TIMER_IRQ = 0; // Timer         
 var KEYBOARD_IRQ = 1; // Keyboard 
-var BSOD_IRQ = 2; // Blue Screen of Death
-var PRINT_INTEGER_IRQ = 3; // Print Integer
-var PRINT_STRING_IRQ = 4; // Print String
-var BREAK_IRQ = 5; // Break
-var INVALID_OPCODE_IRQ = 6; // Invalid Op Code
-var INVALID_OPCODE_USE_IRQ = 7; // Invalid Op Code Usage
-var MEMORY_OUT_OF_BOUNDS_IRQ = 8; // Memory Out of Bounds
-var CREATE_PROCESSS_IRQ = 9; // Create a new process
-var START_PROCESS_IRQ = 10; // Start a new  process
-var TERMINATE_PROCESS_IRQ = 11; // Terminate a  process
-var CONTEXT_SWITCH_IRQ = 12; // Context Swtich Between Processes
-var END_CPU_IRQ = 13; // Stop the CPU from executing 
+var FILE_SYSTEM_IRQ = 2; // File System
+var BSOD_IRQ = 3; // Blue Screen of Death
+var PRINT_INTEGER_IRQ = 4; // Print Integer
+var PRINT_STRING_IRQ = 5; // Print String
+var BREAK_IRQ = 6; // Break
+var INVALID_OPCODE_IRQ = 7; // Invalid Op Code
+var INVALID_OPCODE_USE_IRQ = 8; // Invalid Op Code Usage
+var MEMORY_OUT_OF_BOUNDS_IRQ = 9; // Memory Out of Bounds
+var CREATE_PROCESSS_IRQ = 10; // Create a new process
+var START_PROCESS_IRQ = 11; // Start a new  process
+var TERMINATE_PROCESS_IRQ = 12; // Terminate a  process
+var CONTEXT_SWITCH_IRQ = 13; // Context Swtich Between Processes
+var END_CPU_IRQ = 14; // Stop the CPU from executing 
 // Process States as consts for the Process Control Blocks // Process States \\   
 var PROCESS_STATE_NEW = "NEW"; //   * New
 var PROCESS_STATE_RUNNING = "RUNNING"; //   * Running
 var PROCESS_STATE_WAITING = "WAITING"; //   * Waiting
 var PROCESS_STATE_READY = "READY"; //   * Ready
 var PROCESS_STATE_TERMINATED = "TERMINATED"; //   * Terminated
+// Process Location States
+var PROCESS_ON_DISK = "DISK";
+var PROCESS_IN_MEM = "MEMORY";
 // TImer States		
 var TIMER_IS_SET = "SET"; //  Set
 var TIMER_IS_OFF = "OFF"; //  OFF
 var TIMER_NOT_FINISHED = "TIMER_NOT_FINISHED"; // Timer not finished yet
 var TIMER_FINISHED = "TIMER_FINISHED"; // Timer is finished
+var TIMER_INDEF = "TIMER_GOT_NO_BRAKES";
 // Not Really Sure What to Call These Yet
 var TIMER_ENDED_PROCESS = "TIMER"; // * The timer has been called and ended the user process
 var BREAK_ENDED_PROCESS = "BREAK"; // * The break instruction was called and ended the user process
@@ -52,7 +56,20 @@ var MEMORY_PARTITION_0_BASE_ADDRESS = 0; // Partition 1
 var MEMORY_PARTITION_1_BASE_ADDRESS = 256; // Partition 2
 var MEMORY_PARTITION_2_BASE_ADDRESS = 512; // Partition 3 
 // CPU Scheduling Algorithms
-var ROUND_ROBIN = "Round Robin"; // Round Robin
+var ROUND_ROBIN = "rr"; // Round Robin
+var FIRST_COME_FIRST_SERVE = "fcfs"; // First Come First Serve
+var NON_PREEMPTIVE_PRIORITY = "priority"; // Non Preemptive Priority
+// File System Operations
+var CREATE_FILE = "OPEN"; // Open File
+var DELETE_FILE = "DELETE"; // Delete File
+var READ_FILE = "READ"; // Read File
+var WRITE_FILE = "WRITE"; // Write File
+var LIST_FILES = "LIST"; // List Files
+var FORMAT_DRIVE = "FORMAT"; // Format Drive
+// HardDisk Block States
+var BLOCK_IN_USE = "BLOCK_IN_USE";
+var BLOCK_FREE = "BLOCK_FREE";
+var NO_FILE_DATA = "#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#";
 //********************************************************\\
 //                 Global Variables                       \\
 //********************************************************\\
@@ -75,7 +92,6 @@ var _StdIn; // Input
 var _StdOut; // Output
 // The Super Slick Scheduler
 var _CPUScheduler;
-console.log(_CPUScheduler + " SDFKLJSDKLFJSLKDFJLKSDJFKLSJDFKLSDF");
 // The Sharp Shell
 var _OsShell;
 // The Magnificent Memory
@@ -84,6 +100,8 @@ var _MemoryBlock;
 var _MemoryManager;
 // The Mysterious Mode
 var _Mode = 0; // 0 = Kernel Mode |  1 = User Mode
+// The Dank Disk
+var _DiskIsFormated = false;
 // The Hardy Hardware Clock
 var _hardwareClockID = null;
 // The Kooky Kernel
@@ -129,6 +147,7 @@ var _ResidentList; // Stores a list of all loaded processes
 //********************************************************\\
 // Global Device Driver Objects - page 12
 var _krnKeyboardDriver; //  = null;
+var _krnFileSystemDriver; // = null
 //********************************************************\\
 //                  UI Variables                          \\
 //********************************************************\\
@@ -158,6 +177,12 @@ var _TerminatedProcessTable;
 //Ready Queue UI
 var _ReadyQueueTableElement;
 var _ReadyQueueTable;
+// Hard Disk UI
+var _HardDiskTableElement;
+var _HardDiskTable;
+// Host Log UI Tracker
+var lastUIMessage = "";
+var hostCounter = 0;
 // Create an image global for the blue screen of death
 var BSOD_IMAGE = new Image();
 // Get the Image from the web

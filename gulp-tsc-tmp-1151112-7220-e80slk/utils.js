@@ -154,6 +154,7 @@ var TSOS;
                 nextChar = input.charCodeAt(i);
                 output = output + nextChar.toString(16);
             }
+            console.log(" The output iss  " + output);
             return output;
         };
         Utils.HexStringToPeopleString = function (input) {
@@ -161,8 +162,10 @@ var TSOS;
             var output = "";
             for (var i = 0; i < input.length; i = i + 2) {
                 nextChar = input.charAt(i) + input.charAt(i + 1);
+                console.log("next char is   " + nextChar);
                 output = output + String.fromCharCode(parseInt(nextChar, 16));
             }
+            console.log(" The output iss  " + output);
             return output;
         };
         /**

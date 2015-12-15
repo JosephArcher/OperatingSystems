@@ -48,9 +48,9 @@ module TSOS {
          */
         public static togglePowerOn(): void {
 
-          _ProgramSpinner.style.color = "#00B200";
+         _ProgramSpinner.style.color = "#00B200";
 
-      $(document).ready(function() {
+        $(document).ready(function() {
 
         $("#btnStartOS").removeClass("btn-navPowerOffBorder");
         $("#btnStartOS").addClass("btn-navPowerOnBorder");
@@ -78,6 +78,10 @@ module TSOS {
 
           $("#mainMemoryPanel").animate({ width: '100%' }, "slow");   
           $("#mainMemoryPanelCheck").fadeIn(); 
+
+          $("#processPanel").animate({ width: '100%' }, "slow");
+          $("#processPanelCheck").fadeIn(); 
+          $("#fileSystemPanelCheck").fadeIn(); 
          });    
        }
 
@@ -85,47 +89,26 @@ module TSOS {
          * Used to handle the UI changes when the power is turned off
          */
         public static togglePowerOff(): void {
-
+     
             _ProgramSpinner.style.color = "#FF0000";
             this.endProgramSpinner();
-
+  
             $(function() {
               $("#btnStartOS").removeClass("btn-navPowerOnBorder");
               $("#btnStartOS").addClass("btn-navPowerOffBorder");
 
-              // $("#face").addClass("happy");
-              // $("#face").removeClass("sad");
-
-              // $(".panel-collapse").collapse('hide');
-
-              // $("#systemInformationPanel").animate({ width: '45%' }, "slow");
-              // $("#systemInformationPanelCheck").fadeOut();
-
-              // $("#userProgramInputPanel").animate({ width: '45%' }, "slow");
-              // $("#userProgramInputPanelCheck").fadeOut();
-
-              // $("#residentListPanel").animate({ width: '45%' }, "slow");
-              // $("#residentListPanelCheck").fadeOut();
-
-              // $("#readyQueuePanel").animate({ width: '45%' }, "slow");
-              // $("#readyQueuePanelCheck").fadeOut();
-
-              // $("#cpuStatPanel").animate({ width: '45%' }, "slow");
-              // $("#cpuStatPanelCheck").fadeOut();
-
-              // $("#processControlBlockPanel").animate({ width: '45%' }, "slow");
-              // $("#processControlBlockPanelCheck").fadeOut();
-
-              // $("#mainMemoryPanel").animate({ width: '55%' }, "slow");
-              // $("#mainMemoryPanelCheck").fadeOut(); 
-
+              $("#mainMemoryPanelCheck").fadeOut();
+              $("#processPanelCheck").fadeOut(); 
+              $("#cpuStatPanelCheck").fadeOut(); 
+              $("#userProgramInputPanelCheck").fadeOut();
+              $("#fileSystemPanelCheck").fadeOut(); 
 
             });
 
             this.clearUserInput();
             this.clearCpuUI();
             _MemoryInformationTable.fillRows();
-            _TerminatedProcessTable.clearTable();
+           // _TerminatedProcessTable.clearTable();
             _ReadyQueueTable.clearTable();
             _Console.clearScreen();
 
@@ -207,12 +190,39 @@ module TSOS {
             $("#btnStepOS").addClass("btn-unselectedMode");
           });
         }
+        public static StringToHexString(input) {
+  
+            var nextChar;
+            var output = "";
+         for (var i = 0; i < input.length; i++){
+             nextChar = input.charCodeAt(i);
+             output = output + nextChar.toString(16);
+         }
+          return output;  
+        }
+
+
+        public static HexStringToPeopleString(input){
+
+         var nextChar;
+         var output = "";
+
+          for (var i = 0; i < input.length; i = i + 2) {
+
+
+              nextChar = input.charAt(i) + input.charAt(i + 1);
+              output = output + String.fromCharCode(parseInt(nextChar, 16));
+
+            }
+            return output;
+        }
+        
         /**
          * Used to convert a decimal string into a hex string
            @Params {String} - A decimal string
            @Returns {String} - A hex string
         */
-        public static decimalToHex(input: string): string {
+        public static decimalToHex(input: string):string {
 
           
           var decimalNumber: number = parseInt(input, 10);
@@ -222,6 +232,7 @@ module TSOS {
           return hexNumber;
 
         }
+
         /**
          * Used to convert a hex string into a decimal string
            @Params {String} - A hex string
@@ -251,8 +262,7 @@ module TSOS {
            // nextProcess = <TSOS.ProcessControlBlock>_ReadyQueue.elementAtIndex(i);
 
             if (nextProcess.getProcessID() == processID) {
-              console.log(nextProcess.getProcessID() + " 1");
-              console.log(processID + " 2");
+           
               return true;
             }
           }
@@ -278,7 +288,7 @@ module TSOS {
         */
         public static getTableRowPosition(address:number):number {
           var rowNumber:number = Math.floor(address / 8);         
-          console.log(rowNumber);        
+             
           return rowNumber;
         }
         /**
@@ -288,7 +298,7 @@ module TSOS {
         */
         public static getTableColumnPosition(address: number):number {
           var columnNumber:number = address % 8;
-          console.log(columnNumber);
+         
           return columnNumber;
         }
         /**
@@ -430,9 +440,9 @@ module TSOS {
         }
         public static hexToAscii(hexString: string): string {
 
-        //  console.log("Hex Value is " + hexString);
+       
           var test = String.fromCharCode(parseInt(hexString, 16))
-        //  console.log("Ascii Value is " + test);
+    
           return test;
 
         }

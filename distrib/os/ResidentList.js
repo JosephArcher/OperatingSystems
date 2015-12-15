@@ -1,4 +1,4 @@
-///<reference path="queue.ts" />
+//<reference path="queue.ts" />
 ///<reference path="processControlBlock.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -65,6 +65,21 @@ var TSOS;
                     return i;
                 }
             }
+        };
+        ResidentList.prototype.isFileWrittenToDisk = function () {
+            var size = _ResidentList.getSize();
+            var nextProcess;
+            // Loop over the queue 
+            for (var i = 0; i < size; i++) {
+                nextProcess = _ResidentList.getElementAt(i);
+                console.log(nextProcess.location + "test for adis");
+                // Check the next process to see if the process is on the disk or in mem
+                if (nextProcess.location == PROCESS_ON_DISK) {
+                    return true;
+                }
+            }
+            // If no process is written to disk return false
+            return false;
         };
         ResidentList.prototype.returnAllProcessIds = function () {
             var nextProcessBlock;
