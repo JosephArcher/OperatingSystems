@@ -556,23 +556,24 @@ module TSOS {
          public readAndReturn(theFilename: string) {
 
            var filename: string = Utils.StringToHexString(theFilename + "");
-                    // Search to see if the file name exists and the write is valid
-                    var response = this.searchForFile(filename);
 
-                    // If the file exists
-                    if (response != null) {
+           // Search to see if the file name exists and the write is valid
+           var response = this.searchForFile(filename);
 
-                        // Split apart the response array
-                        var fileLocation = response[0];
-                        var fileData = response[1]; 
+            // If the file exists
+            if (response != null) {
 
-                        // Split apart the index and get the track , sector, block from the index
-                        var fileDataArray = fileData.split(',');
+              // Split apart the response array
+              var fileLocation = response[0];
+              var fileData = response[1]; 
 
-                        // Using the starting location find the final block in the chain
-                        var data = Utils.HexStringToPeopleString(this.readDataFromAllBlocks(this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3])));
-                       
-                        return data;
+              // Split apart the index and get the track , sector, block from the index
+              var fileDataArray = fileData.split(',');
+
+              // Using the starting location find the final block in the chain
+             var data = Utils.HexStringToPeopleString(this.readDataFromAllBlocks(this.createFileLocationString(fileDataArray[1], fileDataArray[2], fileDataArray[3])));
+                      
+             return data;
           }
         } 
         /**
@@ -887,7 +888,9 @@ module TSOS {
         var x : TSOS.ProcessControlBlock = _ReadyQueue.getProcessInFirstPartition();
 
         if(x != null){
+
           x.setLocation(PROCESS_ON_DISK);
+          _ReadyQueueTable.updateProcessById(x);
         }
      
         // Initalize Variables

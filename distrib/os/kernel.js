@@ -258,8 +258,11 @@ var TSOS;
             _CPUScheduler.runningProcess.setYReg(_CPU.Yreg);
             _CPUScheduler.runningProcess.setZFlag(_CPU.Zflag);
             _CPUScheduler.runningProcess.setProcessState(PROCESS_STATE_TERMINATED);
-            // Remove the process from memory and update the UI Table
-            _MemoryManager.clearMemoryPartition(process);
+            if (process.location != PROCESS_ON_DISK) {
+                console.log("TESTING TESTING TESTING");
+                // Remove the process from memory and update the UI Table
+                _MemoryManager.clearMemoryPartition(process);
+            }
             // Get the index of the process in the Resident List
             var indexOfProcess = _ResidentList.getElementIndexByProccessId(process);
             // Remove the process from the residentList
@@ -370,7 +373,7 @@ var TSOS;
             }
         };
         /**
-         * used to terminate a currenlty running process and remove it fromt he ready qyeye
+         * used to terminate a currenlty running process and remove it from the ready queye
          */
         Kernel.prototype.terminateProcess = function (process) {
             // Check to see if the process is on the disk or not
@@ -416,8 +419,11 @@ var TSOS;
                 // Destroy
                 _ReadyQueue = _ReadyQueue.removeElementAtIndex(indexInReadyQueue);
             }
-            // Remove the process from memory and update the UI Table
-            _MemoryManager.clearMemoryPartition(process);
+            // Check to see if the process was in memory or disk, if disk do not clear Mem partition
+            if (process.location != PROCESS_ON_DISK) {
+                // Remove the process from memory and update the UI Table
+                _MemoryManager.clearMemoryPartition(process);
+            }
             // Get the index of the process in the Resident List
             var indexOfProcess = _ResidentList.getElementIndexByProccessId(process);
             // Remove the process from the residentList
@@ -432,7 +438,8 @@ var TSOS;
          * This also calls the UI stuff that should happen when the CPU stops executing user programs
          */
         Kernel.prototype.stopCpuExecution = function () {
-            //  console.log("Stopping the CPU execution becuase no processes are currently active");
+            // When the CPU stops delete the process file cause it breaks stuff 
+            _krnFileSystemDriver.deleteFile("process", false);
             // Stop the Cpu from executing
             _CPU.isExecuting = false;
             _CPUScheduler.runningProcess = null;

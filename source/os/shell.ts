@@ -420,12 +420,12 @@ module TSOS {
             }
 
             // Determine where to write the program too
+            console.log(_MemoryManager.availableMemoryPartitions);
 
+            console.log(_MemoryManager.availableMemoryPartitions.getSize() + " THE LENGTH IS");
             // Check to see if there is room in memory
             if (_MemoryManager.availableMemoryPartitions.getSize() < 1) {
 
-                console.log("CREATING DISK SHIT");
-                  // console.log(_ResidentList.isFileWrittenToDisk() + "joe is calasdf");
                 // Next check to see if a file is written to the disk yet
                 if(_ResidentList.isFileWrittenToDisk() == false){
 
@@ -758,6 +758,10 @@ module TSOS {
          */ 
         public setSchedule(schedulingAlgorithm: string) {
 
+             // Check to see if the CPU is executing and if so tell user they cant switch stuff
+             if(_CPU.isExecuting == false){
+
+
             // Check to see if the scheduling algorithm is valid
             if (schedulingAlgorithm == ROUND_ROBIN || schedulingAlgorithm == FIRST_COME_FIRST_SERVE || schedulingAlgorithm == NON_PREEMPTIVE_PRIORITY) {
                 _CPUScheduler.setSchedulingAlgorithm(schedulingAlgorithm);
@@ -766,7 +770,10 @@ module TSOS {
             // If not dont set it and tell the user
             else{
                 _StdOut.putText("Error { " + schedulingAlgorithm + " } is not valid... Please enter either rr, fcfs, or priority <INT>");
-            }         
+            }
+            }else{
+                 _StdOut.putText("Error, cannot switch algorithms while executing ");
+            }    
         }
         /**
          * Gets the current scheduling algorithm from the CPU Scheduler

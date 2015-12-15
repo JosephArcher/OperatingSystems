@@ -91,32 +91,33 @@ var TSOS;
          * "Clears" a single memory partition in memory and adds it back to the available partition queue
          */
         MemoryManager.prototype.clearMemoryPartition = function (process) {
-            // Get the base regisger of the process 
-            var processBaseRegister = process.getBaseReg();
-            // Get the length of the partition index
-            var length = this.memoryPartitionIndex.length;
-            // Get the length of the residentList
-            var listLength = _ResidentList.getSize();
-            // The partitionIndex
-            var theMemoryPartition;
-            // Loop over the partition index and find a matching base address
-            for (var i = 0; i < length; i++) {
-                // check the processBaseAddress with the base address in the index
-                if (processBaseRegister == this.memoryPartitionIndex[i]) {
-                    // If a match is found then save the answer to the variable for later user
-                    theMemoryPartition = this.memoryPartitionIndex[i];
+            if (process.location != PROCESS_ON_DISK) {
+                // Get the base regisger of the process 
+                var processBaseRegister = process.getBaseReg();
+                // Get the length of the partition index
+                var length = this.memoryPartitionIndex.length;
+                // Get the length of the residentList
+                var listLength = _ResidentList.getSize();
+                // The partitionIndex
+                var theMemoryPartition;
+                // Loop over the partition index and find a matching base address
+                for (var i = 0; i < length; i++) {
+                    // check the processBaseAddress with the base address in the index
+                    if (processBaseRegister == this.memoryPartitionIndex[i]) {
+                        // If a match is found then save the answer to the variable for later user
+                        theMemoryPartition = this.memoryPartitionIndex[i];
+                    }
+                    else {
+                    }
                 }
-                else {
+                // Clear the memory blocks at those locations
+                for (var i = theMemoryPartition; i < theMemoryPartition + 256; i++) {
+                    this.memoryBlock[i] = new TSOS.Byte(i, "00");
+                    _MemoryInformationTable.setCellData(i, "00");
                 }
+                // Add the partition back into the available memory partitions
+                this.availableMemoryPartitions.enqueue(theMemoryPartition);
             }
-            //console.log("The size of the resident list is ..." + _ResidentList.getSize());
-            // Clear the memory blocks at those locations
-            for (var i = theMemoryPartition; i < theMemoryPartition + 256; i++) {
-                this.memoryBlock[i] = new TSOS.Byte(i, "00");
-                _MemoryInformationTable.setCellData(i, "00");
-            }
-            // Add the partition back into the available memory partitions
-            this.availableMemoryPartitions.enqueue(theMemoryPartition);
         };
         /**
          * "Clears" all of the Memory Partitions in memory

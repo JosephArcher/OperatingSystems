@@ -114,6 +114,8 @@ module TSOS {
 		 */
 		 public clearMemoryPartition(process: TSOS.ProcessControlBlock): void  {
 
+		 	if(process.location != PROCESS_ON_DISK) {
+
 		 	// Get the base regisger of the process 
 			var processBaseRegister = process.getBaseReg();
 			
@@ -139,16 +141,17 @@ module TSOS {
 			 	}
 
 			}
-			//console.log("The size of the resident list is ..." + _ResidentList.getSize());
 
 			// Clear the memory blocks at those locations
 			for (var i = theMemoryPartition; i < theMemoryPartition + 256; i++){
 				this.memoryBlock[i] = new Byte(i, "00");
 				_MemoryInformationTable.setCellData(i, "00");
 			}
-
 			// Add the partition back into the available memory partitions
 			this.availableMemoryPartitions.enqueue(theMemoryPartition);	
+
+			}
+			
 		}
 		/**
 		 * "Clears" all of the Memory Partitions in memory

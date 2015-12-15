@@ -295,7 +295,8 @@ module TSOS {
          *  Used to handle the break interrupt
          */
         public krnBreakISR(process: TSOS.ProcessControlBlock) {
-      console.log(process);
+            
+            console.log(process);
 
               // When a break is called on a location
               if(process.location == PROCESS_ON_DISK){
@@ -314,8 +315,12 @@ module TSOS {
                _CPUScheduler.runningProcess.setZFlag(_CPU.Zflag);
                _CPUScheduler.runningProcess.setProcessState(PROCESS_STATE_TERMINATED);
 
-               // Remove the process from memory and update the UI Table
-               _MemoryManager.clearMemoryPartition(process);
+               if(process.location != PROCESS_ON_DISK){
+           console.log("TESTING TESTING TESTING");
+                 // Remove the process from memory and update the UI Table
+                 _MemoryManager.clearMemoryPartition(process);
+               }
+             
 
                // Get the index of the process in the Resident List
                var indexOfProcess: number = _ResidentList.getElementIndexByProccessId(process); 
@@ -464,7 +469,7 @@ module TSOS {
             }
         }
         /**
-         * used to terminate a currenlty running process and remove it fromt he ready qyeye
+         * used to terminate a currenlty running process and remove it from the ready queye
          */
         public terminateProcess(process: TSOS.ProcessControlBlock) {
 
@@ -526,10 +531,13 @@ module TSOS {
                 // Destroy
                 _ReadyQueue = _ReadyQueue.removeElementAtIndex(indexInReadyQueue);
             }
-            
-                // Remove the process from memory and update the UI Table
-                _MemoryManager.clearMemoryPartition(process);
-
+                
+                // Check to see if the process was in memory or disk, if disk do not clear Mem partition
+                if(process.location != PROCESS_ON_DISK){
+                  // Remove the process from memory and update the UI Table
+                  _MemoryManager.clearMemoryPartition(process);
+                }
+                
                 // Get the index of the process in the Resident List
                 var indexOfProcess: number = _ResidentList.getElementIndexByProccessId(process); 
 
@@ -547,15 +555,16 @@ module TSOS {
          * This also calls the UI stuff that should happen when the CPU stops executing user programs
          */
         public stopCpuExecution(): void {
-
-          //  console.log("Stopping the CPU execution becuase no processes are currently active");
-            // Stop the Cpu from executing
-            _CPU.isExecuting = false;
-            _CPUScheduler.runningProcess = null;
-            // Handle the UI from having no programs execuing
-            Utils.endProgramSpinner();
-            _Console.advanceLine();
-            _OsShell.putPrompt(); 
+          // When the CPU stops delete the process file cause it breaks stuff 
+         _krnFileSystemDriver.deleteFile("process", false);
+         
+          // Stop the Cpu from executing
+          _CPU.isExecuting = false;
+          _CPUScheduler.runningProcess = null;
+          // Handle the UI from having no programs execuing
+          Utils.endProgramSpinner();
+          _Console.advanceLine();
+          _OsShell.putPrompt(); 
         
         }
 

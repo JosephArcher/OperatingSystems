@@ -685,6 +685,7 @@ var TSOS;
             var x = _ReadyQueue.getProcessInFirstPartition();
             if (x != null) {
                 x.setLocation(PROCESS_ON_DISK);
+                _ReadyQueueTable.updateProcessById(x);
             }
             // Initalize Variables
             var nextByte;
