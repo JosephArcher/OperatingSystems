@@ -438,8 +438,11 @@ var TSOS;
          * This also calls the UI stuff that should happen when the CPU stops executing user programs
          */
         Kernel.prototype.stopCpuExecution = function () {
+            console.log("JOE NEW FIX");
             // When the CPU stops delete the process file cause it breaks stuff 
-            _krnFileSystemDriver.deleteFile("process", false);
+            if (_DiskIsFormated) {
+                _krnFileSystemDriver.deleteFile("process", false);
+            }
             _MemoryManager.fixMemArray();
             // Stop the Cpu from executing
             _CPU.isExecuting = false;
