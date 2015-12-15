@@ -89,8 +89,6 @@ var TSOS;
                 // Check to see if the next process is located on the disk or not
                 if (nextProcess.location == PROCESS_ON_DISK) {
                     var test = _ReadyQueue.getProcessInFirstPartition();
-                    console.log("testing stuff");
-                    console.log(test);
                     _krnFileSystemDriver.rollOutProcess();
                     nextProcess.setBaseReg(0);
                     nextProcess.setLimitReg(256);

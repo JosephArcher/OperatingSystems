@@ -13,7 +13,7 @@
 //********************************************************\\
 // Application Information
 var APP_NAME = "Joe/S"; // Joe is Love Joe is Lyfe
-var APP_VERSION = "0.04"; // 
+var APP_VERSION = "0.04"; // Final Project BB
 // System 
 var CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 second.
 // Interrupts

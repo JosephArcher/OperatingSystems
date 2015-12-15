@@ -137,8 +137,6 @@ module TSOS {
      */
     public searchForFile(theFilename) {
 
-   // console.log("HERRE");
-
      var filename:string = Utils.StringToHexString(theFilename + "");
       // Initalize the variables
       var nextFileDataString: string;
@@ -147,8 +145,6 @@ module TSOS {
 
       // First convert the filename to hex
       filename = filename + "";
-
-   //   console.log(filename);
 
       // Loop from 0 0 1 - > 0 7 7 and search each value for a matching file name
       for (var i = 0; i < 1; i++) {
@@ -166,9 +162,8 @@ module TSOS {
 
               // compare the file name of the current index in the directory to the one that the user is searching for
               if (nextFileData[4] == filename) {
+
                 // Fill the array
-      //    console.log(nextFileData[4]);
-     //     console.log(filename);
                 response[0] = this.createFileLocationString(i + "", j + "", k + "");
                 response[1] = nextFileData.toString();
 
@@ -192,7 +187,6 @@ module TSOS {
       // Concat the 1, 2, 3 elements of the block together
       var nextLocation = blockArray[1] + blockArray[2] + blockArray[3];
 
-   //   console.log("next location is ... " + nextLocation);
       if(nextLocation == "000"){
         return false;
       }
@@ -222,11 +216,9 @@ module TSOS {
        currentBlock = this.getNextBlock(currentBlock);
 
      }
-   //   console.log("FINAL BLOCK IN CHAIN IS.....  " + currentBlock);
       return currentBlock;
     }
     public readDataFromAllBlocks(block: string) {
-    //  console.log("Read test data");
       var finalBlock;
       var currentBlock = block;
       var test = sessionStorage.getItem(currentBlock);
@@ -235,16 +227,14 @@ module TSOS {
       var totalData = testSplit[4] + "";
       var nextValue;
       var nextArray;
-    //  console.log(testSplit);
+
       while(this.hasNextBlockInChain(currentBlock)){
 
        currentBlock = this.getNextBlock(currentBlock);
        nextValue = sessionStorage.getItem(currentBlock);
        nextArray = nextValue.split(',');
        totalData = totalData + nextArray[4];
-      // console.log(totalData + "total Data TEST JOE ");
      }
-     // console.log("FINAL BLOCK IN CHAIN IS.....  " + currentBlock);
       return totalData;
     }
     /**
@@ -271,8 +261,7 @@ module TSOS {
 
             // Check the in use byte
             if (nextFileData[0] == "0") {  // If the directory index is not currently in use
-              //console.log("The next free directory location is... " + i + j + k);
-                            // return the key for the free index
+              // return the key for the free index
               return this.createFileLocationString(i + "", j + "", k + "");
             }
           }
@@ -302,11 +291,11 @@ module TSOS {
             // Break up the string by the commas and add it to an array
             nextFileData = nextFileDataString.split(',');
 
-           // console.log("Index " + i + j + k + "is equal to" + nextFileData[0]);
+       
 
             // Check the in use byte
             if (nextFileData[0] == "0") {  // If the directory index is not currently in use
-             // console.log("The next free data location is... " + i + j + k);
+            
               // return the key for the free index
               return this.createFileLocationString(i + "", j + "", k + "");
             }
@@ -419,13 +408,21 @@ module TSOS {
             // Create the directory entry for the new file
             sessionStorage.setItem(nextFreeDirectoryLocation, this.createDirectoryFileDataString(1, fileTableData[0], fileTableData[1], fileTableData[2], filename));
 
-            // Create the table entry for the new file
-            console.log("writing to location " + nextFreeDataLocation);
+            // Create the data entry for the new file
             sessionStorage.setItem(nextFreeDataLocation, this.createDataFileString("1", "0", "0", "0", ""));
              
             if(printMsg){
               // Report to the user that the creation was successful
               _StdOut.putText("Success: The file was created"); 
+
+              // Advance the line in the console
+              _Console.advanceLine();
+
+              // Place the prompt
+              _OsShell.putPrompt();
+
+              // IT WORKED !
+              return true;
             }
 
             // Update the Hard Disk UI
@@ -438,14 +435,7 @@ module TSOS {
             _HardDiskTable.updateRow(parseInt(aString), this.createHeaderString("1", bSplit[0], bSplit[1], bSplit[2]), filename); // The Directory entry
             _HardDiskTable.updateRow(parseInt(bString), "1000", ""); // The Data block
 
-            // Advance the line in the console
-            _Console.advanceLine();
-
-            // Place the prompt
-            _OsShell.putPrompt();
-
-            // IT WORKED !
-            return true;
+            
           }
           else { // If no file blocks are availble
             if(printMsg){
@@ -858,6 +848,7 @@ module TSOS {
             // Initlize Variables
             var fileList = [];
             var nextDirLocation;
+            var nextFileName = "";
             // Find all the files in the File System and add them into the arrary
 
             // Loop over the file directory and check each spot for an in use
@@ -876,10 +867,13 @@ module TSOS {
 
                   // Check to see if the in use bit is equal to 1
                   if (nextDirLocationArray[0] == "1") {   // If a file exists at that directory location
-                    // Add the file to the file list to be returned
-                    fileList.push(nextDirLocationArray[4]);
-                  }
 
+                    // Get the next file name
+                    nextFileName = Utils.HexStringToPeopleString(nextDirLocationArray[4]);
+
+                    // Add the file to the file list to be returned
+                    fileList.push(nextFileName);
+                  }
                 }
               }
             }

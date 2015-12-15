@@ -59,8 +59,8 @@ var TSOS;
             this.krnTrace(_krnKeyboardDriver.status);
             // Load the File System Device Driver
             this.krnTrace("Loading the File System.");
-            _krnFileSystemDriver = new TSOS.DeviceDriverFileSystem();
-            _krnFileSystemDriver.driverEntry();
+            _krnFileSystemDriver = new TSOS.DeviceDriverFileSystem(); // Construct it.
+            _krnFileSystemDriver.driverEntry(); // Call the driverEntry() initalization routine.
             this.krnTrace(_krnFileSystemDriver.status);
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
             this.krnTrace("Enabling the interrupts.");

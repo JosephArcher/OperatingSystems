@@ -47,17 +47,11 @@ var TSOS;
         ReadyQueue.prototype.getProcessInFirstPartition = function () {
             var size = this.q.length;
             var nextProcess;
-            console.log("READY QUEUE");
-            console.log(_ReadyQueue);
-            console.log(_CPUScheduler.getCurrentProcess());
             // Loop over the queue 
             for (var i = 0; i < size; i++) {
                 nextProcess = _ReadyQueue.getElementAt(i);
-                console.log("JOE THE BASE REG IS   " + nextProcess.getBaseReg());
                 // Compare the given process ID and the one at the position in the queue
                 if (nextProcess.getBaseReg() == MEMORY_PARTITION_0_BASE_ADDRESS && nextProcess.location != PROCESS_ON_DISK) {
-                    console.log("TOP");
-                    console.log(nextProcess);
                     return nextProcess;
                 }
             }

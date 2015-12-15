@@ -68,29 +68,8 @@ module TSOS {
 
 			return output;
 		}
-		// public updateTableContents(): void {
-
-		// 	this.setProcessStateValue(PROCESS_STATE_TERMINATED);
-		// 	this.setProgramCounterValue(_CPU.PC + "");
-		// 	this.setXRegisterValue(_CPU.Xreg + "");
-		// 	this.setYRegisterValue(_CPU.Yreg + "");
-		// 	this.setAccumulatorValue(_CPU.Acc + "");
-		// 	this.setZFlagValue(_CPU.Zflag + "");
-		// }
-		// public clearTable(): void {
-
-		// 	this.setProcessStateValue("00");
-		// 	this.setProgramCounterValue("00");
-		// 	this.setXRegisterValue("00");
-		// 	this.setYRegisterValue("00");
-		// 	this.setAccumulatorValue("00");
-		// 	this.setZFlagValue("00");
-		// }
 		public addNewProcess(newProcess: TSOS.ProcessControlBlock): void {
-		//	console.log(this.table.rows.length + "ROWDSFSDFSDSF");
 			this.addRow(newProcess);
-
-
 		}
 		public addRow(process: TSOS.ProcessControlBlock) {
 
@@ -146,7 +125,7 @@ module TSOS {
 
 					// Compare the ID of the row to the ID of the process that is ending
 					if (nextProcessRowID == theProcessID) {
-					//	console.log("The Process ID matches one in the current table! UPDATING RIGHT NOW BB");
+					
 						// Get the row that matches in order to update its contents
 						row = <HTMLTableRowElement>this.table.rows.item(i);
 
@@ -173,8 +152,6 @@ module TSOS {
 						cell8.innerHTML = process.getBaseReg() + "";
 						cell9.innerHTML = process.getTurnAroundTime() + "";
 						cell10.innerHTML = process.getWaitTime() + "";
-
-
 					}
 				}
 			}
@@ -202,7 +179,6 @@ module TSOS {
 				}
 			}
 			else{
-			//	console.log("topkek123");
 			}
 		}
 	}

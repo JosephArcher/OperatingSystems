@@ -16,7 +16,7 @@
 
 // Application Information
 const APP_NAME: string    = "Joe/S";   // Joe is Love Joe is Lyfe
-const APP_VERSION: string = "0.04";   // 
+const APP_VERSION: string = "0.04";   // Final Project BB
 
 // System 
 const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 1000 = 1 second.
